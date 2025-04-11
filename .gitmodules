@@ -1,0 +1,3 @@
+[submodule "PolyBench-ACC"]
+	path = PolyBench-ACC
+	url = https://github.com/cavazos-lab/PolyBench-ACC.git
