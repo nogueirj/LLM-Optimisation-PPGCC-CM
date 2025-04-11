@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include <omp.h>
 
 /* Include polybench common header. */
 #include <polybench.h>
@@ -75,7 +74,6 @@ void kernel_gemm(int ni, int nj, int nk,
 
 #pragma scop
   /* C := alpha*A*B + beta*C */
-  #pragma omp parallel for private(j, k) collapse(2)
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
       {
@@ -84,6 +82,7 @@ void kernel_gemm(int ni, int nj, int nk,
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }
 #pragma endscop
+
 }
 
 
