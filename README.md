@@ -12,6 +12,14 @@ Link para o Artigo: [`Uso de IA Generativa na Geração de Código Paralelo para
 
 3. Pedir para gerar código `OpenMP` para `GPU`, construtor `target` que gera código para `GPU` pelo `GCC`, sem a necessidade de saber `CUDA`. Comparar com o `Polybench-GPU`
 
-.
+
+
+## Ferramentas
+
+```bash
+https://ollama.com/
+https://github.com/open-webui/open-webui
+
+```
 
 
