@@ -20,6 +20,30 @@ Link para o Artigo: [`Uso de IA Generativa na Geração de Código Paralelo para
 https://ollama.com/
 https://github.com/open-webui/open-webui
 
+https://ollama.com/library/deepseek-coder-v2
+ollama run deepseek-coder-v2
+
+https://ollama.com/search
+
+
+```
+
+O `deepseek-coder-v2:236b` não rolou na minha máquina com 32GB.
+
+```bash
+[rag@backporting open-webui]$ ollama run deepseek-coder-v2:236b
+pulling manifest 
+pulling 6bbfda8eb96d... 100% ▕███████▏ 132 GB                         
+pulling 22091531faf0... 100% ▕███████▏  705 B                         
+pulling 4bb71764481f... 100% ▕███████▏  13 KB                         
+pulling 1c8f573e830c... 100% ▕███████▏ 1.1 KB                         
+pulling 19f2fb9e8bc6... 100% ▕███████▏   32 B                         
+pulling 1f3aee0087c2... 100% ▕███████▏  569 B                         
+verifying sha256 digest 
+writing manifest 
+success 
+Error: model requires more system memory (132.5 GiB) than is available (11.5 GiB)
+[rag@backporting open-webui]$
 ```
 
 

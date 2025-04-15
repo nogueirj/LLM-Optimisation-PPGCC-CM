@@ -183,7 +183,7 @@ for sched in "${SCHEDULES[@]}"; do
   for t in "${THREADS[@]}"; do
     export OMP_NUM_THREADS=$t
     echo -e "\n[Threads: $t]"
-    OMP_SCHEDULE=$sched $EXEC
+    time OMP_SCHEDULE=$sched $EXEC
   done
 done
 ```
