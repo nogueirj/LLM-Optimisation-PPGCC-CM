@@ -1,8 +1,8 @@
-Critérios comparativos para analisar códigos OpenMP pode te ajudar bastante a avaliar o nível de sofisticação, eficiência e clareza dos paralelismos aplicados. Aqui estão algumas sugestões de **critérios organizados por categorias**:
+Critérios comparativos para analisar códigos OpenMP que podem ajudar na avaliação do nível de sofisticação, eficiência e clareza dos construtores de paralelismo aplicados. Aqui estão algumas sugestões de **critérios organizados por categorias**:
 
 ------
 
-### 🔍 **1. Profundidade da Paralelização**
+### **1. Profundidade da Paralelização**
 
 Avalia o quão profundamente o código utiliza paralelismo, não apenas em laços superficiais.
 
@@ -12,7 +12,7 @@ Avalia o quão profundamente o código utiliza paralelismo, não apenas em laço
 
 ------
 
-### ⚙️ **2. Variedade e sofisticação das diretivas OpenMP**
+### **2. Variedade e sofisticação das diretivas OpenMP**
 
 Quanto mais específico e variado o uso de diretivas, maior o domínio sobre OpenMP.
 
@@ -23,11 +23,11 @@ Quanto mais específico e variado o uso de diretivas, maior o domínio sobre Ope
 
 ------
 
-### 📊 **3. Eficiência e otimização**
+### **3. Eficiência e otimização**
 
-- **Granularidade das tarefas ou regiões paralelas** (evitar overhead de criação).
+- **Granularidade das tarefas ou regiões paralelas** (evitar _overhead_ de criação do time de _threads_).
 
-  - Dois laços dentro de uma mesma região paralela, utiliza o mesmo time de threads criado. Em regiões separadas, teremos o overhead de criação dos times de threads. Por exemplo, no código apenas um time de threads é criado e trabalham sobre os dois laços:
+  - Dois laços dentro de uma mesma região paralela, utiliza o mesmo time de _threads_ criado. Em regiões separadas, teremos o _overhead_ de criação dos times de _threads_. Por exemplo, no código apenas um time de threads é criado e trabalham sobre os dois laços:
 
     ```c
     #pragma omp parallel
@@ -64,7 +64,7 @@ Quanto mais específico e variado o uso de diretivas, maior o domínio sobre Ope
 
 ------
 
-### 🧠 **4. Clareza e manutenibilidade**
+### **4. Clareza e manutenibilidade**
 
 - O código está bem estruturado e comentado para explicar o uso de OpenMP?
 - A paralelização interfere ou não na lógica sequencial?
@@ -72,15 +72,15 @@ Quanto mais específico e variado o uso de diretivas, maior o domínio sobre Ope
 
 ------
 
-### 📈 **5. Medição de desempenho**
+### **5. Medição de desempenho**
 
 - **Speedup real obtido** (pode ser usado para avaliar a qualidade da paralelização).
 - **Escalabilidade**: desempenho com 2, 4, 8, 16 threads.
-- **Overhead de criação de threads, sincronização, false sharing**.
+- **Overhead de criação de threads, sincronização, _false sharing_**.
 
 ------
 
-### ✅ Exemplo de avaliação
+### Exemplo de avaliação
 
 Você pode criar uma **tabela comparativa** com pontuação de 1 a 5, por exemplo:
 
@@ -96,7 +96,7 @@ Você pode criar uma **tabela comparativa** com pontuação de 1 a 5, por exempl
 
 ------
 
-## 📊 Tabela de Avaliação de Códigos OpenMP
+## Tabela de Avaliação de Códigos OpenMP
 
 | Categoria                         | Critério                                                                 | Nota / Observação |
 |-----------------------------------|--------------------------------------------------------------------------|-------------------|
