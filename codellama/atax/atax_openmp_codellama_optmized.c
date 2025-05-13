@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "atax.h"
-
+#include <omp.h> 
 
 /* Array initialization. */
 static

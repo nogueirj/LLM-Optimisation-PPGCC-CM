@@ -9,6 +9,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "gemm.h"
+#include <omp.h> 
 
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */

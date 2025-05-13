@@ -9,6 +9,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "syr2k.h"
+#include <omp.h>
 
 /* Array initialization. */
 static

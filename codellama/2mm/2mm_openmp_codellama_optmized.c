@@ -16,9 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "2mm.h"
-#include <omp.h> // Include for OpenMP directives
-
-
+#include <omp.h> 
 
 /* Array initialization. */
 static
@@ -36,15 +34,19 @@ void init_array(int ni, int nj, int nk, int nl,
   *beta = 2123;
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
+    #pragma omp parallel for private(i) shared(A, B, C, D)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
   for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
+    #pragma omp parallel for private(i) shared(B, A, C, D)
       B[i][j] = ((DATA_TYPE) i*(j+1)) / nj;
   for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
+    #pragma omp parallel for private(i) shared(C, A, B, D)
       C[i][j] = ((DATA_TYPE) i*(j+3)) / nl;
   for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
+    #pragma omp parallel for private(i) shared(D, A, B, C)
       D[i][j] = ((DATA_TYPE) i*(j+2)) / nk;
 }
 
@@ -68,41 +70,38 @@ void print_array(int ni, int nl,
 
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
-   static
-   void kernel_2mm(int ni, int nj, int nk, int nl,
-           DATA_TYPE alpha,
-           DATA_TYPE beta,
-           DATA_TYPE POLYBENCH_2D(tmp,NI,NJ,ni,nj),
-           DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
-           DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj),
-           DATA_TYPE POLYBENCH_2D(C,NL,NJ,nl,nj),
-           DATA_TYPE POLYBENCH_2D(D,NI,NL,ni,nl))
-   {
-     int i, j, k;
-   
-   #pragma scop
-     /* D := alpha*A*B*C + beta*D */
-     #pragma omp parallel for private(i,j,k) shared(tmp, A, B, C, D, alpha, beta)
-     for (i = 0; i < _PB_NI; i++)
-       for (j = 0; j < _PB_NJ; j++)
-         {
-       tmp[i][j] = 0;
-       for (k = 0; k < _PB_NK; ++k)
-         tmp[i][j] += alpha * A[i][k] * B[k][j];
-         }
-   
-     #pragma omp parallel for private(i,j,k) shared(tmp, D, beta)
-     for (i = 0; i < _PB_NI; i++)
-       for (j = 0; j < _PB_NJ; j++)
-         D[i][j] *= beta;
-   
-     #pragma omp parallel for private(i,j,k) shared(tmp, D, C)
-     for (i = 0; i < _PB_NI; i++)
-       for (j = 0; j < _PB_NJ; j++)
-         for (k = 0; k < _PB_NL; ++k)
-       D[i][j] += tmp[i][k] * C[k][j];
-   #pragma endscop
-   }
+static
+void kernel_2mm(int ni, int nj, int nk, int nl,
+		DATA_TYPE alpha,
+		DATA_TYPE beta,
+		DATA_TYPE POLYBENCH_2D(tmp,NI,NJ,ni,nj),
+		DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
+		DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj),
+		DATA_TYPE POLYBENCH_2D(C,NL,NJ,nl,nj),
+		DATA_TYPE POLYBENCH_2D(D,NI,NL,ni,nl))
+{
+  int i, j, k;
+
+#pragma scop
+  /* D := alpha*A*B*C + beta*D */
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NJ; j++)
+      {
+	tmp[i][j] = 0;
+	for (k = 0; k < _PB_NK; ++k)
+	  tmp[i][j] += alpha * A[i][k] * B[k][j];
+      }
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NL; j++)
+      {
+	D[i][j] *= beta;
+	for (k = 0; k < _PB_NJ; ++k)
+	  D[i][j] += tmp[i][k] * C[k][j];
+      }
+#pragma endscop
+
+}
+
 
 int main(int argc, char** argv)
 {
