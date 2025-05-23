@@ -2,6 +2,8 @@
 
 Link para o Artigo: [`Uso de IA Generativa na Geração de Código Paralelo para Arquiteturas Heterogêneas`](https://pt.overleaf.com/project/67dc14860cf4074a0dd5d508)
 
+<https://www.overleaf.com/project/67f3d7d192540c2e2cb9e569>
+
 ## TODO
 
 ### Reunião: 20/03/2025
