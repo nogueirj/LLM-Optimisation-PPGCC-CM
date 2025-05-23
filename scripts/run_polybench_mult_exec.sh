@@ -29,7 +29,7 @@ fi
 POLYBENCH_DIR=$(realpath "$1")
 REPS=${2:-5}                          # Nº de repetições (default 5)
 COMPILER=${3:-gcc}
-CFLAGS=${4:-"-O3"}
+CFLAGS=${4:-"-O3 -lm"}
 
 OUTDIR="results_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$OUTDIR"
@@ -52,9 +52,9 @@ for src in $(find "$POLYBENCH_DIR" -type f -name "*.c" ! -path "*/utilities/*");
 
     echo "  • ${kernel_name}_${size}"
 
-    $COMPILER $CFLAGS -I"$POLYBENCH_DIR/utilities" \
+    $COMPILER -I"$POLYBENCH_DIR/utilities" \
       "$src" "$POLYBENCH_DIR/utilities/polybench.c" \
-      -D$define -DPOLYBENCH_TIME -o "$exe"
+      -D$define -DPOLYBENCH_TIME -o "$exe" $CFLAGS
   done
 done
 
@@ -70,10 +70,10 @@ for exe in $(find "$OUTDIR" -type f -name "*.exe" | sort); do
     exe="$OUTDIR/${kernel_name}_${size}.exe"
     for run in $(seq 1 "$REPS"); do
       printf " • %-20s %-10s run %d/%d\r" "$kernel_name" "$size" "$run" "$REPS"
-      ## sec=$("$exe" 2>&1 | grep -Eo '[0-9]+\.[0-9]+')
-      #seconds=$("$exe" 2>&1 | grep -Eo '[0-9]+\.[0-9]+') || seconds="NA"
-      #echo " $seconds s"
-      #echo "$kernel_name,$size,$run,$seconds" >> "$RAW"
+      # sec=$("$exe" 2>&1 | grep -Eo '[0-9]+\.[0-9]+')
+      seconds=$("$exe" 2>&1 | grep -Eo '[0-9]+\.[0-9]+') || seconds="NA"
+      echo " $seconds s"
+      echo "$kernel_name,$size,$run,$seconds" >> "$RAW"
     done
   done
 done
