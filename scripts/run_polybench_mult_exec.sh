@@ -31,7 +31,7 @@ REPS=${2:-5}                          # Nº de repetições (default 5)
 COMPILER=${3:-gcc}
 CFLAGS=${4:-"-O3 -lm"}
 
-OUTDIR="results_$(date +%Y%m%d_%H%M%S)"
+OUTDIR="results_$(date +%Y%m%d_%H%M%S)_$(hostname)_$USER"
 mkdir -p "$OUTDIR"
 RAW="$OUTDIR/raw.csv"                 # 1 linha = 1 execução
 STATS="$OUTDIR/stats.csv"             # média e desvio
