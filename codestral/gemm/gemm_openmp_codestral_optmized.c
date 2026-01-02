@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "gemm.h"
-#include <omp.h>  // Inclusão da biblioteca OpenMP
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -31,15 +31,12 @@ void init_array(int ni, int nj, int nk,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for collapse(2)
   for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
-    #pragma omp parallel for collapse(2)
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-    #pragma omp parallel for collapse(2)
   for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -75,16 +72,17 @@ void kernel_gemm(int ni, int nj, int nk,
 {
   int i, j, k;
 
-#pragma omp parallel for private(i, j, k)
+#pragma omp parallel for private(i,j,k) schedule(static)
   /* C := alpha*A*B + beta*C */
   for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NJ; j++)
-      {
-	C[i][j] *= beta;
-	for (k = 0; k < _PB_NK; ++k)
-	  C[i][j] += alpha * A[i][k] * B[k][j];
-      }
-#pragma endscop
+    {
+      for (j = 0; j < _PB_NJ; j++)
+        {
+          C[i][j] *= beta;
+          for (k = 0; k < _PB_NK; ++k)
+            C[i][j] += alpha * A[i][k] * B[k][j];
+        }
+    }
 
 }
 

@@ -1,5 +1,3 @@
-Otimize o código abaixo usando OpenMP anotando com diretivas e forneça a versão otimizada
-```c
 /**
  * atax.c: This file is part of the PolyBench/C 3.2 test suite.
  *
@@ -18,7 +16,7 @@ Otimize o código abaixo usando OpenMP anotando com diretivas e forneça a vers�
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "atax.h"
-#include <omp.h>  // Inclusão da biblioteca OpenMP
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -64,20 +62,19 @@ void kernel_atax(int nx, int ny,
 {
   int i, j;
 
-#pragma omp parallel for private(i) // Paraleliza o loop externo com privatização de 'i'
+#pragma omp parallel for private(i)
   for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-    #pragma omp parallel for private(i, j) // Paraleliza o loop externo e interno com privatização de 'i' e 'j'
-  for (i = 0; i < _PB_NX; i++)
-    {
-      tmp[i] = 0;
-      for (j = 0; j < _PB_NY; j++)
-	tmp[i] = tmp[i] + A[i][j] * x[j];
-    #pragma omp parallel for private(j) // Paraleliza o loop interno com privatização de 'j'
-      for (j = 0; j < _PB_NY; j++)
-	y[j] = y[j] + A[i][j] * tmp[i];
-    }
 
+#pragma omp parallel for private(i,j)
+  for (i = 0; i < _PB_NX; i++) {
+      tmp[i] = 0.0;
+      for (j = 0; j < _PB_NY; j++)
+        tmp[i] += A[i][j] * x[j];
+#pragma omp parallel for private(j) reduction(+:y[:ny])
+      for (j = 0; j < _PB_NY; j++)
+        y[j] += A[i][j] * tmp[i];
+    }
 
 }
 
@@ -123,5 +120,3 @@ int main(int argc, char** argv)
 
   return 0;
 }
-
-```

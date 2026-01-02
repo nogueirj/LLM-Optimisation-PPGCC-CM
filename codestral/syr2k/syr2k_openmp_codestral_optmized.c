@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "syr2k.h"
-
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -31,13 +31,11 @@ void init_array(int ni, int nj,
 
   *alpha = 32412;
   *beta = 2123;
-    #pragma omp parallel for private(i, j) // Parallelize loop using OpenMP
   for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++) {
       A[i][j] = ((DATA_TYPE) i*j) / ni;
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
-      #pragma omp parallel for private(i, j) // Parallelize loop using OpenMP
   for (i = 0; i < ni; i++)
     for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -73,21 +71,19 @@ void kernel_syr2k(int ni, int nj,
 {
   int i, j, k;
 
-  #pragma omp parallel for private(i) // Parallelize loop using OpenMP
+#pragma omp parallel for private(i, j, k)
   /*    C := alpha*A*B' + alpha*B*A' + beta*C */
-  for (i = 0; i < _PB_NI; i++)
-      #pragma omp parallel for private(j) // Nested parallelism
-    for (j = 0; j < _PB_NI; j++)
+  for (i = 0; i < _PB_NI; i++) {
+    for (j = 0; j < _PB_NI; j++) {
       C[i][j] *= beta;
-  for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NI; j++)
-          #pragma omp parallel for private(k) reduction(+:C[i][j]) // Parallelize loop and reduce using OpenMP
-      for (k = 0; k < _PB_NJ; k++)
-	{
-	  C[i][j] += alpha * A[i][k] * B[j][k];
-	  C[i][j] += alpha * B[i][k] * A[j][k];
-	}
-#pragma endscop
+
+#pragma omp parallel for private(k)
+      for (k = 0; k < _PB_NJ; k++) {
+        C[i][j] += alpha * A[i][k] * B[j][k];
+        C[i][j] += alpha * B[i][k] * A[j][k];
+      }
+    }
+  }
 
 }
 
