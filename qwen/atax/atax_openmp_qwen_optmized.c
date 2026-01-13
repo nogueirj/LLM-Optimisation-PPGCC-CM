@@ -1,3 +1,10 @@
+/**
+ * atax.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -9,12 +16,13 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "atax.h"
+#include <omp.h>
 
 /* Array initialization. */
 static
 void init_array (int nx, int ny,
-         DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny),
-         DATA_TYPE POLYBENCH_1D(x,NY,ny))
+		 DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny),
+		 DATA_TYPE POLYBENCH_1D(x,NY,ny))
 {
   int i, j;
 
@@ -25,11 +33,13 @@ void init_array (int nx, int ny,
       A[i][j] = ((DATA_TYPE) i*(j+1)) / nx;
 }
 
+
 /* DCE code. Must scan the entire live-out data.
    Can be used also to check the correctness of the output. */
 static
 void print_array(int nx,
-         DATA_TYPE POLYBENCH_1D(y,NX,nx))
+		 DATA_TYPE POLYBENCH_1D(y,NX,nx))
+
 {
   int i;
 
@@ -40,32 +50,33 @@ void print_array(int nx,
   fprintf (stderr, "\n");
 }
 
+
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 static
 void kernel_atax(int nx, int ny,
-         DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny),
-         DATA_TYPE POLYBENCH_1D(x,NY,ny),
-         DATA_TYPE POLYBENCH_1D(y,NY,ny),
-         DATA_TYPE POLYBENCH_1D(tmp,NX,nx))
+		 DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny),
+		 DATA_TYPE POLYBENCH_1D(x,NY,ny),
+		 DATA_TYPE POLYBENCH_1D(y,NY,ny),
+		 DATA_TYPE POLYBENCH_1D(tmp,NX,nx))
 {
   int i, j;
 
-#pragma scop
+#pragma omp parallel for private(i)
   for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-  #pragma omp parallel for private(j)
+  #pragma omp parallel for collapse(2) private(i, j)
   for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
       for (j = 0; j < _PB_NY; j++)
-    tmp[i] += A[i][j] * x[j];
-      #pragma omp parallel for private(j)
+	tmp[i] = tmp[i] + A[i][j] * x[j];
       for (j = 0; j < _PB_NY; j++)
-    y[j] += A[i][j] * tmp[i];
+	y[j] = y[j] + A[i][j] * tmp[i];
     }
-#pragma endscop
+
 }
+
 
 int main(int argc, char** argv)
 {
@@ -79,16 +90,28 @@ int main(int argc, char** argv)
   POLYBENCH_1D_ARRAY_DECL(y, DATA_TYPE, NY, ny);
   POLYBENCH_1D_ARRAY_DECL(tmp, DATA_TYPE, NX, nx);
 
-  /* Initialize arrays. */
-  init_array(nx, ny, POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(x));
+  /* Initialize array(s). */
+  init_array (nx, ny, POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(x));
 
-  /* Call the kernel. */
-  kernel_atax(nx, ny, POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(x), POLYBENCH_ARRAY(y), POLYBENCH_ARRAY(tmp));
+  /* Start timer. */
+  polybench_start_instruments;
 
-  /* Print array y. */
-  print_array(nx, POLYBENCH_ARRAY(y));
+  /* Run kernel. */
+  kernel_atax (nx, ny,
+	       POLYBENCH_ARRAY(A),
+	       POLYBENCH_ARRAY(x),
+	       POLYBENCH_ARRAY(y),
+	       POLYBENCH_ARRAY(tmp));
 
-  /* Free arrays. */
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  polybench_prevent_dce(print_array(nx, POLYBENCH_ARRAY(y)));
+
+  /* Be clean. */
   POLYBENCH_FREE_ARRAY(A);
   POLYBENCH_FREE_ARRAY(x);
   POLYBENCH_FREE_ARRAY(y);

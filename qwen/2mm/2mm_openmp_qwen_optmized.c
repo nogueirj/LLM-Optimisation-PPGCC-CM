@@ -16,8 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "2mm.h"
-#include <omp.h> 
-
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -79,7 +78,7 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 {
   int i, j, k;
 
-  #pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2) private(i, j, k) shared(alpha, A, B, tmp)
   /* D := alpha*A*B*C + beta*D */
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
@@ -89,7 +88,7 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 	  tmp[i][j] += alpha * A[i][k] * B[k][j];
       }
 
-  #pragma omp parallel for collapse(2)
+  #pragma omp parallel for collapse(2) private(i, j, k) shared(beta, tmp, C, D)
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++)
       {
@@ -97,6 +96,7 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 	for (k = 0; k < _PB_NJ; ++k)
 	  D[i][j] += tmp[i][k] * C[k][j];
       }
+#pragma endscop
 
 }
 
