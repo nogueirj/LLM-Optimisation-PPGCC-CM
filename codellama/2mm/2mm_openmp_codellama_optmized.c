@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "2mm.h"
-#include <omp.h> 
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -34,19 +34,15 @@ void init_array(int ni, int nj, int nk, int nl,
   *beta = 2123;
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
-    #pragma omp parallel for private(i) shared(A, B, C, D)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
   for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
-    #pragma omp parallel for private(i) shared(B, A, C, D)
       B[i][j] = ((DATA_TYPE) i*(j+1)) / nj;
   for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
-    #pragma omp parallel for private(i) shared(C, A, B, D)
       C[i][j] = ((DATA_TYPE) i*(j+3)) / nl;
   for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
-    #pragma omp parallel for private(i) shared(D, A, B, C)
       D[i][j] = ((DATA_TYPE) i*(j+2)) / nk;
 }
 
@@ -82,7 +78,7 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 {
   int i, j, k;
 
-#pragma scop
+#pragma omp for
   /* D := alpha*A*B*C + beta*D */
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
@@ -98,7 +94,6 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 	for (k = 0; k < _PB_NJ; ++k)
 	  D[i][j] += tmp[i][k] * C[k][j];
       }
-#pragma endscop
 
 }
 

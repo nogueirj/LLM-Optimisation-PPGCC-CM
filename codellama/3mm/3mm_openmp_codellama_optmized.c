@@ -16,7 +16,6 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "3mm.h"
-#include <omp.h> 
 
 
 /* Array initialization. */
@@ -75,6 +74,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 {
   int i, j, k;
 
+#pragma omp parallel for private(i) shared(E,A,B,F,C,D,G)
   /* E := A*B */
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
@@ -84,6 +84,7 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 	  E[i][j] += A[i][k] * B[k][j];
       }
   /* F := C*D */
+  #pragma omp parallel for private(i) shared(E,A,B,F,C,D,G)
   for (i = 0; i < _PB_NJ; i++)
     for (j = 0; j < _PB_NL; j++)
       {
@@ -91,6 +92,8 @@ void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 	for (k = 0; k < _PB_NM; ++k)
 	  F[i][j] += C[i][k] * D[k][j];
       }
+  #pragma omp parallel for private(i) shared(E,A,B,F,C,D,G)
+
   /* G := E*F */
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++)
@@ -112,7 +115,6 @@ int main(int argc, char** argv)
   int nl = NL;
   int nm = NM;
 
-  #pragma omp parallel
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(E, DATA_TYPE, NI, NJ, ni, nj);
   POLYBENCH_2D_ARRAY_DECL(A, DATA_TYPE, NI, NK, ni, nk);
