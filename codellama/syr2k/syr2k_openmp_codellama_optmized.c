@@ -72,18 +72,23 @@ void kernel_syr2k(int ni, int nj,
   int i, j, k;
   int num_threads = 4;
 
-#pragma omp parallel for num_threads(numThreads) schedule(static, 1024)  /*    C := alpha*A*B' + alpha*B*A' + beta*C */
-  for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NI; j++)
+#pragma omp parallel for private(i) shared(C) num_threads(4)
+  for (i = 0; i < _PB_NI; i++) {
+    for (j = 0; j < _PB_NJ; j++) {
       C[i][j] *= beta;
-  for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NI; j++)
-      for (k = 0; k < _PB_NJ; k++)
-	{
-	  C[i][j] += alpha * A[i][k] * B[j][k];
-	  C[i][j] += alpha * B[i][k] * A[j][k];
-	}
-
+    }
+  }
+  
+#pragma omp parallel for private(i) shared(C, A, B) num_threads(4)
+  for (i = 0; i < _PB_NI; i++) {
+    for (j = 0; j < _PB_NI; j++) {
+#pragma omp parallel for private(k) shared(A, B)
+      for (k = 0; k < _PB_NJ; k++) {
+        C[i][j] += alpha * A[i][k] * B[j][k];
+        C[i][j] += alpha * B[i][k] * A[j][k];
+      }
+    }
+  }
 }
 
 
