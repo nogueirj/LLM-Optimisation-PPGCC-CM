@@ -3,7 +3,7 @@ UNAME_S := $(shell uname -s)
 
 # 2. Configurações Gerais
 CC = gcc
-CFLAGS = -O3 -I ../polybench-c-3.2/utilities
+CFLAGS = -O3 -I ../polybench-c-3.2/utilities -DPOLYBENCH_TIME
 LDFLAGS = -lm
 POLY_SRC = ../polybench-c-3.2/utilities/polybench.c
 
