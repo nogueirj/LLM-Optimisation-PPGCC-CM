@@ -1,36 +1,63 @@
+# 1. Detecção do Sistema Operacional
+UNAME_S := $(shell uname -s)
+
+# 2. Configurações Gerais
+CC = gcc
+CFLAGS = -O2 -I ../polybench-c-3.2/utilities
+LDFLAGS = -lm
+POLY_SRC = ../polybench-c-3.2/utilities/polybench.c
+
+# 3. Personalização de flags por SO (Mac vs Linux)
+ifeq ($(UNAME_S), Darwin)
+    # Configurações para macOS (M1 Pro + Homebrew libomp)
+    OMP_FLAGS = -Xpreprocessor -fopenmp
+    OMP_INC   = -I/opt/homebrew/opt/libomp/include
+    OMP_LIBS  = -L/opt/homebrew/opt/libomp/lib -lomp
+else
+    # Configurações para Ubuntu/Linux
+    OMP_FLAGS = -fopenmp
+    OMP_INC   = 
+    OMP_LIBS  = 
+endif
+
+# 4. Alvo Principal
 all: 2mmseq 2mmgpt 3mmseq 3mmgpt ataxseq ataxgpt gemmseq gemmgpt syr2kseq syr2kgpt 
 
+# --- 2mm ---
 2mmseq: 2mm/2mm.c 2mm/2mm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I 2mm ../polybench-c-3.2/utilities/polybench.c 2mm/2mm.c -lm -o 2mm-seq.exe
+	$(CC) $(CFLAGS) -I 2mm $(POLY_SRC) 2mm/2mm.c $(LDFLAGS) -o 2mm-seq.exe
 
 2mmgpt: 2mm/2mm_openmp_gpt_optmized.c 2mm/2mm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I 2mm ../polybench-c-3.2/utilities/polybench.c 2mm/2mm_openmp_gpt_optmized.c -lm -fopenmp -o 2mm-gpt.exe
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 2mm $(POLY_SRC) 2mm/2mm_openmp_gpt_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 2mm-gpt.exe
 
+# --- 3mm ---
 3mmseq: 3mm/3mm.c 3mm/3mm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I 3mm ../polybench-c-3.2/utilities/polybench.c 3mm/3mm.c -lm -o 3mm-seq.exe
+	$(CC) $(CFLAGS) -I 3mm $(POLY_SRC) 3mm/3mm.c $(LDFLAGS) -o 3mm-seq.exe
 
 3mmgpt: 3mm/3mm_openmp_gpt_optmized.c 3mm/3mm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I 3mm ../polybench-c-3.2/utilities/polybench.c 3mm/3mm_openmp_gpt_optmized.c -lm -fopenmp -o 3mm-gpt.exe
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 3mm $(POLY_SRC) 3mm/3mm_openmp_gpt_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 3mm-gpt.exe
 
+# --- atax ---
 ataxseq: atax/atax.c atax/atax.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I atax ../polybench-c-3.2/utilities/polybench.c atax/atax.c -lm -o atax-seq.exe
+	$(CC) $(CFLAGS) -I atax $(POLY_SRC) atax/atax.c $(LDFLAGS) -o atax-seq.exe
 
 ataxgpt: atax/atax_openmp_gpt_optmized.c atax/atax.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I atax ../polybench-c-3.2/utilities/polybench.c atax/atax_openmp_gpt_optmized.c -lm -fopenmp -o atax-gpt.exe
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I atax $(POLY_SRC) atax/atax_openmp_gpt_optmized.c $(LDFLAGS) $(OMP_LIBS) -o atax-gpt.exe
 
-
+# --- gemm ---
 gemmseq: gemm/gemm.c gemm/gemm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I gemm ../polybench-c-3.2/utilities/polybench.c gemm/gemm.c -lm -o gemm-seq.exe
+	$(CC) $(CFLAGS) -I gemm $(POLY_SRC) gemm/gemm.c $(LDFLAGS) -o gemm-seq.exe
 
 gemmgpt: gemm/gemm_openmp_gpt_optmized.c gemm/gemm.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I gemm ../polybench-c-3.2/utilities/polybench.c gemm/gemm_openmp_gpt_optmized.c -lm -fopenmp -o gemm-gpt.exe
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I gemm $(POLY_SRC) gemm/gemm_openmp_gpt_optmized.c $(LDFLAGS) $(OMP_LIBS) -o gemm-gpt.exe
 
-
+# --- syr2k ---
 syr2kseq: syr2k/syr2k.c syr2k/syr2k.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I syr2k ../polybench-c-3.2/utilities/polybench.c syr2k/syr2k.c -lm -o syr2k-seq.exe
+	$(CC) $(CFLAGS) -I syr2k $(POLY_SRC) syr2k/syr2k.c $(LDFLAGS) -o syr2k-seq.exe
 
 syr2kgpt: syr2k/syr2k_openmp_gpt_optmized.c syr2k/syr2k.h
-	gcc -O2 -I ../polybench-c-3.2/utilities -I syr2k ../polybench-c-3.2/utilities/polybench.c syr2k/syr2k_openmp_gpt_optmized.c -lm -fopenmp -o syr2k-gpt.exe
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I syr2k $(POLY_SRC) syr2k/syr2k_openmp_gpt_optmized.c $(LDFLAGS) $(OMP_LIBS) -o syr2k-gpt.exe
 
+# 5. Limpeza
 clean:
-	rm *.exe
+	rm -f *.exe
