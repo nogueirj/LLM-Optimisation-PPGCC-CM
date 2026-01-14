@@ -62,10 +62,9 @@ void kernel_atax(int nx, int ny,
 {
   int i, j;
 
-#pragma omp parallel for private(i)
+#pragma omp parallel for private(i) shared(y)
   for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-  #pragma omp parallel for collapse(2) private(i, j)
   for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
