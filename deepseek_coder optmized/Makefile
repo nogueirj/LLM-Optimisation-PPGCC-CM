@@ -1,9 +1,11 @@
 # 1. Detecção do Sistema Operacional
 UNAME_S := $(shell uname -s)
 
+DATASET_SIZE ?= -DSTANDARD_DATASET
+
 # 2. Configurações Gerais
 CC = gcc
-CFLAGS = -O3 -I ../polybench-c-3.2/utilities -DPOLYBENCH_TIME
+CFLAGS = -O3 -I ../polybench-c-3.2/utilities -DPOLYBENCH_TIME $(DATASET_SIZE)
 LDFLAGS = -lm
 POLY_SRC = ../polybench-c-3.2/utilities/polybench.c
 

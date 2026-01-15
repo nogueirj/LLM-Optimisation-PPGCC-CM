@@ -9,7 +9,7 @@ CFLAGS = -O3 -I ../polybench-c-3.2/utilities -DPOLYBENCH_TIME $(DATASET_SIZE)
 LDFLAGS = -lm
 POLY_SRC = ../polybench-c-3.2/utilities/polybench.c
 
-# 3. Personalização de flags por SO (Mac vs Linux)
+# 3. Personalização de flags por SO
 ifeq ($(UNAME_S), Darwin)
     # Configurações para macOS (M1 Pro + Homebrew libomp)
     OMP_FLAGS = -Xpreprocessor -fopenmp
@@ -23,42 +23,42 @@ else
 endif
 
 # 4. Alvo Principal
-all: 2mmseq 2mmcodellama 3mmseq 3mmcodellama ataxseq ataxcodellama gemmseq gemmcodellama syr2kseq syr2kcodellama 
+all: 2mmseq 2mmgemini 3mmseq 3mmgemini ataxseq ataxgemini gemmseq gemmgemini syr2kseq syr2kgemini 
 
 # --- 2mm ---
 2mmseq: 2mm/2mm.c 2mm/2mm.h
 	$(CC) $(CFLAGS) -I 2mm $(POLY_SRC) 2mm/2mm.c $(LDFLAGS) -o 2mm-seq.exe
 
-2mmcodellama: 2mm/2mm_openmp_codellama_optmized.c 2mm/2mm.h
-	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 2mm $(POLY_SRC) 2mm/2mm_openmp_codellama_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 2mm-codellama.exe
+2mmgemini: 2mm/2mm_openmp_gemini_optmized.c 2mm/2mm.h
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 2mm $(POLY_SRC) 2mm/2mm_openmp_gemini_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 2mm-gemini.exe
 
 # --- 3mm ---
 3mmseq: 3mm/3mm.c 3mm/3mm.h
 	$(CC) $(CFLAGS) -I 3mm $(POLY_SRC) 3mm/3mm.c $(LDFLAGS) -o 3mm-seq.exe
 
-3mmcodellama: 3mm/3mm_openmp_codellama_optmized.c 3mm/3mm.h
-	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 3mm $(POLY_SRC) 3mm/3mm_openmp_codellama_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 3mm-codellama.exe
+3mmgemini: 3mm/3mm_openmp_gemini_optmized.c 3mm/3mm.h
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I 3mm $(POLY_SRC) 3mm/3mm_openmp_gemini_optmized.c $(LDFLAGS) $(OMP_LIBS) -o 3mm-gemini.exe
 
 # --- atax ---
 ataxseq: atax/atax.c atax/atax.h
 	$(CC) $(CFLAGS) -I atax $(POLY_SRC) atax/atax.c $(LDFLAGS) -o atax-seq.exe
 
-ataxcodellama: atax/atax_openmp_codellama_optmized.c atax/atax.h
-	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I atax $(POLY_SRC) atax/atax_openmp_codellama_optmized.c $(LDFLAGS) $(OMP_LIBS) -o atax-codellama.exe
+ataxgemini: atax/atax_openmp_gemini_optmized.c atax/atax.h
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I atax $(POLY_SRC) atax/atax_openmp_gemini_optmized.c $(LDFLAGS) $(OMP_LIBS) -o atax-gemini.exe
 
 # --- gemm ---
 gemmseq: gemm/gemm.c gemm/gemm.h
 	$(CC) $(CFLAGS) -I gemm $(POLY_SRC) gemm/gemm.c $(LDFLAGS) -o gemm-seq.exe
 
-gemmcodellama: gemm/gemm_openmp_codellama_optmized.c gemm/gemm.h
-	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I gemm $(POLY_SRC) gemm/gemm_openmp_codellama_optmized.c $(LDFLAGS) $(OMP_LIBS) -o gemm-codellama.exe
+gemmgemini: gemm/gemm_openmp_gemini_optmized.c gemm/gemm.h
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I gemm $(POLY_SRC) gemm/gemm_openmp_gemini_optmized.c $(LDFLAGS) $(OMP_LIBS) -o gemm-gemini.exe
 
 # --- syr2k ---
 syr2kseq: syr2k/syr2k.c syr2k/syr2k.h
 	$(CC) $(CFLAGS) -I syr2k $(POLY_SRC) syr2k/syr2k.c $(LDFLAGS) -o syr2k-seq.exe
 
-syr2kcodellama: syr2k/syr2k_openmp_codellama_optmized.c syr2k/syr2k.h
-	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I syr2k $(POLY_SRC) syr2k/syr2k_openmp_codellama_optmized.c $(LDFLAGS) $(OMP_LIBS) -o syr2k-codellama.exe
+syr2kgemini: syr2k/syr2k_openmp_gemini_optmized.c syr2k/syr2k.h
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I syr2k $(POLY_SRC) syr2k/syr2k_openmp_gemini_optmized.c $(LDFLAGS) $(OMP_LIBS) -o syr2k-gemini.exe
 
 # 5. Limpeza
 clean:
