@@ -78,7 +78,7 @@ void kernel_2mm(int ni, int nj, int nk, int nl,
 {
   int i, j, k;
 
-#pragma omp parallel for collapse(2) private(i,j,k) schedule(static)
+#pragma omp parallel for private(j, k) shared(tmp, A, B) collapse(2)  
 for (i = 0; i < _PB_NI; i++) {
     for (j = 0; j < _PB_NJ; j++) {
         tmp[i][j] = 0;
@@ -87,7 +87,7 @@ for (i = 0; i < _PB_NI; i++) {
         }
     }
 }
-#pragma omp parallel for collapse(2) private(i,j,k) schedule(static) reduction(+:D[0:NI][0:NL])
+#pragma omp parallel for private(j, k) shared(D, tmp, C) collapse(2)
 for (i = 0; i < _PB_NI; i++) {
     for (j = 0; j < _PB_NL; j++) {
         D[i][j] *= beta;

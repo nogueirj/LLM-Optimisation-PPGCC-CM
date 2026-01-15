@@ -63,6 +63,7 @@ void print_array(int ni, int nj,
 
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
+
 static
 void kernel_gemm(int ni, int nj, int nk,
 		 DATA_TYPE alpha,
@@ -73,15 +74,19 @@ void kernel_gemm(int ni, int nj, int nk,
 {
   int i, j, k;
 
-#pragma omp parallel for private(j) reduction(+: C[:NI][:NJ]) shared(A, B)
-  for (i = 0; i < _PB_NI; ++i) {
-    for (j = 0; j < _PB_NJ; ++j) {
-      C[i][j] *= beta;
-      for (k = 0; k < _PB_NK; ++k) {
-        C[i][j] += alpha * A[i][k] * B[k][j];
+#pragma scop
+#pragma omp parallel for private(i) shared(C)
+  /* C := alpha*A*B + beta*C */
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NJ; j++)
+      {
+	C[i][j] *= beta;
+  #pragma omp parallel for private(i) shared(C, A, B)
+	for (k = 0; k < _PB_NK; ++k)
+	  C[i][j] += alpha * A[i][k] * B[k][j];
       }
-    }
-  }
+#pragma endscop
+
 }
 
 
