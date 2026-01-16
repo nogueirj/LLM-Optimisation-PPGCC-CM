@@ -1,36 +1,85 @@
-# Makefile Pai - Orquestrador de Experimentos
+# =================================================================
+# MASTER MAKEFILE - ORQUESTRADOR DE EXPERIMENTOS HPC
+# Projeto: Comparativo de Otimização OpenMP (IA vs Expert vs Polly)
+# =================================================================
 
-# 1. Definição das pastas dos modelos
-# Nota: Usamos aspas na pasta do DeepSeek devido ao espaço no nome
-MODELS = chatgpt codellama codestral qwen starcode "deepseek_coder optmized"
+# 1. DEFINIÇÕES DE DIRETÓRIOS
+MODELS_DIR = models
+SCRIPTS_DIR = scripts
+RESULTS_DIR = results
 
-.PHONY: all clean $(MODELS)
+# 2. LISTA OFICIAL DE MODELOS (Pastas em models/)
+# Nota: Certifique-se de que a pasta deepseekcoder não tem espaços.
+MODELS = sequential chatgpt codellama codestral deepseekcoder gemini qwen polly openmp openacc
 
-# O alvo 'all' tentará compilar todos os modelos
+# 3. PARÂMETROS PADRÃO (Podem ser sobrescritos via linha de comando)
+# Exemplo: make all DATASET_SIZE=-DLARGE_DATASET
+# Exemplo: make run N_THREADS=64
+DATASET_SIZE ?= 
+N_THREADS ?= 8
+
+# 4. ALVOS VIRTUAIS (Não são arquivos)
+.PHONY: all clean run analyze scale help $(MODELS)
+
+# -----------------------------------------------------------------
+# ALVOS DE COMPILAÇÃO
+# -----------------------------------------------------------------
+
+# Compila todos os modelos da lista
 all: $(MODELS)
 
-# 2. Regras individuais para cada diretório
-# O comando $(MAKE) -C entra na pasta e executa o Makefile de lá
-chatgpt:
-	$(MAKE) -C chatgpt
+# Regra genérica para entrar em cada pasta e disparar o Makefile local
+$(MODELS):
+	@if [ -d $(MODELS_DIR)/$@ ]; then \
+		echo "=========================================================="; \
+		echo "🔨 COMPILANDO MODELO: $@"; \
+		echo "=========================================================="; \
+		$(MAKE) -C $(MODELS_DIR)/$@ DATASET_SIZE=$(DATASET_SIZE); \
+	else \
+		echo "⚠️  Aviso: Diretório $(MODELS_DIR)/$@ não encontrado."; \
+	fi
 
-codellama:
-	$(MAKE) -C codellama
+# -----------------------------------------------------------------
+# ALVOS DE EXECUÇÃO E ANÁLISE
+# -----------------------------------------------------------------
 
-codestral:
-	$(MAKE) -C codestral
+# Executa a bateria de testes simples (usa N_THREADS padrão ou informada)
+run:
+	@echo "🏃 Iniciando execução dos benchmarks com $(N_THREADS) threads..."
+	python3 $(SCRIPTS_DIR)/executor.py $(N_THREADS)
 
-qwen:
-	$(MAKE) -C qwen
+# Executa o script de escalabilidade completa (Strong Scaling: 1 a 64 threads)
+scale:
+	@echo "📈 Iniciando bateria de escalabilidade completa..."
+	chmod +x $(SCRIPTS_DIR)/run_scaling.sh
+	./$(SCRIPTS_DIR)/run_scaling.sh
 
-# Regra especial para a pasta com espaço
-deepseek:
-	$(MAKE) -C "deepseek_coder optmized"
+# Gera gráficos e tabelas baseados no CSV de resultados
+analyze:
+	@echo "📊 Gerando métricas e visualizações estatísticas..."
+	python3 $(SCRIPTS_DIR)/analyzer.py
 
-# 3. Regra para limpar todos os binários de todas as pastas
+# -----------------------------------------------------------------
+# MANUTENÇÃO E LIMPEZA
+# -----------------------------------------------------------------
+
+# Limpa todos os binários .exe e arquivos de resultados
 clean:
-	$(MAKE) -C chatgpt clean
-	$(MAKE) -C codellama clean
-	$(MAKE) -C codestral clean
-	$(MAKE) -C qwen clean
-	$(MAKE) -C "deepseek_coder optmized" clean
+	@for dir in $(MODELS); do \
+		if [ -d $(MODELS_DIR)/$$dir ]; then \
+			echo "🧹 Limpando $$dir..."; \
+			$(MAKE) -C $(MODELS_DIR)/$$dir clean; \
+		fi; \
+	done
+	@echo "🗑️ Removendo arquivos de resultados..."
+	rm -rf $(RESULTS_DIR)/*.csv $(RESULTS_DIR)/*.png $(RESULTS_DIR)/*.tex
+	@echo "✨ Limpeza concluída."
+
+# Ajuda rápida
+help:
+	@echo "Comandos disponíveis:"
+	@echo "  make all          - Compila todos os modelos"
+	@echo "  make run          - Executa benchmarks (N_THREADS=8 por padrão)"
+	@echo "  make scale        - Executa bateria de escalabilidade (1 a 64 threads)"
+	@echo "  make analyze      - Gera gráficos e tabelas LaTeX"
+	@echo "  make clean        - Remove binários e resultados"
