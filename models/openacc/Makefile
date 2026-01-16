@@ -5,7 +5,7 @@ UNAME_S := $(shell uname -s)
 # Estrutura: OpenMP-Optimized/models/openacc
 CORE_DIR    = ../../core/PolyBench-ACC
 UTILS_DIR   = ../../core/polybench-c-3.2/utilities
-ACC_KERNELS = $(CORE_DIR)/OpenACC/Linear-Algebra/Kernels
+ACC_KERNELS = $(CORE_DIR)/OpenACC/linear-algebra/kernels
 POLY_SRC    = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 

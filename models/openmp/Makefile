@@ -5,7 +5,7 @@ UNAME_S := $(shell uname -s)
 CORE_DIR    = ../../core/PolyBench-ACC
 UTILS_DIR   = ../../core/polybench-c-3.2/utilities
 # No PolyBench-ACC, os kernels ficam em subpastas como OpenMP/Linear-Algebra/Kernels/2mm
-ACC_KERNELS = $(CORE_DIR)/OpenMP/Linear-Algebra/Kernels
+ACC_KERNELS = $(CORE_DIR)/OpenMP/linear-algebra/kernels
 POLY_SRC    = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 
