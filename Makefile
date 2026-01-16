@@ -34,7 +34,7 @@ $(MODELS):
 		echo "=========================================================="; \
 		echo "🔨 COMPILANDO MODELO: $@"; \
 		echo "=========================================================="; \
-		$(MAKE) -C $(MODELS_DIR)/$@ DATASET_SIZE=$(DATASET_SIZE); \
+		-$(MAKE) -C $(MODELS_DIR)/$@ DATASET_SIZE=$(DATASET_SIZE); \
 	else \
 		echo "⚠️  Aviso: Diretório $(MODELS_DIR)/$@ não encontrado."; \
 	fi
