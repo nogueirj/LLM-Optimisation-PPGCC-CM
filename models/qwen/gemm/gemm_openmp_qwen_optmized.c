@@ -72,16 +72,17 @@ void kernel_gemm(int ni, int nj, int nk,
 {
   int i, j, k;
 
+#pragma scop
   /* C := alpha*A*B + beta*C */
   for (i = 0; i < _PB_NI; i++)
-  #pragma omp parallel for collapse(2) private(j, k)
-
+    #pragma omp parallel for collapse(2) private(j, k) schedule(static)
     for (j = 0; j < _PB_NJ; j++)
       {
 	C[i][j] *= beta;
 	for (k = 0; k < _PB_NK; ++k)
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }
+#pragma endscop
 
 }
 
