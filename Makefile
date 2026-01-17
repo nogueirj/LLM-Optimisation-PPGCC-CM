@@ -42,10 +42,17 @@ run:
 	@echo "🏃 Iniciando benchmarks com $(N_THREADS) threads..."
 	python3 $(SCRIPTS_DIR)/executor.py $(N_THREADS)
 
+# Alvo de escalabilidade: Builda tudo uma vez e depois só executa
 scale:
-	@echo "📈 Iniciando bateria de escalabilidade (1 a 64 threads)..."
-	chmod +x $(SCRIPTS_DIR)/run_scaling.sh
-	./$(SCRIPTS_DIR)/run_scaling.sh
+	@echo "🔨 Fase 1: Compilando todos os modelos (Single Build)..."
+	$(MAKE) all DATASET_SIZE=$(DATASET_SIZE)
+	@echo "🏃 Fase 2: Iniciando bateria de execução (No-Build Mode)..."
+	chmod +x scripts/run_scale.sh
+	./scripts/run_scale.sh $(DATASET_SIZE)
+
+# Alvo run simples (apenas para uma execução manual)
+run:
+	python3 scripts/executor.py $(N_THREADS)
 
 analyze:
 	@echo "📊 Gerando métricas e visualizações estatísticas..."
