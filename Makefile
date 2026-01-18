@@ -15,7 +15,7 @@ DATASET_SIZE ?=
 N_THREADS    ?= 8
 
 # 4. ALVOS VIRTUAIS
-.PHONY: all clean run analyze scale help $(MODELS)
+.PHONY: all clean run analyze scale help check $(MODELS)
 
 # -----------------------------------------------------------------
 # ALVOS DE COMPILAÇÃO
@@ -54,6 +54,9 @@ scale:
 run:
 	python3 scripts/executor.py $(N_THREADS)
 
+check:
+	python3 scripts/check_env.py
+
 analyze:
 	@echo "📊 Gerando métricas e visualizações estatísticas..."
 	python3 $(SCRIPTS_DIR)/analyzer.py
@@ -80,3 +83,4 @@ help:
 	@echo "  make scale        - Executa bateria de escalabilidade total"
 	@echo "  make analyze      - Gera gráficos e tabelas LaTeX"
 	@echo "  make clean        - Remove binários e resultados antigos"
+	@echo "  make check        - Verifica o ambiente de execução"
