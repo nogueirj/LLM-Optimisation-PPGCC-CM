@@ -1,0 +1,37 @@
+# Forçamos amd64 para compatibilidade com pacotes legados do LLVM no Mac M-series
+FROM --platform=linux/amd64 ubuntu:16.04
+
+# 1. Instalar dependências (focando nos pacotes -dev para compilar os plugins)
+RUN apt-get update && apt-get install -y \
+    cmake \
+    git \
+    build-essential \
+    python3 \
+    libxml2-dev \
+    libedit-dev \
+    zlib1g-dev \
+    llvm-3.8-dev \
+    clang-3.8 \
+    libclang-3.8-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Configurar o ambiente para o LLVM 3.8
+ENV LLVM_DIR=/usr/lib/llvm-3.8
+ENV PATH=$LLVM_DIR/bin:$PATH
+
+# 3. Download do código-fonte
+WORKDIR /opt
+RUN git clone https://github.com/gleisonsdm/DawnCC-Compiler.git
+
+# 4. Compilação (A partir da raiz /opt/dawncc)
+WORKDIR /opt/DawnCC-Compiler
+RUN mkdir build && cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# 5. Preparar o diretório de dados
+WORKDIR /data
+
+# O DawnCC é executado via um script wrapper (run.sh) ou diretamente via opt.
+# Vamos deixar o ENTRYPOINT flexível para você rodar o script de análise.
+ENTRYPOINT ["/bin/bash", "/opt/dawncc/run.sh"]

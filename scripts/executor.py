@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__)) + "/.."
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 RESULTS_DIR = os.path.join(BASE_DIR, "results")
 
-MODELS = ["sequential", "chatgpt", "codellama", "codestral", "deepseekcoder", "gemini", "qwen", "polly", "openmp",]
+MODELS = ["sequential", "chatgpt", "codellama", "codestral", "deepseekcoder", "granite", "gemini", "qwen", "polly", "openmp",]
 KERNELS = ["2mm", "3mm", "atax", "gemm", "syr2k"]
 REPETITIONS = 10
 N_THREADS = int(sys.argv[1]) if len(sys.argv) > 1 else 8

@@ -8,7 +8,7 @@ SCRIPTS_DIR = scripts
 RESULTS_DIR = results
 
 # 2. LISTA OFICIAL DE MODELOS
-MODELS = sequential chatgpt codellama codestral deepseekcoder gemini qwen polly openmp openacc
+MODELS = sequential chatgpt codellama codestral deepseekcoder granite gemini qwen polly openmp
 
 # 3. PARÂMETROS DE AMBIENTE
 DATASET_SIZE ?= 
