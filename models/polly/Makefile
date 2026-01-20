@@ -1,17 +1,20 @@
-# Makefile para Polly - Versão LLVM 21 (Research Grade)
+# Makefile para Polly - Otimizado para Ubuntu (LLVM 18)
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Darwin)
-	CC = /opt/homebrew/opt/llvm/bin/clang
-	OMP_INC   = -I/opt/homebrew/opt/llvm/include
-	OMP_LIBS  = -L/opt/homebrew/opt/llvm/lib -lomp -Wl,-rpath,/opt/homebrew/opt/llvm/lib
+    # Configuração para macOS (Homebrew LLVM)
+    CC = /opt/homebrew/opt/llvm/bin/clang
+    OMP_INC   = -I/opt/homebrew/opt/llvm/include
+    OMP_LIBS  = -L/opt/homebrew/opt/llvm/lib -lomp -Wl,-rpath,/opt/homebrew/opt/llvm/lib
 else
-	CC = clang
-	OMP_INC   = 
-	OMP_LIBS  = -lomp -lgomp
+    # Configuração para Ubuntu com LLVM 18
+    CC = clang-18
+    OMP_INC   = 
+    # No Linux/Clang, -fopenmp lida com a linkagem da libomp automaticamente
+    OMP_LIBS  = -fopenmp
 endif
 
-# Flags específicas para o Polly no LLVM 21
+# Flags de Otimização Poliedral (Polly)
 POLLY_FLAGS = -mllvm -polly \
               -mllvm -polly-parallel \
               -mllvm -polly-tiling \
