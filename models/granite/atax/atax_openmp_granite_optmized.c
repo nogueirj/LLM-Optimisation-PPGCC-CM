@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "atax.h"
-
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -65,15 +65,17 @@ void kernel_atax(int nx, int ny,
 #pragma scop
   for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
+#pragma omp parallel for schedule(static) shared(y) private(i,j)
   for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
       for (j = 0; j < _PB_NY; j++)
-	tmp[i] = tmp[i] + A[i][j] * x[j];
+        tmp[i] = tmp[i] + A[i][j] * x[j];
       for (j = 0; j < _PB_NY; j++)
-	y[j] = y[j] + A[i][j] * tmp[i];
+        y[j] = y[j] + A[i][j] * tmp[i];
     }
 #pragma endscop
+
 
 }
 

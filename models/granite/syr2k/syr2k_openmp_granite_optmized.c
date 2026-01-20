@@ -16,7 +16,7 @@
 /* Include benchmark-specific header. */
 /* Default data type is double, default size is 4000. */
 #include "syr2k.h"
-
+#include <omp.h>
 
 /* Array initialization. */
 static
@@ -76,13 +76,14 @@ void kernel_syr2k(int ni, int nj,
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
+#pragma omp parallel for schedule(static) collapse(2)
   for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       for (k = 0; k < _PB_NJ; k++)
-	{
-	  C[i][j] += alpha * A[i][k] * B[j][k];
-	  C[i][j] += alpha * B[i][k] * A[j][k];
-	}
+        {
+          C[i][j] += alpha * A[i][k] * B[j][k];
+          C[i][j] += alpha * B[i][k] * A[j][k];
+        }
 #pragma endscop
 
 }
