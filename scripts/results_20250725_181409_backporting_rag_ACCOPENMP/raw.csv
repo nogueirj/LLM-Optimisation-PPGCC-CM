@@ -1,0 +1,9 @@
+kernel,size,run,seconds,version
+2mm,large,1,2.404155,ACCOPENMP
+2mm,medium,1,3.714890,ACCOPENMP
+2mm,mini,1,0.000170,ACCOPENMP
+2mm,small,1,0.000934,ACCOPENMP
+3mm,large,1,3.356179,ACCOPENMP
+3mm,medium,1,5.552563,ACCOPENMP
+3mm,mini,1,0.002477,ACCOPENMP
+3mm,small,1,0.001658,ACCOPENMP

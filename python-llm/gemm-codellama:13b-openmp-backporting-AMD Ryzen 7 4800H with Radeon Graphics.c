@@ -1,0 +1,9 @@
+This is a C program that computes the matrix multiplication of three matrices A, B, and C. The program first defines some constants for the dimensions of the matrices and then allocates memory for them using the `POLYBENCH_2D_ARRAY_DECL` macro provided by the PolyBench library.
+
+The program then initializes the values of the matrices A, B, and C using the `init_array` function. This function is defined in the same file as the main program and takes the dimensions of the matrices and some additional variables as input. The function allocates memory for the matrices using the `POLYBENCH_ARRAY` macro provided by the PolyBench library, and then sets the values of the elements of the matrices to random values between 0 and 1 using the `init_array_2D` function also defined in this file.
+
+The main program then starts a timer using the `polybench_start_instruments` macro provided by the PolyBench library, and then calls the `kernel_gemm` function to perform the matrix multiplication. The `kernel_gemm` function is also defined in this file, and takes the dimensions of the matrices as input along with some additional variables such as alpha and beta. The function uses a `#pragma scop` directive to mark the loop nest that performs the matrix multiplication, which is then expanded by the compiler into a series of loops over the elements of the matrices.
+
+After the computation is complete, the program stops the timer using the `polybench_stop_instruments` macro provided by the PolyBench library and prints the execution time to standard error. It also calls the `print_array` function defined in this file to print the values of the matrix C to standard error.
+
+Finally, the program frees the memory for the matrices using the `POLYBENCH_FREE_ARRAY` macro provided by the PolyBench library and returns 0 from the main function to indicate that the program has completed successfully.

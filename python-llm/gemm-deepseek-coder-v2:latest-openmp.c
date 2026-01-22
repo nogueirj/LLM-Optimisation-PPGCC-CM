@@ -1,0 +1,143 @@
+ O código fornecido é uma implementação do algoritmo GEMM (General Matrix Multiplication) em C, que utiliza diretivas OpenMP para paralelização. Abaixo está o código com as diretivas OpenMP adicionadas no lugar apropriado:
+
+```python
+/**
+ * gemm.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+/* Include polybench common header. */
+#include <polybench.h>
+
+/* Include benchmark-specific header. */
+/* Default data type is double, default size is 4000. */
+#include "gemm.h"
+
+
+/* Array initialization. */
+static
+void init_array(int ni, int nj, int nk,
+		DATA_TYPE *alpha,
+		DATA_TYPE *beta,
+		DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj),
+		DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
+		DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj))
+{
+  int i, j;
+
+  *alpha = 32412;
+  *beta = 2123;
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nj; j++)
+      C[i][j] = ((DATA_TYPE) i*j) / ni;
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nk; j++)
+      A[i][j] = ((DATA_TYPE) i*j) / ni;
+  for (i = 0; i < nk; i++)
+    for (j = 0; j < nj; j++)
+      B[i][j] = ((DATA_TYPE) i*j) / ni;
+}
+
+
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
+static
+void print_array(int ni, int nj,
+		 DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj))
+{
+  int i, j;
+
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nj; j++) {
+	fprintf (stderr, "%0.2lf ", C[i][j]);
+	if ((i * ni + j) % 20 == 0) fprintf (stderr, "\n");
+    }
+}
+
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
+static
+void kernel_gemm(int ni, int nj, int nk,
+		  DATA_TYPE alpha,
+		  DATA_TYPE beta,
+		  DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj),
+		  DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
+		  DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj))
+{
+  int i, j, k;
+
+#pragma omp parallel for private(i,j,k) shared(C,A,B)
+  for (i = 0; i < ni; i++)        // Line added for OpenMP parallelism
+    for (j = 0; j < nj; j++) {
+      C[i][j] *= beta;
+#pragma omp parallel for private(k) shared(C,A,B,i,j) reduction(+:C[i][j]) // Line added for OpenMP parallelism
+      for (k = 0; k < nk; k++) {
+	C[i][j] += alpha * A[i][k] * B[k][j];
+      }
+    }
+}
+
+int main(int argc, char** argv)
+{
+  /* Retrieve problem size. */
+  int ni = NI;
+  int nj = NJ;
+  int nk = NK;
+
+  /* Variable declaration/allocation. */
+  DATA_TYPE alpha, beta;
+  POLYBENCH_2D(C,NI,NJ,ni,nj);
+  POLYBENCH_2D(A,NI,NK,ni,nk);
+  POLYBENCH_2D(B,NK,NJ,nk,nj);
+
+  /* Initialize array(s). */
+  init_array (ni, nj, nk, &alpha, &beta,
+	      POLYBENCH_ARRAY(C),
+	      POLYBENCH_ARRAY(A),
+	      POLYBENCH_ARRAY(B));
+
+  /* Start timer. */
+  polybench_start_instruments;
+
+  /* Run kernel. */
+  kernel_gemm (ni, nj, nk,
+	       alpha, beta,
+	       POLYBENCH_ARRAY(C),
+	       POLYBENCH_ARRAY(A),
+	       POLYBENCH_ARRAY(B));
+
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  polybench_prevent_dce(print_array(ni, nj,  POLYBENCH_ARRAY(C)));
+
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(C);
+  POLYBENCH_FREE_ARRAY(A);
+  POLYBENCH_FREE_ARRAY(B);
+
+  return 0;
+}
+```
+
+Aqui está o código com as diretivas OpenMP adicionadas:
+
+1. Na função `init_array`, não há necessidade de paralelização, pois ela é usada apenas para inicializar os arrays.
+2. Na função `print_array`, também não há necessidade de paralelização, pois ela é usada apenas para imprimir os dados.
+3. A função `kernel_gemm` foi modificada para incluir diretivas OpenMP que paralelizam o loop principal:
+   - Adicionei uma linha com `#pragma omp parallel for private(i,j,k) shared(C,A,B)` antes do loop `for (i = 0; i < ni; i++)` para garantir que cada thread trabalhe em uma parte independente do array `C`.
+   - Adicionei uma linha com `#pragma omp parallel for private(k) shared(C,A,B,i,j) reduction(+:C[i][j])` dentro do loop `for (j = 0; j < nj; j++)` para garantir que cada thread trabalhe em uma parte independente dos cálculos de `C[i][j]`.
+
+Isso deve acelerar o código, pois permite a execução concorrente das iterações do loop principal e dos subloops.
+
+Além disso, é importante notar que o uso de diretivas OpenMP pode variar dependendo da arquitetura do computador e do sistema operacional em que o código está sendo executado. É sempre uma boa prática testar diferentes configurações para garantir o desempenho ideal.
