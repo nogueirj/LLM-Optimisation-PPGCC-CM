@@ -1,0 +1,112 @@
+digraph ResearchPipeline {
+    // Configurações Gerais
+    rankdir=TB;
+    splines=ortho;
+    nodesep=0.6;
+    ranksep=0.8;
+    fontname="Helvetica";
+    fontsize=12;
+    
+    // Estilos de Nós
+    node [shape=box, style="filled,rounded", fillcolor="#ffffff", color="#333333", fontname="Helvetica"];
+    edge [color="#555555", arrowsize=0.8];
+
+    // --- CLUSTER 1: ENTRADA ---
+    subgraph cluster_input {
+        label="1. Entrada (Benchmarks)";
+        style=dashed;
+        color="#888888";
+        bgcolor="#f9f9f9";
+        
+        PolyBench [label="PolyBench/C 4.2.1\n(Kernels Sequenciais)", shape=cylinder, fillcolor="#e1f5fe"];
+        Kernels [label="Kernels Selecionados:\n2mm, 3mm, gemm,\natax, syr2k", shape=note, fontsize=10];
+        
+        PolyBench -> Kernels [style=dotted];
+    }
+
+    // --- CLUSTER 2: ESTRATÉGIAS DE GERAÇÃO ---
+    subgraph cluster_strategies {
+        label="2. Estratégias de Geração de Código";
+        style=solid;
+        color="#444444";
+        bgcolor="#eeeeee";
+
+        // Caminho A: Baseline Humano
+        subgraph cluster_human {
+            label="Baseline (Humano)";
+            style=filled;
+            color="#d1c4e9";
+            Expert [label="PolyBench-ACC\n(Otimização Manual)", fillcolor="#ffffff"];
+        }
+
+        // Caminho B: Ferramentas Determinísticas
+        subgraph cluster_tools {
+            label="Determinístico (Ferramentas)";
+            style=filled;
+            color="#c8e6c9";
+            Polly [label="LLVM Polly\n(Modelo Poliédrico)", fillcolor="#ffffff"];
+            DawnCC [label="DawnCC\n(Análise de Intervalo)", fillcolor="#ffffff"];
+        }
+
+        // Caminho C: Modelos Probabilísticos (IA)
+        subgraph cluster_llms {
+            label="Probabilístico (LLMs)";
+            style=filled;
+            color="#ffccbc";
+            
+            Prompting [label="Engenharia de Prompt\n(Contexto Explícito vs Oculto)", shape=component, fillcolor="#fff3e0"];
+            
+            LLMs [label="{ChatGPT 4.5 | Gemini | Qwen | Granite | \nCodestral | DeepSeek | CodeLlama}", shape=record, fillcolor="#ffffff"];
+            
+            Prompting -> LLMs;
+        }
+    }
+
+    // --- CLUSTER 3: EXECUÇÃO E VALIDAÇÃO ---
+    subgraph cluster_execution {
+        label="3. Ambiente Experimental";
+        style=solid;
+        color="#444444";
+        bgcolor="#e0f7fa";
+
+        Compiler [label="Compilação (GCC/Clang)\nFlags -O3 -fopenmp -polly", shape=component];
+        Validation [label="Validação de Corretude\n(Comparação Numérica)", shape=diamond, style=filled, fillcolor="#fff9c4"];
+        
+        Hardware [label="Execução em Hardware\nAMD Ryzen Threadripper\n(Escalabilidade: 1 a 64 Threads)", shape=box3d, fillcolor="#cfd8dc"];
+    }
+
+    // --- CLUSTER 4: ANÁLISE ---
+    subgraph cluster_analysis {
+        label="4. Análise de Resultados";
+        style=solid;
+        color="#444444";
+        bgcolor="#f3e5f5";
+
+        Quantitative [label="Análise Quantitativa\n(Performance)", fillcolor="#e1bee7"];
+        Qualitative [label="Análise Qualitativa\n(Estrutural)", fillcolor="#e1bee7"];
+        
+        Metrics_Quant [label="• Tempo de Execução\n• Speedup\n• Eficiência Paralela", shape=note, fontsize=10];
+        Metrics_Qual [label="• Tags OpenMP (Schedule, Collapse)\n• Score de Qualidade\n• Robustez & Boas Práticas", shape=note, fontsize=10];
+
+        Quantitative -> Metrics_Quant [style=dotted];
+        Qualitative -> Metrics_Qual [style=dotted];
+    }
+
+    // RELACIONAMENTOS GERAIS
+    Kernels -> Expert;
+    Kernels -> Polly;
+    Kernels -> DawnCC;
+    Kernels -> Prompting;
+
+    Expert -> Compiler;
+    Polly -> Compiler;
+    DawnCC -> Compiler;
+    LLMs -> Compiler;
+
+    Compiler -> Validation;
+    Validation -> Hardware [label="Se Válido", color="green"];
+    Validation -> LLMs [label="Refinamento (Iterativo)", style=dashed, color="red"];
+
+    Hardware -> Quantitative;
+    Hardware -> Qualitative;
+}

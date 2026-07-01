@@ -50,16 +50,36 @@ scale:
 	chmod +x scripts/run_scale.sh
 	./scripts/run_scale.sh $(DATASET_SIZE)
 
-# Alvo run simples (apenas para uma execução manual)
-run:
-	python3 scripts/executor.py $(N_THREADS)
-
 check:
 	python3 scripts/check_env.py
 
 analyze:
 	@echo "📊 Gerando métricas e visualizações estatísticas..."
 	python3 $(SCRIPTS_DIR)/analyzer.py
+
+analyze-speedup:
+	@echo "📈 Gerando gráficos de speedup por dataset..."
+	python3 analysis_scripts/speedup_grafico.py
+
+analyze-stats:
+	@echo "📉 Gerando gráficos estatísticos com desvio padrão..."
+	python3 analysis_scripts/speedup_estatistico.py
+
+analyze-data:
+	@echo "📋 Analisando dados consolidados..."
+	python3 analysis_scripts/analise_por_dataset.py
+
+analyze-latex:
+	@echo "📄 Gerando tabelas LaTeX..."
+	python3 analysis_scripts/gerar_tabelas_latex.py
+
+analyze-all: analyze-speedup analyze-stats analyze-data analyze-latex
+	@echo "✅ Todas as análises foram executadas com sucesso!"
+	@echo ""
+	@echo "📁 Arquivos gerados em results/:"
+	@echo "  • Gráficos: *.png"
+	@echo "  • Dados: *.csv"
+	@echo "  • Tabelas: *.tex"
 
 # -----------------------------------------------------------------
 # MANUTENÇÃO E LIMPEZA
@@ -77,10 +97,30 @@ clean:
 	@echo "✨ Limpeza concluída."
 
 help:
-	@echo "Comandos disponíveis:"
-	@echo "  make all          - Compila todos os modelos (ignora falhas individuais)"
-	@echo "  make run          - Executa benchmarks (N_THREADS=8 por padrão)"
-	@echo "  make scale        - Executa bateria de escalabilidade total"
-	@echo "  make analyze      - Gera gráficos e tabelas LaTeX"
-	@echo "  make clean        - Remove binários e resultados antigos"
-	@echo "  make check        - Verifica o ambiente de execução"
+	@echo ""
+	@echo "╔════════════════════════════════════════════════════════════════╗"
+	@echo "║          COMANDOS DISPONÍVEIS - OpenMP Optimized               ║"
+	@echo "╚════════════════════════════════════════════════════════════════╝"
+	@echo ""
+	@echo "🔨 COMPILAÇÃO:"
+	@echo "  make all                - Compila todos os modelos"
+	@echo ""
+	@echo "🏃 EXECUÇÃO:"
+	@echo "  make run                - Executa benchmarks (N_THREADS=8)"
+	@echo "  make scale              - Executa bateria de escalabilidade"
+	@echo ""
+	@echo "📊 ANÁLISE DETALHADA:"
+	@echo "  make analyze            - Análise básica (script analyzer.py)"
+	@echo "  make analyze-speedup    - Gráficos de speedup por dataset"
+	@echo "  make analyze-stats      - Gráficos com desvio padrão"
+	@echo "  make analyze-data       - Análise consolidada de dados"
+	@echo "  make analyze-latex      - Tabelas LaTeX para artigos"
+	@echo "  make analyze-all        - Executa TODAS as análises ✨"
+	@echo ""
+	@echo "🧹 MANUTENÇÃO:"
+	@echo "  make clean              - Remove binários e resultados"
+	@echo "  make check              - Verifica o ambiente"
+	@echo ""
+	@echo "📁 ESTRUTURA:"
+	@echo "  make help               - Mostra esta mensagem"
+	@echo ""
