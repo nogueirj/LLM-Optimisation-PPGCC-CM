@@ -10,12 +10,48 @@ BENCHMARKS=("2mm" "3mm" "gemm" "atax" "syr2k")
 BENCH_DIR="../core/polybench-c-3.2/linear-algebra/kernels"
 PROMPTS_DIR="../prompts"
 MODELS_DIR="../models"
+LOGS_DIR="../logs"
 
-echo "Fetching models from Ollama..."
-models=$(ollama list | awk 'NR>1 {print $1}')
+mkdir -p "$LOGS_DIR"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+LOG_FILE="${LOGS_DIR}/execute_all_${TIMESTAMP}.log"
+
+# Grava toda a saída no arquivo de log E exibe em tempo real no terminal
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "========================================================================"
+echo "PIPELINE AUTOMATIZADO DE EXECUÇÃO MULTI-MODELOS (OLLAMA & POLYBENCH)"
+echo "Data/Hora de Início: $(date)"
+echo "Arquivo de Log:      $LOG_FILE"
+echo "Kernels:             ${BENCHMARKS[*]}"
+echo "========================================================================"
+
+# Detecta o interpretador Python adequado (virtualenv ou sistema)
+if [ -f "../.venv/bin/python" ]; then
+    PYTHON_CMD="../.venv/bin/python"
+elif [ -n "$VIRTUAL_ENV" ]; then
+    PYTHON_CMD="$VIRTUAL_ENV/bin/python"
+else
+    PYTHON_CMD="python3"
+fi
+echo "Interpretador Python: $PYTHON_CMD"
+
+# Se modelos específicos foram passados na linha de comando, usa apenas eles;
+# caso contrário, busca todos os modelos disponíveis no Ollama.
+if [ $# -gt 0 ]; then
+    models="$*"
+    echo "Modelos especificados via argumento: $models"
+else
+    echo "Buscando modelos instalados no Ollama..."
+    models=$(ollama list | awk 'NR>1 {print $1}')
+fi
+
+SUCCESS_COUNT=0
+FAIL_COUNT=0
+SKIPPED_COUNT=0
 
 for model in $models; do
-    # Map model to prompt and output directory
+    # Mapeamento do modelo para o prompt e pasta de saída correspondentes
     case "$model" in
         *"granite-code:20b"*)
             PROMPT="${PROMPTS_DIR}/GraniteCode20BPrompt.md"
