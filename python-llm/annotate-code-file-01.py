@@ -1,94 +1,233 @@
 import sys
 import os
-import ollama
+import re
+import json
+import time
+import urllib.request
+import urllib.error
 
-def process_code_with_llm(code_file_path, llm_model, prompt_template):
+def extract_c_code(text):
     """
-    Reads code from a file and processes it using an Ollama language model.
+    Extracts pure C code from the LLM response, removing markdown, explanations, and thinking.
+    Prefers complete C source files over tiny 1-line snippets.
+    """
+    code_blocks = re.findall(r'```(?:c|cpp|C)?\s*\n(.*?)```', text, re.DOTALL)
+    if code_blocks:
+        candidates = []
+        for block in code_blocks:
+            clean_block = block.strip()
+            num_lines = len(clean_block.splitlines())
+            num_chars = len(clean_block)
+            
+            # Skip tiny snippets like `gcc -fopenmp ...` or `#include <omp.h>`
+            if num_lines < 3 or num_chars < 50:
+                continue
 
-    Args:
-        code_file_path (str): Path to the code file.
-        llm_model (str): Model name.
-        prompt_template (str): Template for the prompt, including a placeholder for the code.
+            score = 0
+            if '#include' in clean_block:
+                score += 30
+            if 'polybench' in clean_block.lower():
+                score += 25
+            if 'main' in clean_block:
+                score += 30
+            if 'kernel_' in clean_block or 'init_array' in clean_block:
+                score += 20
+            if '#pragma omp' in clean_block:
+                score += 25
+            if 'for (' in clean_block or 'for(' in clean_block:
+                score += 15
 
-    Returns:
-        str: The generated response from the language model.
+            # Size score: prefer larger, complete blocks over small fragments
+            score += min(num_lines, 200)
+
+            candidates.append((score, num_chars, clean_block))
+
+        if candidates:
+            candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+            return candidates[0][2]
+
+        # If all blocks were < 3 lines, just take the longest one
+        code_blocks.sort(key=lambda b: len(b), reverse=True)
+        return code_blocks[0].strip()
+
+    # Fallback: if no markdown fences, search for where C code starts
+    lines = text.split('\n')
+    start_idx = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith(('/*', '/**', '#include', '#pragma', 'static void', 'void ', 'int ')):
+            start_idx = i
+            break
+    
+    code = '\n'.join(lines[start_idx:])
+    return code.strip()
+
+def format_metrics(response, model, code_file, prompt_file, raw_content):
+    total_duration = response.get('total_duration')
+    load_duration = response.get('load_duration')
+    prompt_eval_count = response.get('prompt_eval_count')
+    prompt_eval_duration = response.get('prompt_eval_duration')
+    eval_count = response.get('eval_count')
+    eval_duration = response.get('eval_duration')
+    created_at = response.get('created_at', 'N/A')
+
+    total_s = f"{total_duration / 1e9:.2f} s" if total_duration else "N/A"
+    load_s = f"{load_duration / 1e9:.2f} s" if load_duration else "N/A"
+    prompt_eval_s = f"{prompt_eval_duration / 1e9:.2f} s" if prompt_eval_duration else "N/A"
+    eval_s = f"{eval_duration / 1e9:.2f} s" if eval_duration else "N/A"
+    
+    prompt_rate = f"{prompt_eval_count / (prompt_eval_duration / 1e9):.2f} tokens/s" if (prompt_eval_count and prompt_eval_duration) else "N/A"
+    eval_rate = f"{eval_count / (eval_duration / 1e9):.2f} tokens/s" if (eval_count and eval_duration) else "N/A"
+
+    report = [
+        "=" * 80,
+        "OLLAMA EXECUTION METRICS & VERBOSE LOG",
+        "=" * 80,
+        f"Model:                {model}",
+        f"Code File:            {code_file}",
+        f"Prompt File:          {prompt_file}",
+        f"Timestamp:            {created_at}",
+        "",
+        "-" * 80,
+        "Performance Metrics",
+        "-" * 80,
+        f"Total Duration:       {total_s}",
+        f"Load Duration:        {load_s}",
+        f"Prompt Eval Count:    {prompt_eval_count if prompt_eval_count is not None else 'N/A'} tokens",
+        f"Prompt Eval Duration: {prompt_eval_s}",
+        f"Prompt Eval Rate:     {prompt_rate}",
+        f"Eval Count:           {eval_count if eval_count is not None else 'N/A'} tokens",
+        f"Eval Duration:        {eval_s}",
+        f"Generation Rate:      {eval_rate}",
+        "",
+        "-" * 80,
+        "Raw Response (including analysis, thinking, and explanations)",
+        "-" * 80,
+        raw_content,
+        "=" * 80
+    ]
+    return "\n".join(report)
+
+def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http://localhost:11434"):
+    """
+    Reads code from a file and processes it using Ollama REST API with streaming output and keep_alive.
     """
     try:
         with open(code_file_path, 'r') as file:
             code_content = file.read()
     except FileNotFoundError:
-        return "Error: Code file not found."
-    
-    prompt = prompt_template.format(code=code_content)
+        print(f"[-] Error: Code file '{code_file_path}' not found.")
+        return "", {}
 
-    response = ollama.chat(model=llm_model, messages=[{'role': 'user', 'content': prompt}])
-    return response['message']['content']
+    # Smart injection of code into prompt template
+    if "{code}" in prompt_template:
+        prompt = prompt_template.replace("{code}", code_content)
+    else:
+        empty_block = re.search(r'```(?:c|cpp|C)?\s*\n\s*```\s*$', prompt_template)
+        if empty_block:
+            prompt = prompt_template[:empty_block.start()] + "```c\n" + code_content + "\n```"
+        else:
+            prompt = prompt_template.rstrip() + "\n\n```c\n" + code_content + "\n```"
 
+    print(f"[*] Connecting to Ollama ({llm_model})...")
+    print(f"[*] (Generating code, keeping model loaded in RAM with keep_alive='1h')...\r", end="", flush=True)
 
-def get_model_list():
-    """
-    Get a list of names of Ollama models.
+    url = f"{host}/api/chat"
+    payload = {
+        "model": llm_model,
+        "messages": [{"role": "user", "content": prompt}],
+        "stream": True,
+        "keep_alive": "1h"  # Prevents Ollama from unloading the model between benchmarks!
+    }
 
-    Args:
-        None
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode('utf-8'),
+        headers={"Content-Type": "application/json"}
+    )
 
-    Returns:
-        list: Generated list of models.
-    """
+    try:
+        full_content = []
+        token_count = 0
+        final_metadata = {}
 
-    # First command: ollama list
-    p1 = subprocess.Popen(['ollama', 'list'], stdout=subprocess.PIPE)
+        with urllib.request.urlopen(req) as response:
+            for line in response:
+                if not line:
+                    continue
+                try:
+                    chunk = json.loads(line.decode('utf-8'))
+                except json.JSONDecodeError:
+                    continue
 
-    # Second command: awk ' { print $1 }'
-    p2 = subprocess.Popen(['awk', '{ print $1 }'], stdin=p1.stdout, stdout=subprocess.PIPE)
+                msg = chunk.get('message', {})
+                content_piece = msg.get('content', '') if isinstance(msg, dict) else ''
 
-    # Close p1's stdout to prevent deadlocks
-    p1.stdout.close()
+                if content_piece:
+                    full_content.append(content_piece)
+                    token_count += 1
+                    if token_count % 15 == 0:
+                        print(f"[*] Generating code... ({token_count} tokens generated)\r", end="", flush=True)
 
-    # Third command: sed -e '1d'
-    p3 = subprocess.Popen(['sed', '-e', '1d'], stdin=p2.stdout, stdout=subprocess.PIPE)
+                if chunk.get('done', False):
+                    final_metadata = chunk
 
-    # Close p2's stdout to prevent deadlocks
-    p2.stdout.close()
+        print(f"\n[+] Finished generation ({token_count} tokens received).")
+        raw_response = "".join(full_content)
+        return raw_response, final_metadata
 
-    # Get the output from p2
-    output, errors = p3.communicate()
-
-    # Print the output
-    print(output.decode("utf-8"))
-
-    return output.decode("utf-8").split()
+    except KeyboardInterrupt:
+        print("\n[!] Execution interrupted by user (Ctrl+C).")
+        sys.exit(130)
+    except urllib.error.URLError as e:
+        print(f"\n[-] Error connecting to Ollama: {e}")
+        print("[-] Make sure Ollama is running ('ollama serve' or Ollama app).")
+        return "", {}
+    except Exception as e:
+        print(f"\n[-] Error during Ollama inference: {e}")
+        return "", {}
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4: # Expecting the script name + 2 arguments
-        print("Usage: python", sys.argv[0], "<model> <code_file> <prompt>")
-        print("Example: python", sys.argv[0], "codellama:13b gemm.c 'Analise o código'")
-        sys.exit(1) # Exit with an error code
+    if len(sys.argv) != 5:
+        print("Usage: python", sys.argv[0], "<model> <code_file> <prompt_file> <output_file>")
+        print("Example: python", sys.argv[0], "codellama:13b gemm.c prompt.md output.c")
+        sys.exit(1)
 
     model = sys.argv[1]
     code_file = sys.argv[2]
-    prompt = sys.argv[3]
-    version = "openmp"
-
-    # Proceed with your logic using param1 and param2
-    print(f"Model: {model}")
-    print(f"File: {code_file}")
-    print(f"prompt: {prompt}")
-
-    base = os.path.basename(code_file)
-    benchmark_name = os.path.splitext(base)[0]
-
-    result_file_name = "{}-{}-{}.c".format(benchmark_name, model, version)
-
-    print(f"Result file: {result_file_name}")
-
-    prompt = prompt + ":\n```python\n{code}\n```"
-
-    result = process_code_with_llm(code_file, model, prompt)
+    prompt_file = sys.argv[3]
+    output_file = sys.argv[4]
     
-    print(result)
+    try:
+        with open(prompt_file, 'r') as pf:
+            prompt_template = pf.read()
+    except FileNotFoundError:
+        print(f"[-] Error: Prompt file '{prompt_file}' not found.")
+        sys.exit(1)
 
-    file = open(result_file_name, "w")
-    file.write(result)
-    file.close()
+    print("=" * 60)
+    print(f"Model:       {model}")
+    print(f"Code File:   {code_file}")
+    print(f"Prompt File: {prompt_file}")
+    print(f"Output File: {output_file}")
+    print("=" * 60)
+
+    raw_response, metadata = process_code_with_llm(code_file, model, prompt_template)
+    
+    if not raw_response:
+        print("[-] No response received from model. Skipping save.")
+        sys.exit(1)
+
+    # 1. Extract pure C code
+    c_code = extract_c_code(raw_response)
+    with open(output_file, "w") as f:
+        f.write(c_code + "\n")
+    print(f"[+] Saved pure C code to: {output_file}")
+
+    # 2. Save verbose metadata and raw reasoning to a separate .txt file
+    verbose_file = os.path.splitext(output_file)[0] + "_verbose.txt"
+    metrics_report = format_metrics(metadata, model, code_file, prompt_file, raw_response)
+    with open(verbose_file, "w") as f:
+        f.write(metrics_report + "\n")
+    print(f"[+] Saved metrics & verbose log to: {verbose_file}")
+    print("-" * 60)
