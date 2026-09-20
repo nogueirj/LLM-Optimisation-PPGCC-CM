@@ -137,7 +137,12 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
         "model": llm_model,
         "messages": [{"role": "user", "content": prompt}],
         "stream": True,
-        "keep_alive": "1h"  # Prevents Ollama from unloading the model between benchmarks!
+        "keep_alive": "1h",
+        "options": {
+            "num_ctx": 4096,
+            "temperature": 1.0,
+            "top_p": 0.95
+        }
     }
 
     req = urllib.request.Request(
@@ -188,16 +193,48 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
         return "", {}
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python", sys.argv[0], "<model> <code_file> <prompt_file> <output_file>")
-        print("Example: python", sys.argv[0], "codellama:13b gemm.c prompt.md output.c")
+    import argparse
+
+    # Flexible parser supporting both named flags (--model, --code, ...) and positional arguments
+    parser = argparse.ArgumentParser(description="Annotate C code using an Ollama LLM.")
+    parser.add_argument("pos_args", nargs="*", help="Positional: <model> <code_file> <prompt_file> [output_file]")
+    parser.add_argument("--model", "-m", help="Name of the Ollama model")
+    parser.add_argument("--code", "-c", help="Path to input C code file")
+    parser.add_argument("--prompt", "-p", help="Path to prompt markdown file")
+    parser.add_argument("--output", "-o", help="Path to save annotated C output file")
+
+    args = parser.parse_args()
+
+    model = args.model
+    code_file = args.code
+    prompt_file = args.prompt
+    output_file = args.output
+
+    # Fallback to positional arguments if flags were not provided
+    if args.pos_args:
+        if len(args.pos_args) >= 1 and not model:
+            model = args.pos_args[0]
+        if len(args.pos_args) >= 2 and not code_file:
+            code_file = args.pos_args[1]
+        if len(args.pos_args) >= 3 and not prompt_file:
+            prompt_file = args.pos_args[2]
+        if len(args.pos_args) >= 4 and not output_file:
+            output_file = args.pos_args[3]
+
+    if not model or not code_file or not prompt_file:
+        print("Usage:")
+        print("  python", sys.argv[0], "<model> <code_file> <prompt_file> [output_file]")
+        print("  python", sys.argv[0], "--model <model> --code <code_file> --prompt <prompt_file> [--output <output_file>]")
+        print("\nExample:")
+        print("  python", sys.argv[0], "codestral-openmp:3b polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c prompts/DefaultPrompt.md models/codestral/2mm/2mm.c")
         sys.exit(1)
 
-    model = sys.argv[1]
-    code_file = sys.argv[2]
-    prompt_file = sys.argv[3]
-    output_file = sys.argv[4]
-    
+    # Auto-generate output filename if not given
+    if not output_file:
+        base_name = os.path.splitext(os.path.basename(code_file))[0]
+        model_clean = re.sub(r'[:/]', '_', model)
+        output_file = f"models/{model_clean}/{base_name}/{base_name}.c"
+
     try:
         with open(prompt_file, 'r') as pf:
             prompt_template = pf.read()
@@ -213,12 +250,16 @@ if __name__ == "__main__":
     print("=" * 60)
 
     raw_response, metadata = process_code_with_llm(code_file, model, prompt_template)
-    
+
     if not raw_response:
         print("[-] No response received from model. Skipping save.")
         sys.exit(1)
 
-    # 1. Extract pure C code
+    # 1. Extract pure C code and ensure output directory exists
+    out_dir = os.path.dirname(output_file)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+
     c_code = extract_c_code(raw_response)
     with open(output_file, "w") as f:
         f.write(c_code + "\n")
