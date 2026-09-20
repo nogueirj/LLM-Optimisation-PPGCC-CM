@@ -6,6 +6,9 @@ set -e
 # Change to the directory where the script is located
 cd "$(dirname "$0")"
 
+# ------------------------------------------------------------------------------
+# Configurações de Diretórios e Logging
+# ------------------------------------------------------------------------------
 BENCHMARKS=("2mm" "3mm" "gemm" "atax" "syr2k")
 BENCH_DIR="../core/polybench-c-3.2/linear-algebra/kernels"
 PROMPTS_DIR="../prompts"
@@ -94,35 +97,54 @@ for model in $models; do
             OUT_FOLDER="codestral-openmp-16b"
             ;;
         *)
-            echo "Unknown model mapping for $model, skipping..."
+            echo "[-] Modelo '$model' não mapeado no case. Pulando..."
+            ((SKIPPED_COUNT++))
             continue
             ;;
     esac
 
+    echo ""
+    echo "========================================================================"
+    echo ">> MODELO ALVO: $model"
+    echo "   Prompt: $PROMPT"
+    echo "   Saída:  ${MODELS_DIR}/${OUT_FOLDER}/"
+    echo "========================================================================"
+
     for bench in "${BENCHMARKS[@]}"; do
         bench_file="${BENCH_DIR}/${bench}/${bench}.c"
         if [ -f "$bench_file" ]; then
-            # Ensure the output directory exists
+            # Garante que o diretório de destino existe
             mkdir -p "${MODELS_DIR}/${OUT_FOLDER}/${bench}"
             out_file="${MODELS_DIR}/${OUT_FOLDER}/${bench}/${bench}.c"
-            
-            # Use .venv python if available, otherwise python3
-            if [ -f "../.venv/bin/python" ]; then
-                PYTHON_CMD="../.venv/bin/python"
-            else
-                PYTHON_CMD="python3"
-            fi
 
-            echo "----------------------------------------"
-            echo "Executing $model on $bench..."
-            echo "Prompt: $PROMPT"
-            echo "Input: $bench_file"
+            echo "--------------------------------------------------------"
+            echo "Executando: $model no kernel $bench..."
+            echo "Input:  $bench_file"
             echo "Output: $out_file"
-            $PYTHON_CMD annotate-code-file-01.py "$model" "$bench_file" "$PROMPT" "$out_file"
+            echo "--------------------------------------------------------"
+
+            # Executa com tolerância a falhas para não abortar todo o lote caso um kernel falhe
+            if $PYTHON_CMD annotate-code-file-01.py "$model" "$bench_file" "$PROMPT" "$out_file"; then
+                echo "[+] [SUCESSO] $model em $bench concluído."
+                ((SUCCESS_COUNT++))
+            else
+                echo "[-] [FALHA] Erro ao processar $model em $bench. Continuando..."
+                ((FAIL_COUNT++))
+            fi
         else
-            echo "Warning: Benchmark file $bench_file not found. Skipping..."
+            echo "[!] Aviso: Arquivo de benchmark '$bench_file' não encontrado. Pulando..."
+            ((FAIL_COUNT++))
         fi
     done
 done
 
-echo "Done mapping and executing models!"
+echo ""
+echo "========================================================================"
+echo "EXECUÇÃO CONCLUÍDA COM SUCESSO!"
+echo "Data/Hora de Término: $(date)"
+echo "Sucessos:             $SUCCESS_COUNT"
+echo "Falhas:               $FAIL_COUNT"
+echo "Modelos Ignorados:    $SKIPPED_COUNT"
+echo "Log Consolidado:      $LOG_FILE"
+echo "Códigos Salvos em:    $MODELS_DIR/"
+echo "========================================================================"
