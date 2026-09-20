@@ -17,41 +17,45 @@ models=$(ollama list | awk 'NR>1 {print $1}')
 for model in $models; do
     # Map model to prompt and output directory
     case "$model" in
-        *"granite"*)
+        *"granite-code:20b"*)
             PROMPT="${PROMPTS_DIR}/GraniteCode20BPrompt.md"
-            OUT_FOLDER="granite"
+            OUT_FOLDER="granite-code-20b"
             ;;
-        *"qwen2.5-coder"*)
+        *"qwen2.5-coder:14"*)
             PROMPT="${PROMPTS_DIR}/Qwen2.5Coder14BPrompt.md"
-            OUT_FOLDER="qwen"
+            OUT_FOLDER="qwen-2.5-coder-14b"
             ;;
-        *"qwen2.5"*)
-            PROMPT="${PROMPTS_DIR}/QwenPrompt.md"
-            OUT_FOLDER="qwen"
-            ;;
-        *"starcoder2"*)
+        *"starcoder2:15b"*)
             PROMPT="${PROMPTS_DIR}/StarCode215B.md"
-            OUT_FOLDER="starcode"
+            OUT_FOLDER="starcode-2_15b"
             ;;
-        *"starcoder"*)
-            PROMPT="${PROMPTS_DIR}/StarCode215B.md"
-            OUT_FOLDER="starcode"
-            ;;
-        *"deepseek-coder"*)
+        *"deepseek-coder-v2:16b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="deepseekcoder"
+            OUT_FOLDER="deepseekcoder-coder-v2_16b"
             ;;
-        *"codellama"*)
+        *"codellama:13b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codellama"
+            OUT_FOLDER="codellama_13b"
             ;;
-        *"codestral"*)
+        *"codestral:22b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codestral"
+            OUT_FOLDER="codestral_22b"
             ;;
-        *"llama3.2"*)
+        *"codestral-openmp:3b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="llama3.2"
+            OUT_FOLDER="codestral-openmp-3b"
+            ;;
+        *"codestral-openmp:4b"*)
+            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            OUT_FOLDER="codestral-openmp-4b"
+            ;;
+        *"codestral-openmp:8b"*)
+            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            OUT_FOLDER="codestral-openmp-8b"
+            ;;
+        *"codestral-openmp:16b"*)
+            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            OUT_FOLDER="codestral-openmp-16b"
             ;;
         *)
             echo "Unknown model mapping for $model, skipping..."
