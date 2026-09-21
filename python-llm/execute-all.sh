@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# Exit on any error
-set -e
+# NÃO use 'set -e' em scripts de lote/batch:
+# 1. Se um kernel ou modelo falhar, queremos que o script continue para os outros.
+# 2. No bash, comandos como ((count++)) retornam código de saída 1 quando count=0 (0 é avaliado como falsy),
+#    o que faz o 'set -e' abortar imediatamente o script após o primeiro sucesso!
+set +e
 
-# Change to the directory where the script is located
+# Posiciona a execução no diretório onde o script reside
 cd "$(dirname "$0")"
 
 # ------------------------------------------------------------------------------
@@ -39,21 +42,35 @@ else
 fi
 echo "Interpretador Python: $PYTHON_CMD"
 
+# Lista padrão e ordenada dos modelos que fazem parte do benchmark
+DEFAULT_MODELS=(
+    "codestral-openmp:3b"
+    "codestral-openmp:4b"
+    "codestral-openmp:8b"
+    "codestral-openmp:16b"
+    "codestral:22b"
+    "granite-code:20b"
+    "qwen2.5-coder:14b"
+    "starcoder2:15b"
+    "deepseek-coder-v2:16b"
+    "codellama:13b"
+)
+
 # Se modelos específicos foram passados na linha de comando, usa apenas eles;
-# caso contrário, busca todos os modelos disponíveis no Ollama.
+# caso contrário, usa a lista padrão de benchmark na ordem priorizada.
 if [ $# -gt 0 ]; then
-    models="$*"
-    echo "Modelos especificados via argumento: $models"
+    models=("$@")
+    echo "Modelos especificados via argumento: ${models[*]}"
 else
-    echo "Buscando modelos instalados no Ollama..."
-    models=$(ollama list | awk 'NR>1 {print $1}')
+    echo "Executando lista padrão de benchmark (${#DEFAULT_MODELS[@]} modelos)..."
+    models=("${DEFAULT_MODELS[@]}")
 fi
 
 SUCCESS_COUNT=0
 FAIL_COUNT=0
 SKIPPED_COUNT=0
 
-for model in $models; do
+for model in "${models[@]}"; do
     # Mapeamento do modelo para o prompt e pasta de saída correspondentes
     case "$model" in
         *"granite-code:20b"*)
@@ -82,26 +99,34 @@ for model in $models; do
             ;;
         *"codestral-openmp:3b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codestral-openmp-3b"
+            OUT_FOLDER="codestral-openmp_3b"
             ;;
         *"codestral-openmp:4b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codestral-openmp-4b"
+            OUT_FOLDER="codestral-openmp_4b"
             ;;
         *"codestral-openmp:8b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codestral-openmp-8b"
+            OUT_FOLDER="codestral-openmp_8b"
             ;;
         *"codestral-openmp:16b"*)
             PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
-            OUT_FOLDER="codestral-openmp-16b"
+            OUT_FOLDER="codestral-openmp_16b"
             ;;
         *)
             echo "[-] Modelo '$model' não mapeado no case. Pulando..."
-            ((SKIPPED_COUNT++))
+            SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
             continue
             ;;
     esac
+
+    # Verifica se o modelo está realmente disponível no Ollama
+    if ! ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+        echo ""
+        echo "[!] AVISO: Modelo '$model' não encontrado no Ollama ('ollama list'). Pulando..."
+        SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
+        continue
+    fi
 
     echo ""
     echo "========================================================================"
@@ -123,24 +148,24 @@ for model in $models; do
             echo "Output: $out_file"
             echo "--------------------------------------------------------"
 
-            # Executa com tolerância a falhas para não abortar todo o lote caso um kernel falhe
+            # Executa com tolerância a falhas para não abortar o lote caso um kernel falhe
             if $PYTHON_CMD annotate-code-file-01.py "$model" "$bench_file" "$PROMPT" "$out_file"; then
                 echo "[+] [SUCESSO] $model em $bench concluído."
-                ((SUCCESS_COUNT++))
+                SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else
                 echo "[-] [FALHA] Erro ao processar $model em $bench. Continuando..."
-                ((FAIL_COUNT++))
+                FAIL_COUNT=$((FAIL_COUNT + 1))
             fi
         else
             echo "[!] Aviso: Arquivo de benchmark '$bench_file' não encontrado. Pulando..."
-            ((FAIL_COUNT++))
+            FAIL_COUNT=$((FAIL_COUNT + 1))
         fi
     done
 done
 
 echo ""
 echo "========================================================================"
-echo "EXECUÇÃO CONCLUÍDA COM SUCESSO!"
+echo "EXECUÇÃO CONCLUÍDA!"
 echo "Data/Hora de Término: $(date)"
 echo "Sucessos:             $SUCCESS_COUNT"
 echo "Falhas:               $FAIL_COUNT"

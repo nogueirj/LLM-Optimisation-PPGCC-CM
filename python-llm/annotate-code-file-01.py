@@ -140,6 +140,7 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
         "keep_alive": "1h",
         "options": {
             "num_ctx": 4096,
+            "num_predict": 4096,
             "temperature": 1.0,
             "top_p": 0.95
         }
