@@ -1,0 +1,26 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/syr2k/syr2k.c
+Prompt File:          ../prompts/StarCode215B.md
+Timestamp:            2026-09-21T01:49:49.230262579Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       69.19 s
+Load Duration:        68.93 s
+Prompt Eval Count:    1656 tokens
+Prompt Eval Duration: 0.23 s
+Prompt Eval Rate:     7185.41 tokens/s
+Eval Count:           2 tokens
+Eval Duration:        0.01 s
+Generation Rate:      176.20 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+
+================================================================================

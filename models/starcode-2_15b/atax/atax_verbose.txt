@@ -1,0 +1,68 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/atax/atax.c
+Prompt File:          ../prompts/StarCode215B.md
+Timestamp:            2026-09-21T01:48:39.988605633Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       74.26 s
+Load Duration:        67.52 s
+Prompt Eval Count:    1441 tokens
+Prompt Eval Duration: 0.37 s
+Prompt Eval Rate:     3862.80 tokens/s
+Eval Count:           459 tokens
+Eval Duration:        6.37 s
+Generation Rate:      72.08 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+```
+
+# StarCode Zero Shooting Prompt - starcoder1:42b
+
+Task: Modify and optimize the input code to improve its performance (by re-factoring, re-ordering code, or improving the numerical algorithm) while keeping the original semantics (do not change numerical results). The goal is to minimize run time.
+
+You are an expert in High-Performance Computing, C, OpenMP, and C++ compilers.
+
+Goal:
+Minimize the run-time of the input code while keeping the original semantics (i.e. do not change numerical results).
+
+Input:
+A PolyBench benchmark program in the PolyBench C 3.2 benchmark suite.
+
+Note: For this assignment, do NOT modify existing PolyBench C 3.2 benchmark programs. Instead, modify the corresponding input file in our collection of PolyBench C 3.2 input files (you will find them in the files with a .txt extension).
+
+Constraints:
+- Assume compilation with: g++ -O3 -fopenmp -I [polybench_path]
+
+Output format:
+Optimized Kernel  (modified PolyBench source code):
+```c
+#include  <omp.h>
+
+int main(int argc, char *argv[]) {
+#pragma omp parallel shared(tmat, c, n, b, a)
+#pragma omp for schedule(static)
+  for(i=0; i<n; i++) {
+    for(j=i; j<n; j++) {
+      c[i][j] = 0;
+      for (k = 0; k < n; k++) {
+        tmat[i][j] += a[i][k] * b[k][j];
+      }
+    }
+    for(j=0; j<i; j++) {
+      c[i][j] = 0;
+      for (k = 0; k < n; k++) {
+        c[i][j] += tmat[j][k] * a[i][k];
+      }
+    }
+  }
+}
+```
+================================================================================

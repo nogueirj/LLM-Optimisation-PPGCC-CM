@@ -1,0 +1,164 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                codestral-openmp:3b
+Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/gemm/gemm.c
+Prompt File:          ../prompts/DefaultPrompt.md
+Timestamp:            2026-09-21T00:19:14.553612589Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       75.00 s
+Load Duration:        47.21 s
+Prompt Eval Count:    1825 tokens
+Prompt Eval Duration: 0.75 s
+Prompt Eval Rate:     2436.18 tokens/s
+Eval Count:           1475 tokens
+Eval Duration:        27.04 s
+Generation Rate:      54.55 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+
+Analysis:
+The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
+
+Optimized Kernel (OpenMP annotations only):
+```c
+<stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+/* Include polybench common header. */
+#include <polybench.h>
+
+/* Include benchmark-specific header. */
+/* Default data type is double, default size is 4000. */
+#include "gemm.h"
+
+
+/* Array initialization. */
+static
+void init_array(int ni, int nj, int nk,
+		DATA_TYPE *alpha,
+		DATA_TYPE *beta,
+		DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj),
+		DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
+		DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj))
+{
+  int i, j;
+
+  *alpha = 32412;
+  *beta = 2123;
+  #pragma omp parallel for firstprivate(ni ,j )
+for (i = 0; i < ni; i++)
+    for (j = 0; j < nj; j++)
+      C[i][j] = ((DATA_TYPE) i*j) / ni;
+  #pragma omp parallel for firstprivate(ni ,j )
+for (i = 0; i < ni; i++)
+    for (j = 0; j < nk; j++)
+      A[i][j] = ((DATA_TYPE) i*j) / ni;
+  #pragma omp parallel for firstprivate(nk ,j )
+for (i = 0; i < nk; i++)
+    for (j = 0; j < nj; j++)
+      B[i][j] = ((DATA_TYPE) i*j) / ni;
+}
+
+
+/* DCE code. Must scan the entire live-out data.
+   Can be used also to check the correctness of the output. */
+static
+void print_array(int ni, int nj,
+		 DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj))
+{
+  int i, j;
+
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nj; j++) {
+	fprintf (stderr, DATA_PRINTF_MODIFIER, C[i][j]);
+	if ((i * ni + j) % 20 == 0) fprintf (stderr, "\n");
+    }
+  fprintf (stderr, "\n");
+}
+
+
+/* Main computational kernel. The whole function will be timed,
+   including the call and return. */
+static
+void kernel_gemm(int ni, int nj, int nk,
+		 DATA_TYPE alpha,
+		 DATA_TYPE beta,
+		 DATA_TYPE POLYBENCH_2D(C,NI,NJ,ni,nj),
+		 DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk),
+		 DATA_TYPE POLYBENCH_2D(B,NK,NJ,nk,nj))
+{
+  int i, j, k;
+
+#pragma scop
+  /* C := alpha*A*B + beta*C */
+  #pragma omp parallel for private(i ,j )
+for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NJ; j++)
+      {
+	C[i][j] *= beta;
+	#pragma vector always
+for (k = 0; k < _PB_NK; ++k)
+	  C[i][j] += alpha * A[i][k] * B[k][j];
+      }
+#pragma endscop
+
+}
+
+
+int main(int argc, char** argv)
+{
+  /* Retrieve problem size. */
+  int ni = NI;
+  int nj = NJ;
+  int nk = NK;
+
+  /* Variable declaration/allocation. */
+  DATA_TYPE alpha;
+  DATA_TYPE beta;
+  POLYBENCH_2D_ARRAY_DECL(C,DATA_TYPE,NI,NJ,ni,nj);
+  POLYBENCH_2D_ARRAY_DECL(A,DATA_TYPE,NI,NK,ni,nk);
+  POLYBENCH_2D_ARRAY_DECL(B,DATA_TYPE,NK,NJ,nk,nj);
+
+  /* Initialize array(s). */
+  init_array (ni, nj, nk, &alpha, &beta,
+	      POLYBENCH_ARRAY(C),
+	      POLYBENCH_ARRAY(A),
+	      POLYBENCH_ARRAY(B));
+
+  /* Start timer. */
+  polybench_start_instruments;
+
+  /* Run kernel. */
+  kernel_gemm (ni, nj, nk,
+	       alpha, beta,
+	       POLYBENCH_ARRAY(C),
+	       POLYBENCH_ARRAY(A),
+	       POLYBENCH_ARRAY(B));
+
+  /* Stop and print timer. */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument. */
+  polybench_prevent_dce(print_array(ni, nj,  POLYBENCH_ARRAY(C)));
+
+  /* Be clean. */
+  POLYBENCH_FREE_ARRAY(C);
+  POLYBENCH_FREE_ARRAY(A);
+  POLYBENCH_FREE_ARRAY(B);
+
+  return 0;
+}
+
+```
+================================================================================

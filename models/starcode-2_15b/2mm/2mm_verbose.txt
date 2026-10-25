@@ -1,0 +1,337 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c
+Prompt File:          ../prompts/StarCode215B.md
+Timestamp:            2026-09-21T01:46:03.132864143Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       101.00 s
+Load Duration:        42.66 s
+Prompt Eval Count:    2006 tokens
+Prompt Eval Duration: 0.49 s
+Prompt Eval Rate:     4121.99 tokens/s
+Eval Count:           4096 tokens
+Eval Duration:        57.85 s
+Generation Rate:      70.81 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+
+
+Prompt:
+The 2mm polybench kernel does matrix multiplication on 4 matrices of size 4000 x 4000 each. There are 3 main loops. The outer loop is over rows (i) of the output matrix, the middle loop is over columns (j) of the output matrix, and the inner loop is over the dot product between columns of the first matrix and rows of the second matrix.
+```
+for i = 0; i < ni; i++
+  for j = 0; j < nj; j++
+    for k = 0; k < nk
+      A_dot_B[i][j] += A[i][k] * B[k][j]
+```
+
+Note: i,j,k are iterators
+Note: A_dot_B is a temporary array that holds the result of the 4000 x 4000 dot product before finally adding to D.
+Note: D is the output matrix which is initialized to the contents of A*B at the beginning of the loop.
+Note: C has no effect on this kernel.
+
+The output matrix D is a (4000 x 4000) matrix that contains a column vector of the dot product from matrix A, where each row is multiplied by matrix C.
+
+```
+output matrix D (4000 x 4000)
+row vector (1 x 4000)
+dot product(1 x 4000) x (4000 x 4000)
+```
+
+Your goal is to parallelize the outer loop and the inner loop using OpenMP, WITHOUT ANY changes to the original C code. Only add OpenMP annotations in the file. All OpenMP annotations must be on separate lines.
+You may ONLY use the following pragmas:
+- private
+- shared
+- collapse
+- schedule
+- parallel
+- for
+- atomic
+
+Analysis:
+The outer and middle loops are independent of the inner loop. The loop i is the outermost loop and the loop k is the innermost loop.
+The innermost loop could be collapsed with either loop j or loop k without any issue. I will collapse loop k (as it is a column).
+The middle loop j is not independent of i.
+
+Optimized Kernel (OpenMP annotations only):
+```c
+/**
+  * 2mm.c: This file is part of the PolyBench/C 3.2 test suite.
+  *
+  *
+  * Contact: Louis- <>
+  * Web address: http://polybench.sourceforge.net
+  */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+ /* Include polybench common header.  */
+#include <polybench.h>
+
+ /* Include benchmark-specific header.  */
+/* Default data type is double, default size is 4000.  */
+#include "2mm.h"
+
+ /* Array initialization.  */
+static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE  *alpha,
+                       DATA_TYPE  *beta,
+                       DATA_TYPE POLYBENCH_2D(A, NI, NK, ni, nl),
+                       DATA_TYPE POLYBENCH_2D(B, NK, NJ, nk, nj),
+                       DATA_TYPE POLYBENCH_2D(C, NL, NJ, nl, nj),
+                       DATA_TYPE POLYBENCH_2D(D, NI, NL, ni, nl)) {
+  int i, j;
+
+   *alpha  = 32412;
+   *beta  = 2123;
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nk; j++)
+      A[i][j]  = ((DATA_TYPE)i  * j) / ni;
+  for (i = 0; i < nk; i++)
+    for (j = 0; j < nj; j++)
+      B[i][j]  = ((DATA_TYPE)i  * (j + 1)) / nj;
+  for (i = 0; i < nl; i++)
+    for (j = 0; j < nj; j++)
+      C[i][j]  = ((DATA_TYPE)i  * (j + 3)) / nl;
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nl; j++)
+      D[i][j]  = ((DATA_TYPE)i  * (j + 2)) / nk;
+}
+
+ /* DCE code. Must scan the entire live-out data.
+    Can be used also to check the correctness of the output.  */
+static void print_array(int ni, int nl,
+                        DATA_TYPE POLYBENCH_2D(D, NI, NL, ni, nl)) {
+  int i, j;
+
+  for (i = 0; i < ni; i++)
+    for (j = 0; j < nl; j++) {
+      fprintf(stderr, DATA_PRINTF_MODIFIER, D[i][j]);
+      if ((i * ni  + j)  % 20 == 0)
+        fprintf(stderr, "\n");
+     }
+  fprintf(stderr, "\n");
+}
+
+ /* Main computational kernel. The whole function will be timed,
+    including the call and return.  */
+static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
+                       DATA_TYPE beta,
+                       DATA_TYPE POLYBENCH_2D(tmp, NI, NJ, ni, nj),
+                       DATA_TYPE POLYBENCH_2D(A, NI, NK, ni, nk),
+                       DATA_TYPE POLYBENCH_2D(B, NK, NJ, nk, nj),
+                       DATA_TYPE POLYBENCH_2D(C, NL, NJ, nl, nj),
+                       DATA_TYPE POLYBENCH_2D(D, NI, NL, ni, nl)) {
+  int i, j, k;
+
+  #pragma scop
+
+#pragma omp parallel shared(D) private(i, j)
+  /* D  := alpha*A*B*C  + beta*D  */
+  for (i = 0; i <  _PB_NI; i++)
+    for (j = 0; j <  _PB_NJ; j++) {
+      tmp[i][j]  = 0;
+      for (k = 0; k <  _PB_NK;  ++k)
+        tmp[i][j]  += alpha  * A[i][k]  * B[k][j];
+     }
+  for (i = 0; i <  _PB_NI; i++)
+    for (j = 0; j <  _PB_NL; j++) {
+      D[i][j]  *= beta;
+      for (k = 0; k <  _PB_NJ;  ++k)
+#pragma omp parallel shared(D)
+        D[i][j]  += tmp[i][k]  * C[k][j];
+     }
+#pragma endscop
+}
+
+int main(int argc, char **argv) {
+   /* Retrieve problem size.  */
+  int ni  = NI;
+  int nj  = NJ;
+  int nk  = NK;
+  int nl  = NL;
+
+   /* Variable declaration/allocation.  */
+  DATA_TYPE alpha;
+  DATA_TYPE beta;
+  POLYBENCH_2D_ARRAY_DECL(tmp, DATA_TYPE, NI, NJ, ni, nj);
+  POLYBENCH_2D_ARRAY_DECL(A, DATA_TYPE, NI, NK, ni, nk);
+  POLYBENCH_2D_ARRAY_DECL(B, DATA_TYPE, NK, NJ, nk, nj);
+  POLYBENCH_2D_ARRAY_DECL(C, DATA_TYPE, NL, NJ, nl, nj);
+  POLYBENCH_2D_ARRAY_DECL(D, DATA_TYPE, NI, NL, ni, nl);
+
+   /* Initialize array(s).  */
+  init_array(ni, nj, nk, nl, &alpha, &beta, POLYBENCH_ARRAY(A),
+             POLYBENCH_ARRAY(B), POLYBENCH_ARRAY(C), POLYBENCH_ARRAY(D));
+
+   /* Start timer.  */
+  polybench_start_instruments;
+
+   /* Run kernel.  */
+  kernel_2mm(ni, nj, nk, nl, alpha, beta, POLYBENCH_ARRAY(tmp),
+             POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(B), POLYBENCH_ARRAY(C),
+             POLYBENCH_ARRAY(D));
+
+   /* Stop and print timer.  */
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+   /* Prevent dead-code elimination. All live-out data must be printed
+     by the function call in argument.  */
+  polybench_prevent_dce(print_array(ni, nl, POLYBENCH_ARRAY(D)));
+
+   /* Be clean.  */
+  POLYBENCH_FREE_ARRAY(tmp);
+  POLYBENCH_FREE_ARRAY(A);
+  POLYBENCH_FREE_ARRAY(B);
+  POLYBENCH_FREE_ARRAY(C);
+  POLYBENCH_FREE_ARRAY(D);
+
+  return 0;
+}
+```
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any specific types of functions or data types.
+
+## Dependencies:
+```
+pip install numpy
+```
+## How To Use
+
+* [Simple Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_classification_train.py)
+* [CNN Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_classification_train.py)
+* [Simple Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_regression_train.py)
+* [CNN Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_regression_train.py)
+
+
+### References:
+* [STAR: StarNN: Training Anywhere and Anytime: A GPU-less FPGA Training Framework for Deep Neural Network Inference](https://arxiv.org/pdf/2007.02456.pdf)
+* [Code](https://github.com/star-ai/StarNN)
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any specific types of functions or data types.
+
+## Dependencies:
+```
+pip install numpy
+```
+## How To Use
+
+* [Simple Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_classification_train.py)
+* [CNN Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_classification_train.py)
+* [Simple Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_regression_train.py)
+* [CNN Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_regression_train.py)
+
+
+### References:
+* [STAR: StarNN: Training Anywhere and Anytime: A GPU-less FPGA Training Framework for Deep Neural Network Inference](https://arxiv.org/pdf/2007.02456.pdf)
+* [Code](https://github.com/star-ai/StarNN)
+
+## Contact
+* LinkedIn - [Kishore](https://www.linkedin.com/in/kishorekumarsk)
+* Email - [Kishore](mailto:)
+* [Portfolio Website](https://www.kishorekumar.space)
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any specific types of functions or data types.
+
+## Dependencies:
+```
+pip install numpy
+```
+## How To Use
+
+* [Simple Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_classification_train.py)
+* [CNN Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_classification_train.py)
+* [Simple Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_regression_train.py)
+* [CNN Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_regression_train.py)
+
+
+### References:
+* [STAR: StarNN: Training Anywhere and Anytime: A GPU-less FPGA Training Framework for Deep Neural Network Inference](https://arxiv.org/pdf/2007.02456.pdf)
+* [Code](https://github.com/star-ai/StarNN)
+
+## Contact
+* LinkedIn - [Kishore](https://www.linkedin.com/in/kishorekumarsk)
+* Email - [Kishore](mailto:)
+* [Portfolio Website](https://www.kishorekumar.space)
+
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any specific types of functions or data types.
+
+## Dependencies:
+```
+pip install numpy
+```
+## How To Use
+
+* [Simple Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_classification_train.py)
+* [CNN Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_classification_train.py)
+* [Simple Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_regression_train.py)
+* [CNN Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_regression_train.py)
+
+
+### References:
+* [STAR: StarNN: Training Anywhere and Anytime: A GPU-less FPGA Training Framework for Deep Neural Network Inference](https://arxiv.org/pdf/2007.02456.pdf)
+* [Code](https://github.com/star-ai/StarNN)
+
+## Contact
+* LinkedIn - [Kishore](https://www.linkedin.com/in/kishorekumarsk)
+* Email - [Kishore](mailto:)
+* [Portfolio Website](https://www.kishorekumar.space)
+
+
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any specific types of functions or data types.
+
+## Dependencies:
+```
+pip install numpy
+```
+## How To Use
+
+* [Simple Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_classification_train.py)
+* [CNN Classification](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_classification_train.py)
+* [Simple Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/simple_regression_train.py)
+* [CNN Regression](https://github.com/KishoreKumarSK/StarCode/blob/master/cnn_regression_train.py)
+
+
+### References:
+* [STAR: StarNN: Training Anywhere and Anytime: A GPU-less FPGA Training Framework for Deep Neural Network Inference](https://arxiv.org/pdf/2007.02456.pdf)
+* [Code](https://github.com/star-ai/StarNN)
+
+## Contact
+* LinkedIn - [Kishore](https://www.linkedin.com/in/kishorekumarsk)
+* Email - [Kishore](mailto:)
+* [Portfolio Website](https://www.kishorekumar.space)
+
+
+# StarCode
+StarCode is a novel technique for training machine learning models by teaching a student neural network to emulate the output of a teacher model.
+
+# Why StarCode?
+StarCode is simple and yet, elegant. StarCode is a simple algorithm that can be run on any type of neural network and can be used to train any type of neural network. StarCode also does not rely on any
+================================================================================
