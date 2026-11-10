@@ -26,11 +26,13 @@ void init_array (int nx, int ny,
 {
   int i, j;
 
-  for (i = 0; i < ny; i++)
+#pragma omp parallel for
+for (i = 0; i < ny; i++)
       x[i] = i * M_PI;
-  for (i = 0; i < nx; i++)
+#pragma omp parallel for
+for (i = 0; i < nx; i++)
     #pragma omp parallel for
-for (j = 0; j < ny; j++)
+    for (j = 0; j < ny; j++)
       A[i][j] = ((DATA_TYPE) i*(j+1)) / nx;
 }
 
@@ -44,7 +46,8 @@ void print_array(int nx,
 {
   int i;
 
-  for (i = 0; i < nx; i++) {
+#pragma omp parallel for
+for (i = 0; i < nx; i++) {
     fprintf (stderr, DATA_PRINTF_MODIFIER, y[i]);
     if (i % 20 == 0) fprintf (stderr, "\n");
   }
@@ -64,15 +67,16 @@ void kernel_atax(int nx, int ny,
   int i, j;
 
 #pragma scop
-  for (i = 0; i < _PB_NY; i++)
+  #pragma omp parallel for
+for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-  #pragma omp parallel private(j) reduction(+:y[:ny])
-for (i = 0; i < _PB_NX; i++)
+  for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
-      for (j = 0; j < _PB_NY; j++)
+      #pragma omp parallel for reduction(+:tmp[i])
+for (j = 0; j < _PB_NY; j++)
 	tmp[i] = tmp[i] + A[i][j] * x[j];
-      #pragma omp parallel for reduction(+:y[:ny])
+      #pragma omp parallel for reduction(+:y[j])
 for (j = 0; j < _PB_NY; j++)
 	y[j] = y[j] + A[i][j] * tmp[i];
     }

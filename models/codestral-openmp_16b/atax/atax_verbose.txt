@@ -4,24 +4,23 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:16b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/atax/atax.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T01:04:30.404237466Z
+Timestamp:            2026-11-05T04:30:15.998767253Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       168.21 s
-Load Duration:        98.13 s
+Total Duration:       510.20 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1639 tokens
-Prompt Eval Duration: 0.61 s
-Prompt Eval Rate:     2704.94 tokens/s
-Eval Count:           1372 tokens
-Eval Duration:        69.46 s
-Generation Rate:      19.75 tokens/s
+Prompt Eval Duration: 3.90 s
+Prompt Eval Rate:     420.77 tokens/s
+Eval Count:           1446 tokens
+Eval Duration:        505.91 s
+Generation Rate:      2.86 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
 --------------------------------------------------------------------------------
-
 
 Analysis:
 The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
@@ -30,7 +29,6 @@ Optimized Kernel (OpenMP annotations only):
 ```c
 <The entire, complete C source code with OpenMP pragmas inserted>
 ```
-
 ```c
 /**
  * atax.c: This file is part of the PolyBench/C 3.2 test suite.
@@ -60,11 +58,10 @@ void init_array (int nx, int ny,
 {
   int i, j;
 
-  #pragma omp parallel for private(i ,j )
+#pragma omp parallel for private(i,j) firstprivate(nx ,ny )
 for (i = 0; i < ny; i++)
       x[i] = i * M_PI;
-  #pragma omp parallel for private(i ,j )
-#pragma scop
+  #pragma omp parallel for private(i,j) firstprivate(nx ,ny )
 for (i = 0; i < nx; i++)
     for (j = 0; j < ny; j++)
       A[i][j] = ((DATA_TYPE) i*(j+1)) / nx;
@@ -100,15 +97,18 @@ void kernel_atax(int nx, int ny,
   int i, j;
 
 #pragma scop
-  for (i = 0; i < _PB_NY; i++)
+  #pragma omp parallel for private(i) firstprivate(ny )
+for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
   #pragma omp parallel for private(j ,i )
 for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
-      for (j = 0; j < _PB_NY; j++)
+      #pragma omp parallel for private(j) firstprivate(i ,ny ) reduction(+:tmp[i])
+for (j = 0; j < _PB_NY; j++)
 	tmp[i] = tmp[i] + A[i][j] * x[j];
-      for (j = 0; j < _PB_NY; j++)
+      #pragma omp parallel for private(j) firstprivate(i ,ny ) reduction(+:y[j])
+for (j = 0; j < _PB_NY; j++)
 	y[j] = y[j] + A[i][j] * tmp[i];
     }
 #pragma endscop

@@ -21,20 +21,19 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
 
   *alpha = 32412;
   *beta = 2123;
-#pragma omp parallel for private (j)
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
-#pragma omp parallel for private (i)
-  for (i = 0; i < nk; i++)
+  #pragma omp parallel for firstprivate(nj ,nl ,j ) 
+for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
-#pragma omp parallel for private (i, j) firstprivate (nl)
-  for (i = 0; i < nl; i++)
+  #pragma omp parallel for firstprivate(nj ,nl ,j ) 
+for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-#pragma omp parallel for private (j) firstprivate (ni, nk)
-  for (i = 0; i < ni; i++)
+  #pragma omp parallel for firstprivate(nk ,nl ,j ) 
+for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -45,8 +44,7 @@ static void print_array(int ni, int nl,
                         DATA_TYPE POLYBENCH_2D(D, NI, NL, ni, nl)) {
   int i, j;
 
-#pragma omp parallel for private (j) firstprivate (ni, nl)
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++) {
       fprintf(stderr, DATA_PRINTF_MODIFIER, D[i][j]);
       if ((i * ni + j) % 20 == 0)
@@ -68,14 +66,14 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-#pragma omp parallel for private (j, k)
+  #pragma omp parallel for firstprivate(nl ,nj ,i ) 
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-#pragma omp parallel for private (j, k)
+  #pragma omp parallel for firstprivate(nk ,nl ,i ) 
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;

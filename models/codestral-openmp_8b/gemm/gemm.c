@@ -24,14 +24,16 @@ void init_array(int ni, int nj, int nk,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for private(i,j)
+  #pragma omp parallel for firstprivate(ni ,j ,i )
 for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
-  for (i = 0; i < ni; i++)
+  #pragma omp parallel for firstprivate(ni ,j ,i )
+for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-  for (i = 0; i < nk; i++)
+  #pragma omp parallel for firstprivate(nj ,nk ,i )
+for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
 }

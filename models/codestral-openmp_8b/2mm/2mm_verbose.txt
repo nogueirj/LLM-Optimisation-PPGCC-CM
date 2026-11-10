@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:8b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:42:35.027059131Z
+Timestamp:            2026-11-05T03:14:41.696248125Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       152.66 s
-Load Duration:        96.65 s
+Total Duration:       1050.34 s
+Load Duration:        19.83 s
 Prompt Eval Count:    2171 tokens
-Prompt Eval Duration: 0.74 s
-Prompt Eval Rate:     2944.32 tokens/s
-Eval Count:           1889 tokens
-Eval Duration:        55.27 s
-Generation Rate:      34.18 tokens/s
+Prompt Eval Duration: 11.08 s
+Prompt Eval Rate:     195.93 tokens/s
+Eval Count:           1906 tokens
+Eval Duration:        1019.42 s
+Generation Rate:      1.87 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -26,11 +26,7 @@ Raw Response (including analysis, thinking, and explanations)
 Analysis:
 The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
 
-Optimized Kernel:
-```c
-<The entire, complete C source code with OpenMP pragmas inserted>
-```
-
+Optimized Kernel (OpenMP annotations only):
 ```c
 /**
  * 2mm.c: This file is part of the PolyBench/C 3.2 test suite.
@@ -62,10 +58,12 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
 
   *alpha = 32412;
   *beta = 2123;
-  for (i = 0; i < ni; i++)
+  #pragma omp parallel for
+for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
   #pragma omp parallel for
+#pragma omp parallel for
 for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
@@ -109,13 +107,16 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-  for (i = 0; i < _PB_NI; i++)
+  #pragma omp parallel for
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  for (i = 0; i < _PB_NI; i++)
+  #pragma omp parallel for
+#pragma omp parallel for
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;
       for (k = 0; k < _PB_NJ; ++k)
@@ -169,5 +170,6 @@ int main(int argc, char **argv) {
 
   return 0;
 }
+
 ```
 ================================================================================

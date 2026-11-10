@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:16b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:55:25.215106863Z
+Timestamp:            2026-11-05T04:00:47.741277098Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       231.91 s
-Load Duration:        136.67 s
+Total Duration:       700.30 s
+Load Duration:        41.42 s
 Prompt Eval Count:    2171 tokens
-Prompt Eval Duration: 0.69 s
-Prompt Eval Rate:     3163.25 tokens/s
-Eval Count:           1859 tokens
-Eval Duration:        94.55 s
-Generation Rate:      19.66 tokens/s
+Prompt Eval Duration: 6.48 s
+Prompt Eval Rate:     334.83 tokens/s
+Eval Count:           1849 tokens
+Eval Duration:        652.38 s
+Generation Rate:      2.83 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -51,20 +51,19 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
 
   *alpha = 32412;
   *beta = 2123;
-#pragma omp parallel for private (j)
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
-#pragma omp parallel for private (i)
-  for (i = 0; i < nk; i++)
+  #pragma omp parallel for firstprivate(nj ,nl ,j ) 
+for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
-#pragma omp parallel for private (i, j) firstprivate (nl)
-  for (i = 0; i < nl; i++)
+  #pragma omp parallel for firstprivate(nj ,nl ,j ) 
+for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-#pragma omp parallel for private (j) firstprivate (ni, nk)
-  for (i = 0; i < ni; i++)
+  #pragma omp parallel for firstprivate(nk ,nl ,j ) 
+for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -75,8 +74,7 @@ static void print_array(int ni, int nl,
                         DATA_TYPE POLYBENCH_2D(D, NI, NL, ni, nl)) {
   int i, j;
 
-#pragma omp parallel for private (j) firstprivate (ni, nl)
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++) {
       fprintf(stderr, DATA_PRINTF_MODIFIER, D[i][j]);
       if ((i * ni + j) % 20 == 0)
@@ -98,14 +96,14 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-#pragma omp parallel for private (j, k)
+  #pragma omp parallel for firstprivate(nl ,nj ,i ) 
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-#pragma omp parallel for private (j, k)
+  #pragma omp parallel for firstprivate(nk ,nl ,i ) 
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;

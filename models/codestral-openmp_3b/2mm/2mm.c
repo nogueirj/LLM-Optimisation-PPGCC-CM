@@ -70,8 +70,7 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  #pragma omp parallel for private(i, j, k)
-for (i = 0; i < _PB_NI; i++)
+  for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;
       for (k = 0; k < _PB_NJ; ++k)

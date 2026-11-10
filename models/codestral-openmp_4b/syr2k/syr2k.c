@@ -31,6 +31,7 @@ for (i = 0; i < ni; i++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
   #pragma omp parallel for
+#pragma omp parallel for
 for (i = 0; i < ni; i++)
     for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -74,7 +75,7 @@ for (i = 0; i < _PB_NI; i++)
       C[i][j] *= beta;
   #pragma omp parallel for
 #pragma omp parallel for
-  for (i = 0; i < _PB_NI; i++)
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       for (k = 0; k < _PB_NJ; k++)
 	{

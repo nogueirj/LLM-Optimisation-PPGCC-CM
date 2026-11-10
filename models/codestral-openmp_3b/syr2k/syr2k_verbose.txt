@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:3b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/syr2k/syr2k.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:21:49.004654876Z
+Timestamp:            2026-11-05T02:54:44.444011978Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       82.97 s
-Load Duration:        55.46 s
+Total Duration:       22.31 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1832 tokens
-Prompt Eval Duration: 0.75 s
-Prompt Eval Rate:     2442.69 tokens/s
-Eval Count:           1497 tokens
-Eval Duration:        26.75 s
-Generation Rate:      55.97 tokens/s
+Prompt Eval Duration: 0.41 s
+Prompt Eval Rate:     4483.20 tokens/s
+Eval Count:           1667 tokens
+Eval Duration:        21.56 s
+Generation Rate:      77.32 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -28,7 +28,18 @@ The loop exhibits data parallelism with independent iterations. Data dependencie
 
 Optimized Kernel (OpenMP annotations only):
 ```c
-<stdio.h>
+<The entire, complete C source code with OpenMP pragmas inserted>
+```
+
+```c
+/**
+ * syr2k.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -55,15 +66,14 @@ void init_array(int ni, int nj,
   *alpha = 32412;
   *beta = 2123;
   for (i = 0; i < ni; i++)
-    #pragma omp parallel for private(j)
+    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
 for (j = 0; j < nj; j++) {
       A[i][j] = ((DATA_TYPE) i*j) / ni;
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
-  #pragma omp parallel for private(j)
-#pragma omp parallel for private(i, j)
-for (i = 0; i < ni; i++)
-    for (j = 0; j < ni; j++)
+  for (i = 0; i < ni; i++)
+    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
+for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
 }
 
@@ -99,15 +109,15 @@ void kernel_syr2k(int ni, int nj,
 
 #pragma scop
   /*    C := alpha*A*B' + alpha*B*A' + beta*C */
-  #pragma omp parallel for private(i, j)
-for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NI; j++)
+  for (i = 0; i < _PB_NI; i++)
+    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
+for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
-  #pragma omp parallel for private(i, j, k)
-#pragma omp parallel for private(i, j, k)
+  #pragma omp parallel for num_threads(16) private(i, k, j) shared(ni, nj, alpha, beta, C, A, B)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
-      for (k = 0; k < _PB_NJ; k++)
+      #pragma vector always
+for (k = 0; k < _PB_NJ; k++)
 	{
 	  C[i][j] += alpha * A[i][k] * B[j][k];
 	  C[i][j] += alpha * B[i][k] * A[j][k];

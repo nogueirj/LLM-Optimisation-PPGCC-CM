@@ -1,0 +1,53 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                codestral-openmp:3b
+Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/3mm/3mm.c
+Prompt File:          ../prompts/DefaultPrompt.md
+Timestamp:            2026-09-21T00:17:59.496246296Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       90.46 s
+Load Duration:        83.69 s
+Prompt Eval Count:    2402 tokens
+Prompt Eval Duration: 0.95 s
+Prompt Eval Rate:     2529.41 tokens/s
+Eval Count:           325 tokens
+Eval Duration:        5.81 s
+Generation Rate:      55.92 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+
+Analysis:
+The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
+
+Optimized Kernel (OpenMP annotations only):
+```c
+<stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+/* Include polybench common header. */
+#include <polybench.h>
+
+/* Include benchmark-specific header. */
+/* Default data type is double, default size is 4000. */
+#include "3mm.h"
+
+/* Array initialization. */
+static void init_array(int ni, int nj, int nk, int nl, int nm,
+                       DATA_TYPE POLYBENCH_2D(A, NI, NK, ni, nk),
+                       DATA_TYPE POLYBENCH_2D(B, NK, NJ, nk, nj),
+                       DATA_TYPE POLYBENCH_2D(C, NJ, NM, nj, nm),
+                       DATA_TYPE POLYBENCH_2D(D, NM, NL, nm, nl)) {
+  int i, j;
+
+  for (i = 0; i < ni; i++)
+    #pragma omp parallel for firstprivate(j)
+================================================================================

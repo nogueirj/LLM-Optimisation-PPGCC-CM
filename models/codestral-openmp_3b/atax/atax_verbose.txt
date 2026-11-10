@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:3b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/atax/atax.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:20:25.979228076Z
+Timestamp:            2026-11-05T02:54:22.056813686Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       71.37 s
-Load Duration:        46.20 s
+Total Duration:       17.82 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1639 tokens
-Prompt Eval Duration: 0.66 s
-Prompt Eval Rate:     2465.23 tokens/s
-Eval Count:           1359 tokens
-Eval Duration:        24.50 s
-Generation Rate:      55.48 tokens/s
+Prompt Eval Duration: 0.36 s
+Prompt Eval Rate:     4602.87 tokens/s
+Eval Count:           1336 tokens
+Eval Duration:        17.07 s
+Generation Rate:      78.29 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -56,11 +56,9 @@ void init_array (int nx, int ny,
 {
   int i, j;
 
-  #pragma omp parallel for
-for (i = 0; i < ny; i++)
+  for (i = 0; i < ny; i++)
       x[i] = i * M_PI;
-  #pragma omp parallel for
-#pragma omp parallel for
+#pragma omp parallel for private(j)
 for (i = 0; i < nx; i++)
     for (j = 0; j < ny; j++)
       A[i][j] = ((DATA_TYPE) i*(j+1)) / nx;
@@ -96,18 +94,15 @@ void kernel_atax(int nx, int ny,
   int i, j;
 
 #pragma scop
-  #pragma omp parallel for
-for (i = 0; i < _PB_NY; i++)
+  for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for private(j)
 for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
-      #pragma omp parallel for
-for (j = 0; j < _PB_NY; j++)
+      for (j = 0; j < _PB_NY; j++)
 	tmp[i] = tmp[i] + A[i][j] * x[j];
-      #pragma omp parallel for
+      #pragma omp parallel for private(j)
 for (j = 0; j < _PB_NY; j++)
 	y[j] = y[j] + A[i][j] * tmp[i];
     }
@@ -157,5 +152,6 @@ int main(int argc, char** argv)
 
   return 0;
 }
+
 ```
 ================================================================================

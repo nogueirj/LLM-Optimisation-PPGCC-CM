@@ -1,11 +1,4 @@
-/**
- * syr2k.c: This file is part of the PolyBench/C 3.2 test suite.
- *
- *
- * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
- * Web address: http://polybench.sourceforge.net
- */
-#include <stdio.h>
+<stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -31,12 +24,13 @@ void init_array(int ni, int nj,
 
   *alpha = 32412;
   *beta = 2123;
-  for (i = 0; i < ni; i++)
+  #pragma omp parallel for
+for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++) {
       A[i][j] = ((DATA_TYPE) i*j) / ni;
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
-  #pragma omp parallel for private(i, j)
+  #pragma omp parallel for
 for (i = 0; i < ni; i++)
     for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -74,11 +68,19 @@ void kernel_syr2k(int ni, int nj,
 
 #pragma scop
   /*    C := alpha*A*B' + alpha*B*A' + beta*C */
-  #pragma omp parallel for private(i, j)
+  #pragma omp parallel for
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
-  #pragma omp parallel for private(i, j, k)
+  #pragma omp parallel for
+#pragma omp parallel for
+  for (i = 0; i < _PB_NI; i++)
+    for (j = 0; j < _PB_NI; j++)
+      for (k = 0; k < _PB_NJ; k++)
+	{
+	  C[i][j] += alpha * A[i][k] * B[j][k];
+	  C[i][j] += alpha * B[i][k] * A[j][k];
+	}
 #pragma endscop
 
 }

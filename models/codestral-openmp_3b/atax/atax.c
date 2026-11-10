@@ -26,11 +26,9 @@ void init_array (int nx, int ny,
 {
   int i, j;
 
-  #pragma omp parallel for
-for (i = 0; i < ny; i++)
+  for (i = 0; i < ny; i++)
       x[i] = i * M_PI;
-  #pragma omp parallel for
-#pragma omp parallel for
+#pragma omp parallel for private(j)
 for (i = 0; i < nx; i++)
     for (j = 0; j < ny; j++)
       A[i][j] = ((DATA_TYPE) i*(j+1)) / nx;
@@ -66,18 +64,15 @@ void kernel_atax(int nx, int ny,
   int i, j;
 
 #pragma scop
-  #pragma omp parallel for
-for (i = 0; i < _PB_NY; i++)
+  for (i = 0; i < _PB_NY; i++)
     y[i] = 0;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for private(j)
 for (i = 0; i < _PB_NX; i++)
     {
       tmp[i] = 0;
-      #pragma omp parallel for
-for (j = 0; j < _PB_NY; j++)
+      for (j = 0; j < _PB_NY; j++)
 	tmp[i] = tmp[i] + A[i][j] * x[j];
-      #pragma omp parallel for
+      #pragma omp parallel for private(j)
 for (j = 0; j < _PB_NY; j++)
 	y[j] = y[j] + A[i][j] * tmp[i];
     }

@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:4b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/gemm/gemm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:36:10.649890796Z
+Timestamp:            2026-11-05T02:56:29.599414967Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       585.98 s
-Load Duration:        554.43 s
+Total Duration:       19.09 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1825 tokens
-Prompt Eval Duration: 0.66 s
-Prompt Eval Rate:     2763.71 tokens/s
-Eval Count:           1485 tokens
-Eval Duration:        30.88 s
-Generation Rate:      48.09 tokens/s
+Prompt Eval Duration: 0.38 s
+Prompt Eval Rate:     4769.33 tokens/s
+Eval Count:           1509 tokens
+Eval Duration:        18.40 s
+Generation Rate:      82.03 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -54,17 +54,14 @@ void init_array(int ni, int nj, int nk,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for firstprivate(ni ,nk ,j ,i )
 for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for firstprivate(nj ,nk ,j ,i )
 for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -102,15 +99,12 @@ void kernel_gemm(int ni, int nj, int nk,
 
 #pragma scop
   /* C := alpha*A*B + beta*C */
-  #pragma omp parallel for
-#pragma omp parallel for private(j)
+  #pragma omp parallel for private(j ,k ) firstprivate(beta ,alpha ,ni ,nj ,nk )
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
       {
 	C[i][j] *= beta;
-	#pragma omp parallel for
-#pragma ivdep
-	#pragma vector always
+	#pragma omp parallel for firstprivate(j ,k ,beta ,alpha ) reduction(+:c[i][j])
 for (k = 0; k < _PB_NK; ++k)
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }

@@ -24,17 +24,14 @@ void init_array(int ni, int nj, int nk,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for firstprivate(ni ,nk ,j ,i )
 for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for firstprivate(nj ,nk ,j ,i )
 for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -72,15 +69,12 @@ void kernel_gemm(int ni, int nj, int nk,
 
 #pragma scop
   /* C := alpha*A*B + beta*C */
-  #pragma omp parallel for
-#pragma omp parallel for private(j)
+  #pragma omp parallel for private(j ,k ) firstprivate(beta ,alpha ,ni ,nj ,nk )
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
       {
 	C[i][j] *= beta;
-	#pragma omp parallel for
-#pragma ivdep
-	#pragma vector always
+	#pragma omp parallel for firstprivate(j ,k ,beta ,alpha ) reduction(+:c[i][j])
 for (k = 0; k < _PB_NK; ++k)
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }

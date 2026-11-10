@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:4b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/syr2k/syr2k.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:40:02.291725308Z
+Timestamp:            2026-11-05T02:57:11.237183712Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       129.58 s
-Load Duration:        98.66 s
+Total Duration:       21.55 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1832 tokens
-Prompt Eval Duration: 0.67 s
-Prompt Eval Rate:     2728.02 tokens/s
-Eval Count:           1455 tokens
-Eval Duration:        30.24 s
-Generation Rate:      48.11 tokens/s
+Prompt Eval Duration: 0.36 s
+Prompt Eval Rate:     5077.62 tokens/s
+Eval Count:           1460 tokens
+Eval Duration:        20.84 s
+Generation Rate:      70.07 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -61,6 +61,7 @@ for (i = 0; i < ni; i++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
   #pragma omp parallel for
+#pragma omp parallel for
 for (i = 0; i < ni; i++)
     for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -104,7 +105,7 @@ for (i = 0; i < _PB_NI; i++)
       C[i][j] *= beta;
   #pragma omp parallel for
 #pragma omp parallel for
-  for (i = 0; i < _PB_NI; i++)
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       for (k = 0; k < _PB_NJ; k++)
 	{
@@ -160,6 +161,5 @@ int main(int argc, char** argv)
 
   return 0;
 }
-
 ```
 ================================================================================

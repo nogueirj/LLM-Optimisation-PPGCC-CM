@@ -4,24 +4,23 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:3b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:16:28.980233515Z
+Timestamp:            2026-11-05T02:53:17.311983962Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       76.69 s
-Load Duration:        42.58 s
+Total Duration:       43.35 s
+Load Duration:        8.04 s
 Prompt Eval Count:    2171 tokens
-Prompt Eval Duration: 0.89 s
-Prompt Eval Rate:     2450.49 tokens/s
-Eval Count:           1786 tokens
-Eval Duration:        33.21 s
-Generation Rate:      53.78 tokens/s
+Prompt Eval Duration: 14.46 s
+Prompt Eval Rate:     150.09 tokens/s
+Eval Count:           1770 tokens
+Eval Duration:        20.83 s
+Generation Rate:      84.99 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
 --------------------------------------------------------------------------------
-
 
 Analysis:
 The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
@@ -100,8 +99,7 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  #pragma omp parallel for private(i, j, k)
-for (i = 0; i < _PB_NI; i++)
+  for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;
       for (k = 0; k < _PB_NJ; ++k)

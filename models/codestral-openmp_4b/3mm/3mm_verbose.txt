@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:4b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/3mm/3mm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:26:24.615101703Z
+Timestamp:            2026-11-05T02:56:10.438532032Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       123.28 s
-Load Duration:        77.69 s
+Total Duration:       40.50 s
+Load Duration:        0.00 s
 Prompt Eval Count:    2402 tokens
-Prompt Eval Duration: 0.86 s
-Prompt Eval Rate:     2794.71 tokens/s
-Eval Count:           2150 tokens
-Eval Duration:        44.72 s
-Generation Rate:      48.07 tokens/s
+Prompt Eval Duration: 0.75 s
+Prompt Eval Rate:     3214.01 tokens/s
+Eval Count:           2039 tokens
+Eval Duration:        39.50 s
+Generation Rate:      51.62 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -100,17 +100,17 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
                        DATA_TYPE POLYBENCH_2D(G, NI, NL, ni, nl)) {
   int i, j, k;
 
+#pragma omp parallel for
 #pragma scop
   /* E := A*B */
-  #pragma omp parallel for schedule(dynamic) private(i,j,k)
-for (i = 0; i < _PB_NI; i++)
+  for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       E[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         E[i][j] += A[i][k] * B[k][j];
     }
   /* F := C*D */
-  #pragma omp parallel for schedule(static,15) private(i,j,k)
+  #pragma omp parallel for
 for (i = 0; i < _PB_NJ; i++)
     for (j = 0; j < _PB_NL; j++) {
       F[i][j] = 0;
@@ -118,7 +118,7 @@ for (i = 0; i < _PB_NJ; i++)
         F[i][j] += C[i][k] * D[k][j];
     }
   /* G := E*F */
-  #pragma omp parallel for schedule(guided,15) private(i,j,k)
+  #pragma omp parallel for
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       G[i][j] = 0;
@@ -145,14 +145,13 @@ int main(int argc, char **argv) {
   POLYBENCH_2D_ARRAY_DECL(D, DATA_TYPE, NM, NL, nm, nl);
   POLYBENCH_2D_ARRAY_DECL(G, DATA_TYPE, NI, NL, ni, nl);
 
-  /* Initialize array(s). */
-  init_array (ni, nj, nk, nl, nm, POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(B), POLYBENCH_ARRAY(C), POLYBENCH_ARRAY(D));
-
   /* Start timer. */
   polybench_start_instruments;
 
   /* Run kernel. */
-  kernel_3mm (ni, nj, nk, nl, nm, POLYBENCH_ARRAY(E), POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(B), POLYBENCH_ARRAY(F), POLYBENCH_ARRAY(C), POLYBENCH_ARRAY(D), POLYBENCH_ARRAY(G));
+  kernel_3mm(ni, nj, nk, nl, nm, POLYBENCH_ARRAY(E), POLYBENCH_ARRAY(A),
+             POLYBENCH_ARRAY(B), POLYBENCH_ARRAY(F), POLYBENCH_ARRAY(C),
+             POLYBENCH_ARRAY(D), POLYBENCH_ARRAY(G));
 
   /* Stop and print timer. */
   polybench_stop_instruments;

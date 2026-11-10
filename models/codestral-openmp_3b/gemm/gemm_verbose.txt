@@ -4,19 +4,19 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 Model:                codestral-openmp:3b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/gemm/gemm.c
 Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-09-21T00:19:14.553612589Z
+Timestamp:            2026-11-05T02:54:04.172821993Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       75.00 s
-Load Duration:        47.21 s
+Total Duration:       21.26 s
+Load Duration:        0.00 s
 Prompt Eval Count:    1825 tokens
-Prompt Eval Duration: 0.75 s
-Prompt Eval Rate:     2436.18 tokens/s
-Eval Count:           1475 tokens
-Eval Duration:        27.04 s
-Generation Rate:      54.55 tokens/s
+Prompt Eval Duration: 0.53 s
+Prompt Eval Rate:     3468.03 tokens/s
+Eval Count:           1584 tokens
+Eval Duration:        20.46 s
+Generation Rate:      77.43 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
@@ -28,7 +28,18 @@ The loop exhibits data parallelism with independent iterations. Data dependencie
 
 Optimized Kernel (OpenMP annotations only):
 ```c
-<stdio.h>
+<The entire, complete C source code with OpenMP pragmas inserted>
+```
+
+```c
+/**
+ * gemm.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -54,15 +65,15 @@ void init_array(int ni, int nj, int nk,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for firstprivate(ni ,j )
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
+    #pragma omp parallel for private(j) firstprivate(ni )
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for firstprivate(ni ,j )
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
+    #pragma omp parallel for private(j) firstprivate(ni )
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for firstprivate(nk ,j )
+  #pragma omp parallel for private(i, j)
 for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -100,13 +111,12 @@ void kernel_gemm(int ni, int nj, int nk,
 
 #pragma scop
   /* C := alpha*A*B + beta*C */
-  #pragma omp parallel for private(i ,j )
+  #pragma omp parallel for private(i,j,k) firstprivate(alpha ,beta )
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++)
       {
 	C[i][j] *= beta;
-	#pragma vector always
-for (k = 0; k < _PB_NK; ++k)
+	for (k = 0; k < _PB_NK; ++k)
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }
 #pragma endscop
