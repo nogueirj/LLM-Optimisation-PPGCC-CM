@@ -1,4 +1,11 @@
-<stdio.h>
+/**
+ * 2mm.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -30,8 +37,7 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
   for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-  #pragma omp parallel for private(i, j)
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -64,13 +70,15 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-  for (i = 0; i < _PB_NI; i++)
+  #pragma omp parallel for private(i, j, k)
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  for (i = 0; i < _PB_NI; i++)
+  #pragma omp parallel for private(i, j, k)
+for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;
       for (k = 0; k < _PB_NJ; ++k)

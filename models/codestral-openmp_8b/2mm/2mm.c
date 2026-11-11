@@ -28,23 +28,16 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
-  #pragma omp parallel for
-#pragma omp parallel for
-for (i = 0; i < nk; i++)
+  for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
-  #pragma omp parallel for
-#pragma omp parallel for
-for (i = 0; i < nl; i++)
+  for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-  #pragma omp parallel for
-#pragma omp parallel for
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -77,15 +70,14 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-  #pragma omp parallel for
+  #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;

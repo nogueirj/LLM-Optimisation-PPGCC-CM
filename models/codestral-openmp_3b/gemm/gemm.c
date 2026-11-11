@@ -32,15 +32,12 @@ void init_array(int ni, int nj, int nk,
   *alpha = 32412;
   *beta = 2123;
   for (i = 0; i < ni; i++)
-    #pragma omp parallel for private(j) firstprivate(ni )
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
   for (i = 0; i < ni; i++)
-    #pragma omp parallel for private(j) firstprivate(ni )
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE) i*j) / ni;
-  #pragma omp parallel for private(i, j)
-for (i = 0; i < nk; i++)
+  for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE) i*j) / ni;
 }
@@ -77,12 +74,12 @@ void kernel_gemm(int ni, int nj, int nk,
 
 #pragma scop
   /* C := alpha*A*B + beta*C */
-  #pragma omp parallel for private(i,j,k) firstprivate(alpha ,beta )
-for (i = 0; i < _PB_NI; i++)
-    for (j = 0; j < _PB_NJ; j++)
+  for (i = 0; i < _PB_NI; i++)
+    #pragma omp parallel for private(j)
+for (j = 0; j < _PB_NJ; j++)
       {
 	C[i][j] *= beta;
-	for (k = 0; k < _PB_NK; ++k)
+for (k = 0; k < _PB_NK; ++k)
 	  C[i][j] += alpha * A[i][k] * B[k][j];
       }
 #pragma endscop

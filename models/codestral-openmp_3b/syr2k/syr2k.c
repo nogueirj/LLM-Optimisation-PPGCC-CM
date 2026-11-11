@@ -32,14 +32,12 @@ void init_array(int ni, int nj,
   *alpha = 32412;
   *beta = 2123;
   for (i = 0; i < ni; i++)
-    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
-for (j = 0; j < nj; j++) {
+    for (j = 0; j < nj; j++) {
       A[i][j] = ((DATA_TYPE) i*j) / ni;
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
   for (i = 0; i < ni; i++)
-    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
-for (j = 0; j < ni; j++)
+    for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
 }
 
@@ -76,13 +74,12 @@ void kernel_syr2k(int ni, int nj,
 #pragma scop
   /*    C := alpha*A*B' + alpha*B*A' + beta*C */
   for (i = 0; i < _PB_NI; i++)
-    #pragma omp parallel for num_threads(16) private(j) shared(ni, nj, alpha, beta, C, A, B)
+    #pragma omp parallel for private(j)
 for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
-  #pragma omp parallel for num_threads(16) private(i, k, j) shared(ni, nj, alpha, beta, C, A, B)
-for (i = 0; i < _PB_NI; i++)
+  for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
-      #pragma vector always
+      #pragma omp parallel for private(k)
 for (k = 0; k < _PB_NJ; k++)
 	{
 	  C[i][j] += alpha * A[i][k] * B[j][k];

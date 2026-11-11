@@ -31,16 +31,13 @@ static void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha,
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
-  #pragma omp parallel for firstprivate(nj ,B ,i ,k ,nk )
-for (i = 0; i < nk; i++)
+  for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
-  #pragma omp parallel for firstprivate(nj ,C ,i ,k ,nl )
-for (i = 0; i < nl; i++)
+  for (i = 0; i < nl; i++)
     for (j = 0; j < nj; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-  #pragma omp parallel for firstprivate(nl ,D ,i ,k ,ni )
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -73,14 +70,14 @@ static void kernel_2mm(int ni, int nj, int nk, int nl, DATA_TYPE alpha,
 
 #pragma scop
   /* D := alpha*A*B*C + beta*D */
-  #pragma omp parallel for private(k ,j ) firstprivate(_PB_NI ,_PB_NL ,tmp ,D ,alpha ,_PB_NK ,A ,_PB_NJ ,B ,beta ,C )
+  #pragma omp parallel for private(i,j,k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       tmp[i][j] = 0;
       for (k = 0; k < _PB_NK; ++k)
         tmp[i][j] += alpha * A[i][k] * B[k][j];
     }
-  #pragma omp parallel for private(j ,k ) firstprivate(_PB_NL ,tmp ,D ,alpha ,_PB_NI ,A ,_PB_NJ ,B ,beta ,C )
+  #pragma omp parallel for private(i,j,k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       D[i][j] *= beta;

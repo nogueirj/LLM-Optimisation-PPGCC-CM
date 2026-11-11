@@ -3,32 +3,38 @@ OLLAMA EXECUTION METRICS & VERBOSE LOG
 ================================================================================
 Model:                codestral-openmp:4b
 Code File:            ../core/polybench-c-3.2/linear-algebra/kernels/syr2k/syr2k.c
-Prompt File:          ../prompts/DefaultPrompt.md
-Timestamp:            2026-11-05T02:57:11.237183712Z
+Prompt File:          ../prompts/QuantizedPrompt.md
+Timestamp:            2026-11-11T14:52:42.718118916Z
 
 --------------------------------------------------------------------------------
 Performance Metrics
 --------------------------------------------------------------------------------
-Total Duration:       21.55 s
+Total Duration:       47.14 s
 Load Duration:        0.00 s
-Prompt Eval Count:    1832 tokens
-Prompt Eval Duration: 0.36 s
-Prompt Eval Rate:     5077.62 tokens/s
-Eval Count:           1460 tokens
-Eval Duration:        20.84 s
-Generation Rate:      70.07 tokens/s
+Prompt Eval Count:    2232 tokens
+Prompt Eval Duration: 0.66 s
+Prompt Eval Rate:     3387.17 tokens/s
+Eval Count:           1587 tokens
+Eval Duration:        46.00 s
+Generation Rate:      34.50 tokens/s
 
 --------------------------------------------------------------------------------
 Raw Response (including analysis, thinking, and explanations)
 --------------------------------------------------------------------------------
-
 
 Analysis:
 The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
 
 Optimized Kernel (OpenMP annotations only):
 ```c
-<stdio.h>
+/**
+ * syr2k.c: This file is part of the PolyBench/C 3.2 test suite.
+ *
+ *
+ * Contact: Louis-Noel Pouchet <pouchet@cse.ohio-state.edu>
+ * Web address: http://polybench.sourceforge.net
+ */
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -54,14 +60,12 @@ void init_array(int ni, int nj,
 
   *alpha = 32412;
   *beta = 2123;
-  #pragma omp parallel for
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nj; j++) {
       A[i][j] = ((DATA_TYPE) i*j) / ni;
       B[i][j] = ((DATA_TYPE) i*j) / ni;
     }
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for private(i, j)
 for (i = 0; i < ni; i++)
     for (j = 0; j < ni; j++)
       C[i][j] = ((DATA_TYPE) i*j) / ni;
@@ -99,12 +103,12 @@ void kernel_syr2k(int ni, int nj,
 
 #pragma scop
   /*    C := alpha*A*B' + alpha*B*A' + beta*C */
-  #pragma omp parallel for
+  #pragma omp parallel for private(i, j)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
-  #pragma omp parallel for
-#pragma omp parallel for
+  #pragma omp parallel for private(i, j, k)
+#pragma scop
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       for (k = 0; k < _PB_NJ; k++)
@@ -162,4 +166,7 @@ int main(int argc, char** argv)
   return 0;
 }
 ```
+
+Rationale:
+Inserted `#pragma omp parallel for private(i, j)` immediately before the compute-intensive loop to distribute iterations across available threads with correct variable scoping and scheduling.
 ================================================================================

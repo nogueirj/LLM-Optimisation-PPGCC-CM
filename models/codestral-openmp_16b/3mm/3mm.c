@@ -25,20 +25,16 @@ static void init_array(int ni, int nj, int nk, int nl, int nm,
                        DATA_TYPE POLYBENCH_2D(D, NM, NL, nm, nl)) {
   int i, j;
 
-#pragma omp parallel for firstprivate (ni)
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i][j] = ((DATA_TYPE)i * j) / ni;
-#pragma omp parallel for firstprivate (nk)
-for (i = 0; i < nk; i++)
+  for (i = 0; i < nk; i++)
     for (j = 0; j < nj; j++)
       B[i][j] = ((DATA_TYPE)i * (j + 1)) / nj;
-#pragma omp parallel for firstprivate (nj, nl)
-for (i = 0; i < nj; i++)
+  for (i = 0; i < nj; i++)
     for (j = 0; j < nm; j++)
       C[i][j] = ((DATA_TYPE)i * (j + 3)) / nl;
-#pragma omp parallel for firstprivate (nm, nk)
-for (i = 0; i < nm; i++)
+  for (i = 0; i < nm; i++)
     for (j = 0; j < nl; j++)
       D[i][j] = ((DATA_TYPE)i * (j + 2)) / nk;
 }
@@ -49,8 +45,7 @@ static void print_array(int ni, int nl,
                         DATA_TYPE POLYBENCH_2D(G, NI, NL, ni, nl)) {
   int i, j;
 
-#pragma omp parallel for firstprivate (ni)
-for (i = 0; i < ni; i++)
+  for (i = 0; i < ni; i++)
     for (j = 0; j < nl; j++) {
       fprintf(stderr, DATA_PRINTF_MODIFIER, G[i][j]);
       if ((i * ni + j) % 20 == 0)
@@ -73,7 +68,7 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm,
 
 #pragma scop
   /* E := A*B */
-#pragma omp parallel for firstprivate (ni)
+  #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NJ; j++) {
       E[i][j] = 0;
@@ -81,7 +76,7 @@ for (i = 0; i < _PB_NI; i++)
         E[i][j] += A[i][k] * B[k][j];
     }
   /* F := C*D */
-#pragma omp parallel for firstprivate (nj, nl)
+  #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NJ; i++)
     for (j = 0; j < _PB_NL; j++) {
       F[i][j] = 0;
@@ -89,7 +84,7 @@ for (i = 0; i < _PB_NJ; i++)
         F[i][j] += C[i][k] * D[k][j];
     }
   /* G := E*F */
-#pragma omp parallel for firstprivate (ni, nl)
+  #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NL; j++) {
       G[i][j] = 0;
@@ -115,6 +110,10 @@ int main(int argc, char **argv) {
   POLYBENCH_2D_ARRAY_DECL(C, DATA_TYPE, NJ, NM, nj, nm);
   POLYBENCH_2D_ARRAY_DECL(D, DATA_TYPE, NM, NL, nm, nl);
   POLYBENCH_2D_ARRAY_DECL(G, DATA_TYPE, NI, NL, ni, nl);
+
+  /* Initialize array(s). */
+  init_array(ni, nj, nk, nl, nm, POLYBENCH_ARRAY(A), POLYBENCH_ARRAY(B),
+             POLYBENCH_ARRAY(C), POLYBENCH_ARRAY(D));
 
   /* Start timer. */
   polybench_start_instruments;
