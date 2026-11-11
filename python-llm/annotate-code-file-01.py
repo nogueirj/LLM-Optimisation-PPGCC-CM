@@ -6,61 +6,237 @@ import time
 import urllib.request
 import urllib.error
 
-def extract_c_code(text):
+def extract_kernel_function(code_str):
+    """
+    Finds `static void kernel_<name>(...) { ... }` using brace balancing.
+    Returns (start_idx, end_idx, func_text) or None.
+    """
+    m = re.search(r'static\s+void\s+kernel_\w+\s*\(', code_str)
+    if not m:
+        return None
+    start = m.start()
+    brace_start = code_str.find('{', m.end())
+    if brace_start == -1:
+        return None
+    depth = 0
+    for idx in range(brace_start, len(code_str)):
+        if code_str[idx] == '{':
+            depth += 1
+        elif code_str[idx] == '}':
+            depth -= 1
+            if depth == 0:
+                return (start, idx + 1, code_str[start:idx + 1])
+    return None
+
+
+def sanitize_kernel_function(k_text):
+    """
+    Cleans up common quantized-LLM pragma artifacts inside `kernel_*`:
+    - Removes non-OpenMP / non-scop pragmas (e.g. `#pragma vector always`).
+    - Collapses consecutive `#pragma omp` lines that have no C statement between them.
+    """
+    lines = k_text.splitlines()
+    cleaned = []
+    for line in lines:
+        s = line.strip()
+        if s.startswith('#pragma') and not (
+            s.startswith('#pragma omp')
+            or s.startswith('#pragma scop')
+            or s.startswith('#pragma endscop')
+        ):
+            continue
+        if s.startswith('#pragma omp'):
+            while cleaned and cleaned[-1].strip().startswith('#pragma omp'):
+                cleaned.pop()
+        if s.startswith('#pragma scop') and cleaned and cleaned[-1].strip().startswith('#pragma omp'):
+            omp_line = cleaned.pop()
+            cleaned.append(line)
+            cleaned.append(omp_line)
+            continue
+        cleaned.append(line)
+    return '\n'.join(cleaned)
+
+
+def _score_c_candidate(block):
+    clean_block = block.strip()
+    # Remove placeholder lines echoed from old prompts
+    lines = [
+        ln for ln in clean_block.splitlines()
+        if '<The entire, complete C source code' not in ln
+        and ln.strip() not in ('c', 'cpp', 'C')
+    ]
+    clean_block = '\n'.join(lines).strip()
+    if clean_block.startswith('<stdio.h>'):
+        clean_block = '#include ' + clean_block
+
+    num_lines = len(clean_block.splitlines())
+    num_chars = len(clean_block)
+    if num_lines < 3 or num_chars < 50:
+        return None
+
+    score = 0
+    if '#include' in clean_block:
+        score += 30
+    if 'polybench' in clean_block.lower():
+        score += 25
+    if 'main' in clean_block:
+        score += 30
+    if 'kernel_' in clean_block:
+        score += 60
+    if 'init_array' in clean_block:
+        score += 20
+    if '#pragma omp' in clean_block:
+        score += 25
+    if 'for (' in clean_block or 'for(' in clean_block:
+        score += 15
+    score += min(num_lines, 200)
+    return (score, num_chars, clean_block)
+
+
+def extract_c_code(text, original_code=None):
     """
     Extracts pure C code from the LLM response, removing markdown, explanations, and thinking.
-    Prefers complete C source files over tiny 1-line snippets.
+    Resilient against inverted Markdown fence parity (e.g. stray ``` before the main block).
+    When `original_code` is provided, splices only the annotated `kernel_*` function into
+    `original_code` so headers, `init_array`, `print_array`, and `main()` remain 100% intact.
     """
-    code_blocks = re.findall(r'```(?:c|cpp|C)?\s*\n(.*?)```', text, re.DOTALL)
-    if code_blocks:
-        candidates = []
-        for block in code_blocks:
-            clean_block = block.strip()
-            num_lines = len(clean_block.splitlines())
-            num_chars = len(clean_block)
-            
-            # Skip tiny snippets like `gcc -fopenmp ...` or `#include <omp.h>`
-            if num_lines < 3 or num_chars < 50:
-                continue
+    candidates = []
 
-            score = 0
-            if '#include' in clean_block:
-                score += 30
-            if 'polybench' in clean_block.lower():
-                score += 25
-            if 'main' in clean_block:
-                score += 30
-            if 'kernel_' in clean_block or 'init_array' in clean_block:
-                score += 20
-            if '#pragma omp' in clean_block:
-                score += 25
-            if 'for (' in clean_block or 'for(' in clean_block:
-                score += 15
+    # 1. Standard paired fence regex
+    for block in re.findall(r'```(?:c|cpp|C)?\s*\n(.*?)```', text, re.DOTALL):
+        scored = _score_c_candidate(block)
+        if scored:
+            candidates.append(scored)
 
-            # Size score: prefer larger, complete blocks over small fragments
-            score += min(num_lines, 200)
+    # 2. Fence-split segments (immune to odd/inverted fence parity like a stray opening ```)
+    for segment in re.split(r'(?m)^\s*```[a-zA-Z]*\s*$', text):
+        scored = _score_c_candidate(segment)
+        if scored:
+            candidates.append(scored)
 
-            candidates.append((score, num_chars, clean_block))
+    best_code = None
+    if candidates:
+        candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
+        best_code = candidates[0][2]
+    else:
+        # Fallback: search for where C code starts
+        lines = text.split('\n')
+        start_idx = 0
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if stripped.startswith(('/*', '/**', '#include', '#pragma', 'static void', 'void ', 'int ')):
+                start_idx = i
+                break
+        best_code = '\n'.join(lines[start_idx:]).strip()
+        if best_code.startswith('<stdio.h>'):
+            best_code = '#include ' + best_code
 
-        if candidates:
-            candidates.sort(key=lambda x: (x[0], x[1]), reverse=True)
-            return candidates[0][2]
+    # 3. Surgical Kernel Injection: transplant the annotated `kernel_*` function into `original_code`
+    if original_code and best_code:
+        k_llm = extract_kernel_function(best_code)
+        k_orig = extract_kernel_function(original_code)
+        if k_llm and k_orig:
+            sanitized_k = sanitize_kernel_function(k_llm[2])
+            # Verify C token integrity inside kernel_* (ignoring #pragma lines)
+            no_p_llm = re.sub(r'(?m)^\s*#pragma\s+.*$', '', sanitized_k)
+            no_p_orig = re.sub(r'(?m)^\s*#pragma\s+.*$', '', k_orig[2])
+            if re.findall(r'\w+|[^\w\s]', no_p_llm) == re.findall(r'\w+|[^\w\s]', no_p_orig):
+                reconstructed = (
+                    original_code[:k_orig[0]]
+                    + sanitized_k
+                    + original_code[k_orig[1]:]
+                )
+                return reconstructed.strip()
 
-        # If all blocks were < 3 lines, just take the longest one
-        code_blocks.sort(key=lambda b: len(b), reverse=True)
-        return code_blocks[0].strip()
+        # 4. Loop-Aligned Pragma Transplantation: if the model returned only #pragma scop..endscop
+        # or slightly altered loop headers/braces, map its #pragma omp lines onto the exact loops of original_code
+        transplanted = transplant_pragmas_to_original(best_code, original_code)
+        if transplanted:
+            return transplanted.strip()
 
-    # Fallback: if no markdown fences, search for where C code starts
-    lines = text.split('\n')
-    start_idx = 0
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith(('/*', '/**', '#include', '#pragma', 'static void', 'void ', 'int ')):
-            start_idx = i
-            break
-    
-    code = '\n'.join(lines[start_idx:])
-    return code.strip()
+    return best_code
+
+
+def _extract_scop_or_kernel_loops(code_text):
+    """
+    Extracts a list of (loop_var, pragma_line_or_None) for each `for (...)` loop
+    inside `#pragma scop ... #pragma endscop` or `kernel_*`.
+    """
+    region = code_text
+    m_scop = re.search(r'#pragma\s+scop\b(.*?)#pragma\s+endscop\b', code_text, re.DOTALL)
+    if m_scop:
+        region = m_scop.group(1)
+    else:
+        k_fn = extract_kernel_function(code_text)
+        if k_fn:
+            region = k_fn[2]
+
+    loops = []
+    pending_pragma = None
+    for line in region.splitlines():
+        s = line.strip()
+        if s.startswith('#pragma omp'):
+            pending_pragma = s
+        else:
+            m_for = re.match(r'for\s*\(\s*(?:int\s+)?([A-Za-z_]\w*)\s*=', s)
+            if m_for:
+                loops.append((m_for.group(1), pending_pragma))
+                pending_pragma = None
+    return loops
+
+
+def transplant_pragmas_to_original(llm_code, orig_code):
+    """
+    Maps `#pragma omp` directives associated with `for` loops in `llm_code`
+    directly onto the corresponding `for` loops inside `#pragma scop ... #pragma endscop`
+    of `orig_code`, keeping 100% of `orig_code` C tokens intact.
+    """
+    from collections import defaultdict
+
+    llm_loops = _extract_scop_or_kernel_loops(llm_code)
+    if not llm_loops or not any(p for _, p in llm_loops):
+        return None
+
+    m_scop = re.search(r'(#pragma\s+scop\b)(.*?)(#pragma\s+endscop\b)', orig_code, re.DOTALL)
+    if not m_scop:
+        return None
+
+    scop_body = m_scop.group(2)
+    orig_lines = scop_body.splitlines()
+    orig_for_indices = []
+    for idx, ln in enumerate(orig_lines):
+        m_for = re.match(r'^\s*for\s*\(\s*(?:int\s+)?([A-Za-z_]\w*)\s*=', ln)
+        if m_for:
+            orig_for_indices.append((idx, m_for.group(1)))
+
+    pragma_by_orig_line = {}
+    if len(llm_loops) == len(orig_for_indices):
+        for (_, pragma), (o_idx, _) in zip(llm_loops, orig_for_indices):
+            if pragma:
+                pragma_by_orig_line[o_idx] = pragma
+    else:
+        orig_by_var = defaultdict(list)
+        for o_idx, o_var in orig_for_indices:
+            orig_by_var[o_var].append(o_idx)
+        seen_var = defaultdict(int)
+        for l_var, pragma in llm_loops:
+            occ = seen_var[l_var]
+            seen_var[l_var] += 1
+            if pragma and occ < len(orig_by_var[l_var]):
+                pragma_by_orig_line[orig_by_var[l_var][occ]] = pragma
+
+    if not pragma_by_orig_line:
+        return None
+
+    new_scop_lines = []
+    for idx, ln in enumerate(orig_lines):
+        if idx in pragma_by_orig_line:
+            indent = re.match(r'^(\s*)', ln).group(1)
+            new_scop_lines.append(f"{indent}{pragma_by_orig_line[idx]}")
+        new_scop_lines.append(ln)
+
+    new_scop_body = '\n'.join(new_scop_lines) + '\n'
+    return orig_code[:m_scop.start(2)] + new_scop_body + orig_code[m_scop.end(2):]
 
 def format_metrics(response, model, code_file, prompt_file, raw_content):
     total_duration = response.get('total_duration')
@@ -121,7 +297,7 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
 
     # Smart injection of code into prompt template
     if "{code}" in prompt_template:
-        prompt = prompt_template.replace("{code}", code_content)
+        prompt = prompt_template.replace("{code}", code_content.strip())
     else:
         empty_block = re.search(r'```(?:c|cpp|C)?\s*\n\s*```\s*$', prompt_template)
         if empty_block:
@@ -130,19 +306,20 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
             prompt = prompt_template.rstrip() + "\n\n```c\n" + code_content + "\n```"
 
     print(f"[*] Connecting to Ollama ({llm_model})...")
-    print(f"[*] (Generating code, keeping model loaded in RAM with keep_alive='1h')...\r", end="", flush=True)
+    print(f"[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...\r", end="", flush=True)
 
     url = f"{host}/api/chat"
     payload = {
         "model": llm_model,
         "messages": [{"role": "user", "content": prompt}],
         "stream": True,
-        "keep_alive": "1h",
+        "keep_alive": "5m",
         "options": {
-            "num_ctx": 4096,
+            "num_ctx": 8192,
             "num_predict": 4096,
-            "temperature": 1.0,
-            "top_p": 0.95
+            "temperature": 0.1,
+            "top_p": 0.95,
+            "repeat_penalty": 1.1
         }
     }
 
@@ -164,6 +341,10 @@ def process_code_with_llm(code_file_path, llm_model, prompt_template, host="http
                 try:
                     chunk = json.loads(line.decode('utf-8'))
                 except json.JSONDecodeError:
+                    continue
+
+                if 'error' in chunk:
+                    print(f"\n[-] Ollama error: {chunk['error']}")
                     continue
 
                 msg = chunk.get('message', {})
@@ -230,6 +411,17 @@ if __name__ == "__main__":
         print("  python", sys.argv[0], "codestral-openmp:3b polybench-c-3.2/linear-algebra/kernels/2mm/2mm.c prompts/DefaultPrompt.md models/codestral/2mm/2mm.c")
         sys.exit(1)
 
+    # Smart path resolution if file is under core/ or prompts/
+    if not os.path.exists(code_file):
+        candidate = os.path.join("core", code_file)
+        if os.path.exists(candidate):
+            code_file = candidate
+
+    if not os.path.exists(prompt_file):
+        candidate = os.path.join("prompts", prompt_file)
+        if os.path.exists(candidate):
+            prompt_file = candidate
+
     # Auto-generate output filename if not given
     if not output_file:
         base_name = os.path.splitext(os.path.basename(code_file))[0]
@@ -261,7 +453,13 @@ if __name__ == "__main__":
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
 
-    c_code = extract_c_code(raw_response)
+    try:
+        with open(code_file, 'r') as cf:
+            original_code_content = cf.read()
+    except FileNotFoundError:
+        original_code_content = None
+
+    c_code = extract_c_code(raw_response, original_code=original_code_content)
     with open(output_file, "w") as f:
         f.write(c_code + "\n")
     print(f"[+] Saved pure C code to: {output_file}")

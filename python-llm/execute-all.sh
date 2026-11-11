@@ -98,19 +98,19 @@ for model in "${models[@]}"; do
             OUT_FOLDER="codestral_22b"
             ;;
         *"codestral-openmp:3b"*)
-            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            PROMPT="${PROMPTS_DIR}/QuantizedPrompt.md"
             OUT_FOLDER="codestral-openmp_3b"
             ;;
         *"codestral-openmp:4b"*)
-            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            PROMPT="${PROMPTS_DIR}/QuantizedPrompt.md"
             OUT_FOLDER="codestral-openmp_4b"
             ;;
         *"codestral-openmp:8b"*)
-            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            PROMPT="${PROMPTS_DIR}/QuantizedPrompt.md"
             OUT_FOLDER="codestral-openmp_8b"
             ;;
         *"codestral-openmp:16b"*)
-            PROMPT="${PROMPTS_DIR}/DefaultPrompt.md"
+            PROMPT="${PROMPTS_DIR}/QuantizedPrompt.md"
             OUT_FOLDER="codestral-openmp_16b"
             ;;
         *)
@@ -161,6 +161,10 @@ for model in "${models[@]}"; do
             FAIL_COUNT=$((FAIL_COUNT + 1))
         fi
     done
+
+    # Libera a VRAM ocupada pelo modelo atual antes de carregar o próximo
+    echo "[*] Descarregando '$model' da VRAM (ollama stop)..."
+    ollama stop "$model" >/dev/null 2>&1 || true
 done
 
 echo ""
