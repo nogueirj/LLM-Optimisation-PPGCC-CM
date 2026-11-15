@@ -1,0 +1,472 @@
+nohup: ignoring input
+🔄 Semeando baseline histórico em results/raw_times.csv a partir de results/final_metrics.csv...
+✅ Baseline histórico restaurado em results/raw_times.csv (686 registros).
+
+======================================================================
+📦 PREPARANDO DATASET: STANDARD (-DSTANDARD_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_16b.exe
+  [OK] 3mm-codestral-openmp_16b.exe
+  [OK] atax-codestral-openmp_16b.exe
+  [OK] gemm-codestral-openmp_16b.exe
+  [OK] syr2k-codestral-openmp_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_8b.exe
+  [OK] 3mm-codestral-openmp_8b.exe
+  [OK] atax-codestral-openmp_8b.exe
+  [OK] gemm-codestral-openmp_8b.exe
+  [OK] syr2k-codestral-openmp_8b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_4b.exe
+  [OK] 3mm-codestral-openmp_4b.exe
+  [OK] atax-codestral-openmp_4b.exe
+  [OK] gemm-codestral-openmp_4b.exe
+  [OK] syr2k-codestral-openmp_4b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_3b.exe
+  [OK] 3mm-codestral-openmp_3b.exe
+  [OK] atax-codestral-openmp_3b.exe
+  [OK] gemm-codestral-openmp_3b.exe
+  [OK] syr2k-codestral-openmp_3b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 1T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 1T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 1T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 2T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 2T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 2T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 4T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 4T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 4T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 8T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 8T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 8T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 16T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 16T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 16T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 32T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 32T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 32T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: STANDARD | THREADS: 64T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/atax (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/atax (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/atax (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/atax (standard) | 64T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (standard) | 64T T(timeout->skip_rest) ABORTADO
+
+======================================================================
+📦 PREPARANDO DATASET: LARGE (-DLARGE_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_16b.exe
+  [OK] 3mm-codestral-openmp_16b.exe
+  [OK] atax-codestral-openmp_16b.exe
+  [OK] gemm-codestral-openmp_16b.exe
+  [OK] syr2k-codestral-openmp_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_8b.exe
+  [OK] 3mm-codestral-openmp_8b.exe
+  [OK] atax-codestral-openmp_8b.exe
+  [OK] gemm-codestral-openmp_8b.exe
+  [OK] syr2k-codestral-openmp_8b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_4b.exe
+  [OK] 3mm-codestral-openmp_4b.exe
+  [OK] atax-codestral-openmp_4b.exe
+  [OK] gemm-codestral-openmp_4b.exe
+  [OK] syr2k-codestral-openmp_4b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [OK] 2mm-codestral-openmp_3b.exe
+  [OK] 3mm-codestral-openmp_3b.exe
+  [OK] atax-codestral-openmp_3b.exe
+  [OK] gemm-codestral-openmp_3b.exe
+  [OK] syr2k-codestral-openmp_3b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 1T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_16b/atax (large) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_8b/3mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_8b/atax (large) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_4b/2mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_4b/3mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_4b/atax (large) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/2mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/3mm (large) | 1T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/atax (large) | 1T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 1T .T(timeout->skip_rest) ABORTADO
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 2T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 2T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_16b/atax (large) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 2T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_8b/atax (large) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 2T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_4b/atax (large) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 2T T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/atax (large) | 2T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 2T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 4T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/atax (large) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/atax (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/atax (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/atax (large) | 4T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 4T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 8T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/atax (large) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/atax (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/atax (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/atax (large) | 8T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 8T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 16T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/atax (large) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/atax (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/atax (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/atax (large) | 16T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 16T .......... OK
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 32T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/atax (large) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/atax (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/atax (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/atax (large) | 32T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/syr2k (large) | 32T T(timeout->skip_rest) ABORTADO
+======================================================================
+🚀 EXECUTANDO QUANTIZADOS | DATASET: LARGE | THREADS: 64T
+======================================================================
+🏃 Executando codestral-openmp_16b/2mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/3mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/atax (large) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/gemm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/syr2k (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/2mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/3mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/atax (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/gemm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/syr2k (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/2mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/3mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/atax (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/gemm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/syr2k (large) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/2mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/3mm (large) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/atax (large) | 64T F(exit=-11->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/gemm (large) | 64T ........T(timeout->skip_rest) ABORTADO
+🏃 Executando codestral-openmp_3b/syr2k (large) | 64T T(timeout->skip_rest) ABORTADO
+
+======================================================================
+📊 GERANDO MÉTRICAS, TABELAS LATEX E GRÁFICOS DE ESCALABILIDADE
+======================================================================
+✅ Métricas consolidadas salvas em: /home/a_julionogueira/LLM-Optimisation-PPGCC-CM/results/quantized_scaling_metrics.csv
+
+================================================================================================
+📊 ESCALABILIDADE DA FAMÍLIA CODESTRAL: ORIGINAL (22B) vs. QUANTIZADOS (16B, 8B, 4B, 3B)
+================================================================================================
+
+▶ DATASET: LARGE (Comparativo em 64 Threads)
+------------------------------------------------------------------------------------------------
+Modelo                 |      2mm |      3mm |      atax |     gemm |     syr2k | Média (G4=PASS) | Efic.(G4=PASS)
+------------------------------------------------------------------------------------------------
+codestral              |   23.11x |   22.24x |    2.11x* |   23.31x |    32.84x |          25.37x |          39.6%
+codestral-openmp_16b   |   13.71x |   12.86x |    1.55x* |   12.99x |    14.92x |          13.62x |          21.3%
+codestral-openmp_8b    |   13.16x |   12.83x |    1.40x* |   11.88x |     9.53x |          11.85x |          18.5%
+codestral-openmp_4b    |   11.06x |   11.30x |    1.15x* |   11.65x |     9.42x |          10.86x |          17.0%
+codestral-openmp_3b    |   10.54x |   11.83x |     CRASH |    0.25x |     CRASH |           7.54x |          11.8%
+
+▶ DATASET: STANDARD (Comparativo em 64 Threads)
+------------------------------------------------------------------------------------------------
+Modelo                 |      2mm |      3mm |      atax |     gemm |     syr2k | Média (G4=PASS) | Efic.(G4=PASS)
+------------------------------------------------------------------------------------------------
+codestral              |   43.05x |   39.69x |    1.70x* |   45.59x |    21.16x |          37.37x |          58.4%
+codestral-openmp_16b   |   22.22x |   21.11x |    0.48x* |   19.32x |    12.17x |          18.70x |          29.2%
+codestral-openmp_8b    |   21.50x |   20.22x |    0.34x* |   20.18x |    14.76x |          19.16x |          29.9%
+codestral-openmp_4b    |   19.83x |   20.53x |    0.45x* |   21.21x |    13.02x |          18.65x |          29.1%
+codestral-openmp_3b    |   19.55x |   20.58x |     CRASH |    0.23x |     CRASH |          13.45x |          21.0%
+
+✅ Tabelas LaTeX salvas em: /home/a_julionogueira/LLM-Optimisation-PPGCC-CM/results/tabela_escalabilidade_quantizados.tex
+ℹ️ matplotlib/seaborn não encontrado neste ambiente; gráfico PNG pode ser gerado localmente.
+Traceback (most recent call last):
+  File "/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/scripts/analyzer.py", line 1, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+⚠️ Aviso: scripts/analyzer.py requer pandas/matplotlib (pode ser rodado localmente).
+Traceback (most recent call last):
+  File "/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/analysis_scripts/analise_por_dataset.py", line 7, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+Traceback (most recent call last):
+  File "/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/analysis_scripts/gerar_tabelas_latex.py", line 7, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+Traceback (most recent call last):
+  File "/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/analysis_scripts/speedup_grafico.py", line 1, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+
+======================================================================
+✨ BENCHMARK DE ESCALABILIDADE DOS QUANTIZADOS FINALIZADO!
+📁 Arquivos gerados para versionamento e análise:
+  • results/raw_times_quantized.csv             (tempos brutos das 4 variantes)
+  • results/quantized_scaling_metrics.csv       (speedup e eficiência consolidados)
+  • results/tabela_escalabilidade_quantizados.tex (tabelas LaTeX para a tese)
+  • results/scaling_curve_quantized.png         (curvas de escalabilidade)
+  • results/final_metrics.csv                   (métricas globais de todos os modelos)
+======================================================================

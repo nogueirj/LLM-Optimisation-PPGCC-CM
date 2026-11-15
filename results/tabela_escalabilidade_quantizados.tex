@@ -1,0 +1,42 @@
+% Tabelas de Escalabilidade - Modelos Quantizados Codestral-OpenMP
+% Gerado automaticamente por analysis_scripts/analise_quantizados_escalabilidade.py
+
+\begin{table}[htbp]
+\centering
+\caption{Speedup e eficiência paralela em 64 threads — Dataset \texttt{LARGE}}
+\label{tab:quant_scale_large}
+\small
+\begin{tabular}{lccccc cc}
+\toprule
+\textbf{Variante} & \textbf{2mm} & \textbf{3mm} & \textbf{atax} & \textbf{gemm} & \textbf{syr2k} & \textbf{Speedup Médio (G4)} & \textbf{Eficiência (G4)} \\
+\midrule
+\texttt{codestral} & $23.11\times$ & $22.24\times$ & $2.11\times^\dagger$ & $23.31\times$ & $32.84\times$ & $\mathbf{25.37\times}$ & $39.6\%$ \\
+\texttt{codestral-openmp\_16b} & $13.71\times$ & $12.86\times$ & $1.55\times^\dagger$ & $12.99\times$ & $14.92\times$ & $\mathbf{13.62\times}$ & $21.3\%$ \\
+\texttt{codestral-openmp\_8b} & $13.16\times$ & $12.83\times$ & $1.40\times^\dagger$ & $11.88\times$ & $9.53\times$ & $\mathbf{11.85\times}$ & $18.5\%$ \\
+\texttt{codestral-openmp\_4b} & $11.06\times$ & $11.30\times$ & $1.15\times^\dagger$ & $11.65\times$ & $9.42\times$ & $\mathbf{10.86\times}$ & $17.0\%$ \\
+\texttt{codestral-openmp\_3b} & $10.54\times$ & $11.83\times$ & \text{Crash} & $0.25\times$ & \text{Crash} & $\mathbf{7.54\times}$ & $11.8\%$ \\
+\bottomrule
+\end{tabular}
+\\[4pt]
+\footnotesize{Nota: $^\dagger$ indica kernel reprovado no Gate 4 (divergência numérica por condição de corrida), excluído da média estrita G4.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Speedup e eficiência paralela em 64 threads — Dataset \texttt{STANDARD}}
+\label{tab:quant_scale_standard}
+\small
+\begin{tabular}{lccccc cc}
+\toprule
+\textbf{Variante} & \textbf{2mm} & \textbf{3mm} & \textbf{atax} & \textbf{gemm} & \textbf{syr2k} & \textbf{Speedup Médio (G4)} & \textbf{Eficiência (G4)} \\
+\midrule
+\texttt{codestral} & $43.05\times$ & $39.69\times$ & $1.70\times^\dagger$ & $45.59\times$ & $21.16\times$ & $\mathbf{37.37\times}$ & $58.4\%$ \\
+\texttt{codestral-openmp\_16b} & $22.22\times$ & $21.11\times$ & $0.48\times^\dagger$ & $19.32\times$ & $12.17\times$ & $\mathbf{18.70\times}$ & $29.2\%$ \\
+\texttt{codestral-openmp\_8b} & $21.50\times$ & $20.22\times$ & $0.34\times^\dagger$ & $20.18\times$ & $14.76\times$ & $\mathbf{19.16\times}$ & $29.9\%$ \\
+\texttt{codestral-openmp\_4b} & $19.83\times$ & $20.53\times$ & $0.45\times^\dagger$ & $21.21\times$ & $13.02\times$ & $\mathbf{18.65\times}$ & $29.1\%$ \\
+\texttt{codestral-openmp\_3b} & $19.55\times$ & $20.58\times$ & \text{Crash} & $0.23\times$ & \text{Crash} & $\mathbf{13.45\times}$ & $21.0\%$ \\
+\bottomrule
+\end{tabular}
+\\[4pt]
+\footnotesize{Nota: $^\dagger$ indica kernel reprovado no Gate 4 (divergência numérica por condição de corrida), excluído da média estrita G4.}
+\end{table}
