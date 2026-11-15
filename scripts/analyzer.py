@@ -84,7 +84,10 @@ def generate_analysis():
 
     with open(OUTPUT_LATEX, "w") as f:
         f.write("% Tabela de Speedup no máximo de Threads (" + str(max_threads) + ")\n")
-        f.write(final_table.to_latex())
+        try:
+            f.write(final_table.to_latex())
+        except ImportError:
+            f.write(final_table.to_string())
     
     print(f"✅ Tabela LaTeX (Threads={max_threads}) gerada em: {OUTPUT_LATEX}")
 

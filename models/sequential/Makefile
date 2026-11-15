@@ -2,10 +2,11 @@
 UNAME_S := $(shell uname -s)
 
 # 2. Caminhos RELATIVOS (Para chegar na raiz e entrar em core)
-CORE_DIR    = ../../core/polybench-c-3.2
-UTILS_DIR   = $(CORE_DIR)/utilities
-KERNELS_DIR = $(CORE_DIR)/linear-algebra/kernels
-POLY_SRC    = $(UTILS_DIR)/polybench.c
+CORE_DIR       = ../../core/polybench-c-3.2
+UTILS_DIR      = $(CORE_DIR)/utilities
+KERNELS_DIR    = $(CORE_DIR)/linear-algebra/kernels
+PARSEC_SEQ_DIR = ../../core/parsec/kernels
+POLY_SRC       = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 
 
@@ -14,10 +15,12 @@ CC = gcc
 CFLAGS = -O3 -I $(UTILS_DIR) -DPOLYBENCH_TIME $(DATASET_SIZE)
 LDFLAGS = -lm
 
-# 4. Alvos (Kernels Originais)
+# 4. Alvos (Kernels Originais PolyBench e PARSEC)
+.PHONY: all parsec clean
 all: 2mmseq 3mmseq ataxseq gemmseq syr2kseq
+parsec: blackscholesseq swaptionsseq fluidanimateseq streamclusterseq freqmineseq
 
-# Regras buscando o código original diretamente da pasta core
+# Regras buscando o código original diretamente da pasta core (PolyBench)
 2mmseq: $(KERNELS_DIR)/2mm/2mm.c $(KERNELS_DIR)/2mm/2mm.h
 	$(CC) $(CFLAGS) -I $(KERNELS_DIR)/2mm $(POLY_SRC) $(KERNELS_DIR)/2mm/2mm.c $(LDFLAGS) -o 2mm-seq.exe
 
@@ -32,6 +35,22 @@ gemmseq: $(KERNELS_DIR)/gemm/gemm.c $(KERNELS_DIR)/gemm/gemm.h
 
 syr2kseq: $(KERNELS_DIR)/syr2k/syr2k.c $(KERNELS_DIR)/syr2k/syr2k.h
 	$(CC) $(CFLAGS) -I $(KERNELS_DIR)/syr2k $(POLY_SRC) $(KERNELS_DIR)/syr2k/syr2k.c $(LDFLAGS) -o syr2k-seq.exe
+
+# Regras buscando os kernels sequenciais do PARSEC (core/parsec/kernels)
+blackscholesseq: $(PARSEC_SEQ_DIR)/blackscholes/blackscholes.c $(PARSEC_SEQ_DIR)/blackscholes/blackscholes.h
+	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/blackscholes $(POLY_SRC) $(PARSEC_SEQ_DIR)/blackscholes/blackscholes.c $(LDFLAGS) -o blackscholes-seq.exe
+
+swaptionsseq: $(PARSEC_SEQ_DIR)/swaptions/swaptions.c $(PARSEC_SEQ_DIR)/swaptions/swaptions.h
+	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/swaptions $(POLY_SRC) $(PARSEC_SEQ_DIR)/swaptions/swaptions.c $(LDFLAGS) -o swaptions-seq.exe
+
+fluidanimateseq: $(PARSEC_SEQ_DIR)/fluidanimate/fluidanimate.c $(PARSEC_SEQ_DIR)/fluidanimate/fluidanimate.h
+	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/fluidanimate $(POLY_SRC) $(PARSEC_SEQ_DIR)/fluidanimate/fluidanimate.c $(LDFLAGS) -o fluidanimate-seq.exe
+
+streamclusterseq: $(PARSEC_SEQ_DIR)/streamcluster/streamcluster.c $(PARSEC_SEQ_DIR)/streamcluster/streamcluster.h
+	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/streamcluster $(POLY_SRC) $(PARSEC_SEQ_DIR)/streamcluster/streamcluster.c $(LDFLAGS) -o streamcluster-seq.exe
+
+freqmineseq: $(PARSEC_SEQ_DIR)/freqmine/freqmine.c $(PARSEC_SEQ_DIR)/freqmine/freqmine.h
+	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/freqmine $(POLY_SRC) $(PARSEC_SEQ_DIR)/freqmine/freqmine.c $(LDFLAGS) -o freqmine-seq.exe
 
 clean:
 	rm -f *.exe

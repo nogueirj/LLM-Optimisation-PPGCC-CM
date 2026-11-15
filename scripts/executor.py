@@ -15,6 +15,12 @@ MODELS = [
     "qwen",
     "polly",
     "openmp",
+    "codestral_22b",
+    "granite-code-20b",
+    "qwen-2.5-coder-14b",
+    "starcode-2_15b",
+    "deepseekcoder-coder-v2_16b",
+    "codellama_13b",
     "codestral-openmp_16b",
     "codestral-openmp_8b",
     "codestral-openmp_4b",
@@ -33,6 +39,13 @@ def get_active_models():
     if not only_env:
         return MODELS
     requested = [m.strip() for m in only_env.replace(",", " ").split() if m.strip()]
+    return requested
+
+def get_active_kernels():
+    only_env = os.environ.get("ONLY_KERNELS", "").strip()
+    if not only_env:
+        return KERNELS
+    requested = [k.strip() for k in only_env.replace(",", " ").split() if k.strip()]
     return requested
 
 def run_experiment():
@@ -58,6 +71,7 @@ def run_experiment():
 
         dataset_log = DATASET_LOG
         active_models = get_active_models()
+        active_kernels = get_active_kernels()
 
         for model in active_models:
             path = os.path.join(MODELS_DIR, model)
@@ -65,7 +79,7 @@ def run_experiment():
 
             suf = SUFFIX_MAP.get(model, model)
             
-            for kernel in KERNELS:
+            for kernel in active_kernels:
                 exe_name = f"{kernel}-{suf}.exe"
                 exe_path = os.path.join(path, exe_name)
 

@@ -4,3 +4,6 @@
 [submodule "PolyBenchC-4.2.1"]
 	path = PolyBenchC-4.2.1
 	url = https://github.com/MatthiasJReisinger/PolyBenchC-4.2.1
+[submodule "core/parsec-benchmark"]
+	path = core/parsec-benchmark
+	url = https://github.com/cirosantilli/parsec-benchmark.git
