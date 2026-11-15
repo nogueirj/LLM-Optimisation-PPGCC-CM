@@ -37,6 +37,7 @@ def sanitize_kernel_function(k_text):
     """
     lines = k_text.splitlines()
     cleaned = []
+    seen_scop = False
     for line in lines:
         s = line.strip()
         if s.startswith('#pragma') and not (
@@ -45,6 +46,10 @@ def sanitize_kernel_function(k_text):
             or s.startswith('#pragma endscop')
         ):
             continue
+        if s.startswith('#pragma scop'):
+            if seen_scop:
+                continue
+            seen_scop = True
         if s.startswith('#pragma omp'):
             while cleaned and cleaned[-1].strip().startswith('#pragma omp'):
                 cleaned.pop()

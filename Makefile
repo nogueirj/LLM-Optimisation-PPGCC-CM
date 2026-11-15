@@ -8,14 +8,15 @@ SCRIPTS_DIR = scripts
 RESULTS_DIR = results
 
 # 2. LISTA OFICIAL DE MODELOS
-MODELS = sequential chatgpt codellama codestral deepseekcoder granite gemini qwen polly openmp
+QUANTIZED_MODELS = codestral-openmp_16b codestral-openmp_8b codestral-openmp_4b codestral-openmp_3b
+MODELS = sequential chatgpt codellama codestral deepseekcoder granite gemini qwen polly openmp $(QUANTIZED_MODELS)
 
 # 3. PARÂMETROS DE AMBIENTE
 DATASET_SIZE ?= 
 N_THREADS    ?= 8
 
 # 4. ALVOS VIRTUAIS
-.PHONY: all clean run analyze scale help check $(MODELS)
+.PHONY: all clean run analyze scale scale-quantized analyze-quantized help check $(MODELS)
 
 # -----------------------------------------------------------------
 # ALVOS DE COMPILAÇÃO
@@ -50,6 +51,16 @@ scale:
 	chmod +x scripts/run_scale.sh
 	./scripts/run_scale.sh $(DATASET_SIZE)
 
+# Alvo de escalabilidade focado nos modelos quantizados (Standard + Large)
+scale-quantized:
+	@echo "🚀 Iniciando bateria de escalabilidade dos modelos quantizados..."
+	chmod +x scripts/run_scale_quantized.sh
+	./scripts/run_scale_quantized.sh $(DATASET_SIZE)
+
+analyze-quantized:
+	@echo "📊 Analisando escalabilidade e eficiência das variantes quantizadas..."
+	python3 analysis_scripts/analise_quantizados_escalabilidade.py
+
 check:
 	python3 scripts/check_env.py
 
@@ -73,7 +84,7 @@ analyze-latex:
 	@echo "📄 Gerando tabelas LaTeX..."
 	python3 analysis_scripts/gerar_tabelas_latex.py
 
-analyze-all: analyze-speedup analyze-stats analyze-data analyze-latex
+analyze-all: analyze-speedup analyze-stats analyze-data analyze-latex analyze-quantized
 	@echo "✅ Todas as análises foram executadas com sucesso!"
 	@echo ""
 	@echo "📁 Arquivos gerados em results/:"

@@ -77,7 +77,6 @@ void kernel_syr2k(int ni, int nj,
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
       C[i][j] *= beta;
-#pragma scop
   #pragma omp parallel for private(i, j, k)
 for (i = 0; i < _PB_NI; i++)
     for (j = 0; j < _PB_NI; j++)
