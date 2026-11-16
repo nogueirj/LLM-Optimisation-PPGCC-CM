@@ -1,0 +1,19 @@
+========================================================================
+PIPELINE AUTOMATIZADO DE ANOTAÇÃO OPENMP — BENCHMARK PARSEC (OLLAMA)
+Data/Hora de Início: Sun Nov 15 08:06:13 PM -03 2026
+Arquivo de Log:      ../logs/execute_parsec_20261115_200613.log
+Kernels PARSEC:      blackscholes swaptions fluidanimate streamcluster freqmine
+========================================================================
+Interpretador Python: ../.venv/bin/python
+Modelos especificados via argumento: all
+[-] Modelo 'all' não mapeado no case. Pulando...
+
+========================================================================
+EXECUÇÃO PARSEC CONCLUÍDA!
+Data/Hora de Término: Sun Nov 15 08:06:13 PM -03 2026
+Sucessos:             0
+Falhas:               0
+Modelos Ignorados:    1
+Log Consolidado:      ../logs/execute_parsec_20261115_200613.log
+Códigos Salvos em:    ../models/
+========================================================================

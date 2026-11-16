@@ -1,0 +1,227 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                codestral-openmp:3b
+Code File:            ../core/parsec/kernels/swaptions/swaptions.c
+Prompt File:          ../prompts/ParsecPrompt.md
+Timestamp:            2026-11-15T23:16:41.764032696Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       90.00 s
+Load Duration:        0.00 s
+Prompt Eval Count:    4170 tokens
+Prompt Eval Duration: 0.97 s
+Prompt Eval Rate:     4302.39 tokens/s
+Eval Count:           3552 tokens
+Eval Duration:        88.30 s
+Generation Rate:      40.22 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+Analysis:
+The loop exhibits data parallelism with independent iterations. Data dependencies allow safe execution with OpenMP thread-level parallelization.
+
+Optimized Kernel (OpenMP annotations only):
+```c
+/**
+ * swaptions.c: PARSEC Benchmark Suite — Heath-Jarrow-Morton (HJM) Swaption Pricing
+ * Adapted from core/parsec-benchmark/pkgs/apps/swaptions/src/HJM_Securities.cpp
+ * (Authors: Mark Broadie, Jatin Dewanwala, Mikhail Smelyanskiy, Christian Bienia)
+ */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+#include <polybench.h>
+#include "swaptions.h"
+
+/* Moro's Inverse Cumulative Normal Distribution approximation (CumNormalInv.cpp) */
+static DATA_TYPE CumNormalInv(DATA_TYPE u) {
+  static const DATA_TYPE a[4] = {
+    2.50662823884, -18.61500062529, 41.39119773534, -25.44106049637
+  };
+  static const DATA_TYPE b[4] = {
+    -8.47351093090, 23.08336743743, -21.06224101826, 3.13082909833
+  };
+  static const DATA_TYPE c[9] = {
+    0.3374754822726147, 0.9761690190917186, 0.1607979714918209,
+    0.0276438810333863, 0.0038405729373609, 0.0003951896511919,
+    0.0000321767881768, 0.0000002888167364, 0.0000003960315187
+  };
+
+  DATA_TYPE x = u - 0.5;
+  DATA_TYPE r;
+  if (fabs(x) < 0.42) {
+    r = x * x;
+    r = x * (((a[3] * r + a[2]) * r + a[1]) * r + a[0]) /
+        ((((b[3] * r + b[2]) * r + b[1]) * r + b[0]) * r + 1.0);
+    return r;
+  }
+  r = u;
+  if (x > 0.0)
+    r = 1.0 - u;
+  r = log(-log(r));
+  r = c[0] + r * (c[1] + r * (c[2] + r * (c[3] + r * (c[4] +
+      r * (c[5] + r * (c[6] + r * (c[7] + r * c[8])))))));
+  if (x < 0.0)
+    r = -r;
+  return r;
+}
+
+/* Deterministic stateless uniform variate in (0, 1) per (swaption, trial, step, factor) */
+static DATA_TYPE HJM_RandUnif(int swaption_id, int trial, int step, int factor) {
+  unsigned int h = (unsigned int)(1979u + swaption_id * 7919u +
+                                  trial * 104729u + step * 31u + factor * 7u);
+  h ^= h >> 16;
+  h *= 0x7feb352du;
+  h ^= h >> 15;
+  h *= 0x846ca68bu;
+  h ^= h >> 16;
+  return ((DATA_TYPE)(h & 0x00ffffffu) + 0.5) / 16777216.0;
+}
+
+static void init_array(int nswaptions, int nsteps, int nfactors,
+                       DATA_TYPE POLYBENCH_1D(strikes, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_1D(maturities, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_2D(yields, NSWAPTIONS, NSTEPS, nswaptions, nsteps),
+                       DATA_TYPE POLYBENCH_2D(factors, NFACTORS, NSTEPS, nfactors, nsteps),
+                       DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i, j;
+  static const DATA_TYPE f1[11] = {
+    0.009048, 0.008187, 0.007408, 0.006703, 0.006065,
+    0.005488, 0.004966, 0.004493, 0.004066, 0.003679, 0.003329
+  };
+  static const DATA_TYPE f2[11] = {
+    0.001000, 0.000750, 0.000500, 0.000250, 0.000000,
+    -0.000250, -0.000500, -0.000750, -0.001000, -0.001250, -0.001500
+  };
+
+  for (j = 0; j < nsteps; j++) {
+    factors[0][j] = 0.01;
+    factors[1][j] = f1[j % 11];
+    factors[2][j] = f2[j % 11];
+  }
+
+  for (i = 0; i < nswaptions; i++) {
+    strikes[i] = 0.08 + 0.002 * (DATA_TYPE)(i % 45);
+    maturities[i] = 1.0 + 0.25 * (DATA_TYPE)(i % 20);
+    yields[i][0] = 0.10;
+    for (j = 1; j < nsteps; j++) {
+      yields[i][j] = yields[i][j - 1] + 0.005;
+    }
+    meanPrice[i] = 0.0;
+    stdError[i] = 0.0;
+  }
+}
+
+static void print_array(int nswaptions,
+                        DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                        DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i;
+  for (i = 0; i < nswaptions; i++) {
+    fprintf(stderr, DATA_PRINTF_MODIFIER, meanPrice[i]);
+    fprintf(stderr, DATA_PRINTF_MODIFIER, stdError[i]);
+    if (i % 10 == 0)
+      fprintf(stderr, "\n");
+  }
+  fprintf(stderr, "\n");
+}
+
+static void kernel_swaptions(int nswaptions, int ntrials, int nsteps, int nfactors,
+                             DATA_TYPE POLYBENCH_1D(strikes, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(maturities, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_2D(yields, NSWAPTIONS, NSTEPS, nswaptions, nsteps),
+                             DATA_TYPE POLYBENCH_2D(factors, NFACTORS, NSTEPS, nfactors, nsteps),
+                             DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i, t, j, f;
+  DATA_TYPE dt, sqrt_dt, sum_price, sum_sq, rate_path, discount;
+  DATA_TYPE shock, drift, vol, z, payoff, disc_payoff;
+
+#pragma scop
+for (i = 0; i < _PB_NSWAPTIONS; i++) {
+    dt = maturities[i] / (DATA_TYPE)_PB_NSTEPS;
+    sqrt_dt = sqrt(dt);
+    sum_price = 0.0;
+    sum_sq = 0.0;
+
+#pragma omp parallel for reduction(+:sum_price, sum_sq) private(t, j, f, rate_path, discount, shock, drift, vol, z, payoff, disc_payoff)
+    for (t = 0; t < _PB_NTRIALS; t++) {
+      rate_path = yields[i][0];
+      discount = 1.0;
+
+      for (j = 0; j < _PB_NSTEPS; j++) {
+        shock = 0.0;
+        drift = 0.0;
+        for (f = 0; f < _PB_NFACTORS; f++) {
+          vol = factors[f][j];
+          z = CumNormalInv(HJM_RandUnif(i, t, j, f));
+          shock += vol * z * sqrt_dt;
+          drift += 0.5 * vol * vol * dt;
+        }
+        rate_path = rate_path * exp(drift + shock);
+        discount = discount * exp(-rate_path * dt);
+      }
+
+      payoff = (rate_path > strikes[i]) ? (rate_path - strikes[i]) : 0.0;
+      disc_payoff = payoff * discount;
+      sum_price += disc_payoff;
+      sum_sq += disc_payoff * disc_payoff;
+    }
+
+    meanPrice[i] = sum_price / (DATA_TYPE)_PB_NTRIALS;
+    stdError[i] = sqrt(fabs(sum_sq - (sum_price * sum_price) / (DATA_TYPE)_PB_NTRIALS)) /
+                  (DATA_TYPE)_PB_NTRIALS;
+  }#pragma endscop
+}
+
+int main(int argc, char **argv) {
+  int nswaptions = NSWAPTIONS;
+  int ntrials = NTRIALS;
+  int nsteps = NSTEPS;
+  int nfactors = NFACTORS;
+
+  POLYBENCH_1D_ARRAY_DECL(strikes, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_1D_ARRAY_DECL(maturities, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_2D_ARRAY_DECL(yields, DATA_TYPE, NSWAPTIONS, NSTEPS, nswaptions, nsteps);
+  POLYBENCH_2D_ARRAY_DECL(factors, DATA_TYPE, NFACTORS, NSTEPS, nfactors, nsteps);
+  POLYBENCH_1D_ARRAY_DECL(meanPrice, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_1D_ARRAY_DECL(stdError, DATA_TYPE, NSWAPTIONS, nswaptions);
+
+  init_array(nswaptions, nsteps, nfactors,
+             POLYBENCH_ARRAY(strikes), POLYBENCH_ARRAY(maturities),
+             POLYBENCH_ARRAY(yields), POLYBENCH_ARRAY(factors),
+             POLYBENCH_ARRAY(meanPrice), POLYBENCH_ARRAY(stdError));
+
+  polybench_start_instruments;
+
+  kernel_swaptions(nswaptions, ntrials, nsteps, nfactors,
+                   POLYBENCH_ARRAY(strikes), POLYBENCH_ARRAY(maturities),
+                   POLYBENCH_ARRAY(yields), POLYBENCH_ARRAY(factors),
+                   POLYBENCH_ARRAY(meanPrice), POLYBENCH_ARRAY(stdError));
+
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  polybench_prevent_dce(print_array(nswaptions, POLYBENCH_ARRAY(meanPrice),
+                                    POLYBENCH_ARRAY(stdError)));
+
+  POLYBENCH_FREE_ARRAY(strikes);
+  POLYBENCH_FREE_ARRAY(maturities);
+  POLYBENCH_FREE_ARRAY(yields);
+  POLYBENCH_FREE_ARRAY(factors);
+  POLYBENCH_FREE_ARRAY(meanPrice);
+  POLYBENCH_FREE_ARRAY(stdError);
+
+  return 0;
+}
+```
+
+Rationale:
+Inserted `#pragma omp parallel for reduction(+:sum_price, sum_sq) private(t, j, f, rate_path, discount, shock, drift, vol, z, payoff, disc_payoff)` immediately before the compute-intensive loop to distribute iterations across available threads with correct variable scoping and scheduling.
+================================================================================

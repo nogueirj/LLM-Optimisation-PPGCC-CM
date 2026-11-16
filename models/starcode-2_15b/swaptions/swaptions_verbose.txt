@@ -1,0 +1,254 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/parsec/kernels/swaptions/swaptions.c
+Prompt File:          ../prompts/ParsecPrompt.md
+Timestamp:            2026-11-16T00:04:58.619841164Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       84.17 s
+Load Duration:        0.00 s
+Prompt Eval Count:    4065 tokens
+Prompt Eval Duration: 0.77 s
+Prompt Eval Rate:     5307.20 tokens/s
+Eval Count:           3722 tokens
+Eval Duration:        83.18 s
+Generation Rate:      44.75 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+Task: Annotate an existing PARSEC C kernel with OpenMP pragmas.
+
+You are an expert in High-Performance Computing, C, and OpenMP.
+
+Goal:
+Insert OpenMP pragmas to parallelize the computational kernel for performance, WITHOUT modifying the original C code logic, loop structure, or statements.
+
+Strict Rules (must follow exactly):
+- DO NOT change, reorder, remove, or refactor any line of C code (keep every comment, #include header, helper function, and main() intact).
+- DO NOT introduce temporary variables.
+- DO NOT change loop bounds or nesting.
+- ONLY add OpenMP pragmas  (#pragma omp  ...) immediately before existing safe `for` loops inside the main `kernel_*` function (between `#pragma scop` and `#pragma endscop`). DO NOT add pragmas inside `init_array`, `print_array`, helper functions, or `main`.
+- NEVER place two `#pragma omp` directives consecutively; every `#pragma omp` line MUST be immediately followed on the very next line by a `for (...) ` statement.
+- Always use `#pragma omp parallel for` (do NOT omit the `for` keyword when annotating a `for` loop).
+- CRITICAL C89 RULE: Because loop variables (`i`, `j`, `k`, `t`, `d`, `f`, `v`) and working scalar variables (`price`, `dist`, `diff`, `x_cost`, `dt`, `sqrt_dt`, `sum_price`, `sum_sq`, `rate_path`, `discount`, `shock`, `drift`, `vol`, `z`, `payoff`, `disc_payoff`, `dx`, `dy`, `dz`, `distSq`, `hmr`, `fpress`, `inv_rho`, `mask`, `has_item`, `count`, `score`, `w`) are declared at the top of `kernel_*`, whenever you parallelize a loop over an index (such as `i`, `t`, or `item`), you MUST explicitly list all inner loop counters and temporary scalar variables modified inside that loop in `private(...)`. Leaving inner loop counters or temporary scalars out of `private(...)` makes them shared across threads and causes race conditions!
+- Do NOT parallelize sequential time-stepping or iterative outer loops (`for (fr = 0; ...) `or `for (step = 0; ...)` where iteration `fr+1` depends on arrays updated in iteration `fr`); instead, parallelize the spatial/data-parallel inner loops (`for (i = 0; ...)`).
+- You MUST return the COMPLETE, FULL, COMPILABLE C source file from the opening comment/#include to the closing `}` of `main()` inside a single ```c ... ``` block.
+- Numerical results must remain identical.
+
+Instructions:
+1. Briefly analyze the loop nest and data dependencies in the `kernel_*` function.
+2. Decide which loops are safe to parallelize.
+3. Add OpenMP pragmas with correct `private(...)` and `schedule(...)` clauses.
+4. Assume compilation with: gcc -O3 -fopenmp.
+
+Output format:
+- Section: "Analysis"
+- Section: "Optimized Kernel (OpenMP annotations only)"
+- Section: "Rationale"
+
+Kernel to annotate:
+
+```c
+/**
+  * swaptions.c: PARSEC Benchmark Suite  — Heath-Jarrow-Morton (HJM) Swaption Pricing
+  * Adapted from core/parsec-benchmark/pkgs/apps/swaptions/src/HJM_Securities.cpp
+  * (Authors: , , , )
+  */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+#include <polybench.h>
+#include "swaptions.h"
+
+/* Moro' s Inverse Cumulative Normal Distribution approximation (CumNormalInv.cpp) */
+static DATA_TYPE CumNormalInv(DATA_TYPE u) {
+  static const DATA_TYPE a[4] = {
+    2.50662823884, -18.61500062529, 41.39119773534, -25.44106049637
+  };
+  static const DATA_TYPE b[4] = {
+    -8.47351093090, 23.08336743743, -21.06224101826, 3.13082909833
+  };
+  static const DATA_TYPE c[9] = {
+    0.3374754822726147, 0.9761690190917186, 0.1607979714918209,
+    0.0276438810333863, 0.0038405729373609, 0.0003951896511919,
+    0.0000321767881768, 0.0000002888167364, 0.0000003960315187
+  };
+
+  DATA_TYPE x = u - 0.5;
+  DATA_TYPE r;
+  if (fabs(x) < 0.42) {
+    r = x * x;
+    r = x * (((a[3] * r + a[2]) * r + a[1]) * r + a[0]) /
+         (((b[3] * r + b[2]) * r + b[1]) * r + 1.0);
+    return r;
+  }
+  r = u;
+  if (x > 0.0)
+    r = 1.0 - u;
+  r = log(-log(r));
+  r = c[0] + r * (c[1] + r * (c[2] + r * (c[3] + r * (c[4] +
+      r * (c[5] + r * (c[6] + r * (c[7] + r * c[8])))))));
+  if (x < 0.0)
+    r = -r;
+  return r;
+}
+
+/* Deterministic stateless uniform variate in (0, 1) per (swaption, trial, step, factor) */
+static DATA_TYPE HJM_RandUnif(int swaption_id, int trial, int step, int factor) {
+  unsigned int h = (unsigned int)(1979u + swaption_id * 7919u +
+                                  trial * 104729u + step * 31u + factor * 7u);
+  h ^= h >> 16;
+  h *= 0x7feb352du;
+  h ^= h >> 15;
+  h *= 0x846ca68bu;
+  h ^= h >> 16;
+  return ((DATA_TYPE)(h & 0x00ffffffu) + 0.5) / 16777216.0;
+}
+
+static void init_array(int nswaptions, int nsteps, int nfactors,
+                       DATA_TYPE POLYBENCH_1D(strikes, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_1D(maturities, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_2D(yields, NSWAPTIONS, NSTEPS, nswaptions, nsteps),
+                       DATA_TYPE POLYBENCH_2D(factors, NFACTORS, NSTEPS, nfactors, nsteps),
+                       DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                       DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i, j;
+  static const DATA_TYPE f1[11] = {
+    0.009048, 0.008187, 0.007408, 0.006703, 0.006065,
+    0.005488, 0.004966, 0.004493, 0.004066, 0.003679, 0.003329
+  };
+  static const DATA_TYPE f2[11] = {
+    0.001000, 0.000750, 0.000500, 0.000250, 0.000000,
+    -0.000250, -0.000500, -0.000750, -0.001000, -0.001250, -0.001500
+  };
+
+  for (j = 0; j < nsteps; j++) {
+    factors[0][j] = 0.01;
+    factors[1][j] = f1[j % 11];
+    factors[2][j] = f2[j % 11];
+  }
+
+  for (i = 0; i < nswaptions; i++) {
+    strikes[i] = 0.08 + 0.002 * (DATA_TYPE)(i % 45);
+    maturities[i] = 1.0 + 0.25 * (DATA_TYPE)(i % 20);
+    yields[i][0] = 0.10;
+    for (j = 1; j < nsteps; j++) {
+      yields[i][j] = yields[i][j - 1] + 0.005;
+    }
+    meanPrice[i] = 0.0;
+    stdError[i] = 0.0;
+  }
+}
+
+static void print_array(int nswaptions,
+                        DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                        DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i;
+  for (i = 0; i < nswaptions; i++) {
+    fprintf(stderr, DATA_PRINTF_MODIFIER, meanPrice[i]);
+    fprintf(stderr, DATA_PRINTF_MODIFIER, stdError[i]);
+    if (i % 10 == 0)
+      fprintf(stderr, "\n");
+  }
+  fprintf(stderr, "\n");
+}
+
+static void kernel_swaptions(int nswaptions, int ntrials, int nsteps, int nfactors,
+                             DATA_TYPE POLYBENCH_1D(strikes, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(maturities, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_2D(yields, NSWAPTIONS, NSTEPS, nswaptions, nsteps),
+                             DATA_TYPE POLYBENCH_2D(factors, NFACTORS, NSTEPS, nfactors, nsteps),
+                             DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i, t, j, f;
+  DATA_TYPE dt, sqrt_dt, sum_price, sum_sq, rate_path, discount;
+  DATA_TYPE shock, drift, vol, z, payoff, disc_payoff;
+
+#pragma scop
+  for (i = 0; i < _PB_NSWAPTIONS; i++) {
+    dt = maturities[i] / (DATA_TYPE)_PB_NSTEPS;
+    sqrt_dt = sqrt(dt);
+    sum_price = 0.0;
+    sum_sq = 0.0;
+
+    for (t = 0; t < _PB_NTRIALS; t++) {
+      rate_path = yields[i][0];
+      discount = 1.0;
+
+      for (j = 0; j < _PB_NSTEPS; j++) {
+        shock = 0.0;
+        drift = 0.0;
+        for (f = 0; f < _PB_NFACTORS; f++) {
+          vol = factors[f][j];
+          z = CumNormalInv(HJM_RandUnif(i, t, j, f));
+          shock += vol * z * sqrt_dt;
+          drift += 0.5 * vol * vol * dt;
+        }
+        rate_path = rate_path * exp(drift + shock);
+        discount = discount * exp(-rate_path * dt);
+      }
+
+      payoff = (rate_path > strikes[i]) ? (rate_path - strikes[i]) : 0.0;
+      disc_payoff = payoff * discount;
+      sum_price += disc_payoff;
+      sum_sq += disc_payoff * disc_payoff;
+    }
+
+    meanPrice[i] = sum_price / (DATA_TYPE)_PB_NTRIALS;
+    stdError[i] = sqrt(fabs(sum_sq - (sum_price * sum_price) / (DATA_TYPE)_PB_NTRIALS)) /
+                   (DATA_TYPE)_PB_NTRIALS;
+  }
+#pragma endscop
+}
+
+int main(int argc, char **argv) {
+  int nswaptions = NSWAPTIONS;
+  int ntrials = NTRIALS;
+  int nsteps = NSTEPS;
+  int nfactors = NFACTORS;
+
+  POLYBENCH_1D_ARRAY_DECL(strikes, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_1D_ARRAY_DECL(maturities, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_2D_ARRAY_DECL(yields, DATA_TYPE, NSWAPTIONS, NSTEPS, nswaptions, nsteps);
+  POLYBENCH_2D_ARRAY_DECL(factors, DATA_TYPE, NFACTORS, NSTEPS, nfactors, nsteps);
+  POLYBENCH_1D_ARRAY_DECL(meanPrice, DATA_TYPE, NSWAPTIONS, nswaptions);
+  POLYBENCH_1D_ARRAY_DECL(stdError, DATA_TYPE, NSWAPTIONS, nswaptions);
+
+  init_array(nswaptions, nsteps, nfactors,
+             POLYBENCH_ARRAY(strikes), POLYBENCH_ARRAY(maturities),
+             POLYBENCH_ARRAY(yields), POLYBENCH_ARRAY(factors),
+             POLYBENCH_ARRAY(meanPrice), POLYBENCH_ARRAY(stdError));
+
+  polybench_start_instruments;
+
+  kernel_swaptions(nswaptions, ntrials, nsteps, nfactors,
+                   POLYBENCH_ARRAY(strikes), POLYBENCH_ARRAY(maturities),
+                   POLYBENCH_ARRAY(yields), POLYBENCH_ARRAY(factors),
+                   POLYBENCH_ARRAY(meanPrice), POLYBENCH_ARRAY(stdError));
+
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  polybench_prevent_dce(print_array(nswaptions, POLYBENCH_ARRAY(meanPrice),
+                                    POLYBENCH_ARRAY(stdError)));
+
+  POLYBENCH_FREE_ARRAY(strikes);
+  POLYBENCH_FREE_ARRAY(maturities);
+  POLYBENCH_FREE_ARRAY(yields);
+  POLYBENCH_FREE_ARRAY(factors);
+  POLYBENCH_FREE_ARRAY(meanPrice);
+  POLYBENCH_FREE_ARRAY(stdError);
+
+  return 0;
+}
+```
+
+
+================================================================================

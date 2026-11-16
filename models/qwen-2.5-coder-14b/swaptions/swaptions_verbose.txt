@@ -1,0 +1,95 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                qwen2.5-coder:14b
+Code File:            ../core/parsec/kernels/swaptions/swaptions.c
+Prompt File:          ../prompts/ParsecPrompt.md
+Timestamp:            2026-11-16T00:00:34.260264182Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       24.01 s
+Load Duration:        0.00 s
+Prompt Eval Count:    3446 tokens
+Prompt Eval Duration: 0.58 s
+Prompt Eval Rate:     5990.72 tokens/s
+Eval Count:           1053 tokens
+Eval Duration:        22.99 s
+Generation Rate:      45.79 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+### Analysis
+
+The `kernel_swaptions` function contains a nested loop structure that can be parallelized. The outermost loop iterates over each swaption (`i`), and the inner loops iterate over trials (`t`), steps (`j`), and factors (`f`). The loops are independent of each other, meaning they do not have data dependencies that would require synchronization between threads.
+
+The key points to consider for parallelization:
+1. **Outer Loop (`for (i = 0; i < _PB_NSWAPTIONS; i++)`)**: This loop can be parallelized because each iteration is independent of the others.
+2. **Inner Loops**: The inner loops (`t`, `j`, and `f`) are also independent and can be parallelized within their respective scopes.
+
+### Optimized Kernel (OpenMP annotations only)
+
+```c
+static void kernel_swaptions(int nswaptions, int ntrials, int nsteps, int nfactors,
+                             DATA_TYPE POLYBENCH_1D(strikes, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(maturities, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_2D(yields, NSWAPTIONS, NSTEPS, nswaptions, nsteps),
+                             DATA_TYPE POLYBENCH_2D(factors, NFACTORS, NSTEPS, nfactors, nsteps),
+                             DATA_TYPE POLYBENCH_1D(meanPrice, NSWAPTIONS, nswaptions),
+                             DATA_TYPE POLYBENCH_1D(stdError, NSWAPTIONS, nswaptions)) {
+  int i, t, j, f;
+  DATA_TYPE dt, sqrt_dt, sum_price, sum_sq, rate_path, discount;
+  DATA_TYPE shock, drift, vol, z, payoff, disc_payoff;
+
+#pragma scop
+#pragma omp parallel for private(i, dt, sqrt_dt, sum_price, sum_sq, rate_path, discount, t, shock, drift, j, f, vol, z, payoff, disc_payoff)
+  for (i = 0; i < _PB_NSWAPTIONS; i++) {
+    dt = maturities[i] / (DATA_TYPE)_PB_NSTEPS;
+    sqrt_dt = sqrt(dt);
+    sum_price = 0.0;
+    sum_sq = 0.0;
+
+#pragma omp parallel for private(t, rate_path, discount, shock, drift, j, f, vol, z, payoff, disc_payoff)
+    for (t = 0; t < _PB_NTRIALS; t++) {
+      rate_path = yields[i][0];
+      discount = 1.0;
+
+#pragma omp parallel for private(j, shock, drift, f, vol, z)
+      for (j = 0; j < _PB_NSTEPS; j++) {
+        shock = 0.0;
+        drift = 0.0;
+
+#pragma omp parallel for private(f, vol, z)
+        for (f = 0; f < _PB_NFACTORS; f++) {
+          vol = factors[f][j];
+          z = CumNormalInv(HJM_RandUnif(i, t, j, f));
+          shock += vol * z * sqrt_dt;
+          drift += 0.5 * vol * vol * dt;
+        }
+        rate_path = rate_path * exp(drift + shock);
+        discount = discount * exp(-rate_path * dt);
+      }
+
+      payoff = (rate_path > strikes[i]) ? (rate_path - strikes[i]) : 0.0;
+      disc_payoff = payoff * discount;
+      sum_price += disc_payoff;
+      sum_sq += disc_payoff * disc_payoff;
+    }
+
+    meanPrice[i] = sum_price / (DATA_TYPE)_PB_NTRIALS;
+    stdError[i] = sqrt(fabs(sum_sq - (sum_price * sum_price) / (DATA_TYPE)_PB_NTRIALS)) /
+                  (DATA_TYPE)_PB_NTRIALS;
+  }
+#pragma endscop
+}
+```
+
+### Rationale
+
+1. **Outer Loop (`for (i = 0; i < _PB_NSWAPTIONS; i++)`)**: This loop is parallelized using `#pragma omp parallel for private(...)`. All variables modified within this loop are listed in the `private(...)` clause to ensure they are thread-private.
+2. **Inner Loops (`for (t = 0; t < _PB_NTRIALS; t++)`, `for (j = 0; j < _PB_NSTEPS; j++)`, and `for (f = 0; f < _PB_NFACTORS; f++)`)**: Each of these loops is also parallelized similarly, ensuring that all variables modified within each loop are thread-private.
+
+By adding these OpenMP pragmas, the kernel can be executed in parallel, potentially leading to significant performance improvements on multi-core systems. The structure ensures that the original logic and numerical results remain unchanged.
+================================================================================

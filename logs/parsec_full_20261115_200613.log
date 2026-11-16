@@ -1,0 +1,428 @@
+nohup: ignoring input
+========================================================================
+PIPELINE AUTOMATIZADO DE ANOTAÇÃO OPENMP — BENCHMARK PARSEC (OLLAMA)
+Data/Hora de Início: Sun Nov 15 08:06:13 PM -03 2026
+Arquivo de Log:      ../logs/execute_parsec_20261115_200613.log
+Kernels PARSEC:      blackscholes swaptions fluidanimate streamcluster freqmine
+========================================================================
+Interpretador Python: ../.venv/bin/python
+Modelos especificados via argumento: all
+[-] Modelo 'all' não mapeado no case. Pulando...
+
+========================================================================
+EXECUÇÃO PARSEC CONCLUÍDA!
+Data/Hora de Término: Sun Nov 15 08:06:13 PM -03 2026
+Sucessos:             0
+Falhas:               0
+Modelos Ignorados:    1
+Log Consolidado:      ../logs/execute_parsec_20261115_200613.log
+Códigos Salvos em:    ../models/
+========================================================================
+======================================================================
+🔍 EXECUTANDO VERIFICAÇÃO EM 4 NÍVEIS (PARSEC 3.0)
+======================================================================
+============================================================================================================================
+RELATÓRIO DE VERIFICAÇÃO EM 4 NÍVEIS — BENCHMARK SUITE PARSEC 3.0
+============================================================================================================================
+Modelo                     | Kernel        | G1: Imutável | G2: Pragmas   | G3: Compila | G4: Numérico | Diagnóstico
+----------------------------------------------------------------------------------------------------------------------------
+openmp                     | blackscholes  | PASS         | PASS (1k/0f)  | PASS        | PASS         | 100% valido (1 pragmas no kernel, Identico (erro_rel_max=0
+openmp                     | swaptions     | PASS         | PASS (1k/0f)  | PASS        | PASS         | 100% valido (1 pragmas no kernel, Identico (erro_rel_max=0
+openmp                     | fluidanimate  | PASS         | PASS (3k/0f)  | PASS        | PASS         | 100% valido (3 pragmas no kernel, Identico (erro_rel_max=0
+openmp                     | streamcluster | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas no kernel, Identico (erro_rel_max=0
+openmp                     | freqmine      | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas no kernel, Identico (erro_rel_max=0
+codestral_22b              | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral_22b              | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral_22b              | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral_22b              | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral_22b              | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+granite-code-20b           | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+granite-code-20b           | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+granite-code-20b           | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+granite-code-20b           | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+granite-code-20b           | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+qwen-2.5-coder-14b         | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+qwen-2.5-coder-14b         | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+qwen-2.5-coder-14b         | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+qwen-2.5-coder-14b         | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+qwen-2.5-coder-14b         | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+starcode-2_15b             | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+starcode-2_15b             | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+starcode-2_15b             | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+starcode-2_15b             | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+starcode-2_15b             | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+deepseekcoder-coder-v2_16b | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+deepseekcoder-coder-v2_16b | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+deepseekcoder-coder-v2_16b | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+deepseekcoder-coder-v2_16b | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+deepseekcoder-coder-v2_16b | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codellama_13b              | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codellama_13b              | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codellama_13b              | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codellama_13b              | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codellama_13b              | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_16b       | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_16b       | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_16b       | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_16b       | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_16b       | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_8b        | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_8b        | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_8b        | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_8b        | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_8b        | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_4b        | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_4b        | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_4b        | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_4b        | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_4b        | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_3b        | blackscholes  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_3b        | swaptions     | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_3b        | fluidanimate  | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_3b        | streamcluster | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+codestral-openmp_3b        | freqmine      | FAIL         | FAIL (0/0)    | FAIL        | SKIP         | Arquivo ausente
+
+============================================================================================================================
+SÍNTESE POR MODELO — BENCHMARKS PARSEC 3.0
+============================================================================================================================
+Modelo                     | G1 Imutável    | G2 Paralelismo  | G3 Compilação    | G4 Numérico    | Aprovação Total (4/4)
+----------------------------------------------------------------------------------------------------------------------------
+openmp                     | 5/5            | 5/5             | 5/5 (100%)       | 5/5            | 5/5 (100%)
+codestral_22b              | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+granite-code-20b           | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+qwen-2.5-coder-14b         | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+starcode-2_15b             | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+deepseekcoder-coder-v2_16b | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+codellama_13b              | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+codestral-openmp_16b       | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+codestral-openmp_8b        | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+codestral-openmp_4b        | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+codestral-openmp_3b        | 0/5            | 0/5             | 0/5 (0%)         | 0/5            | 0/5 (0%)
+----------------------------------------------------------------------------------------------------------------------------
+TOTAL GLOBAL (55 casos): Compiláveis (G3) = 5/55 (9.1%) | Numericamente Corretos (G4) = 5/55 (9.1%) | Aprovados nos 4 Gates = 5/55 (9.1%)
+Relatório CSV salvo em: results/verificacao_parsec.csv
+============================================================================================================================
+
+======================================================================
+📦 PREPARANDO PARSEC DATASET: STANDARD (-DSTANDARD_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando baseline sequential (PARSEC) para STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/parsec/kernels/blackscholes ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/blackscholes/blackscholes.c -lm -o blackscholes-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/parsec/kernels/swaptions ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/swaptions/swaptions.c -lm -o swaptions-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/parsec/kernels/fluidanimate ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/fluidanimate/fluidanimate.c -lm -o fluidanimate-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/parsec/kernels/streamcluster ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/streamcluster/streamcluster.c -lm -o streamcluster-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/parsec/kernels/freqmine ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/freqmine/freqmine.c -lm -o freqmine-seq.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+🚀 Executando baseline sequential (1T) | DATASET: STANDARD...
+🏃 Executando sequential/blackscholes (standard) | 1T .......... OK
+🏃 Executando sequential/swaptions (standard) | 1T .......... OK
+🏃 Executando sequential/fluidanimate (standard) | 1T .......... OK
+🏃 Executando sequential/streamcluster (standard) | 1T .......... OK
+🏃 Executando sequential/freqmine (standard) | 1T .......... OK
+----------------------------------------------------------------------
+🔨 Compilando openmp (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/parsec/kernels/blackscholes ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/blackscholes/blackscholes.c -lm -lgomp -o blackscholes-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/parsec/kernels/swaptions ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/swaptions/swaptions.c -lm -lgomp -o swaptions-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/parsec/kernels/fluidanimate ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/fluidanimate/fluidanimate.c -lm -lgomp -o fluidanimate-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/parsec/kernels/streamcluster ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/streamcluster/streamcluster.c -lm -lgomp -o streamcluster-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/parsec/kernels/freqmine ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/freqmine/freqmine.c -lm -lgomp -o freqmine-openmp.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+----------------------------------------------------------------------
+🔨 Compilando codestral_22b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+----------------------------------------------------------------------
+🔨 Compilando granite-code-20b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+----------------------------------------------------------------------
+🔨 Compilando qwen-2.5-coder-14b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+----------------------------------------------------------------------
+🔨 Compilando starcode-2_15b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+----------------------------------------------------------------------
+🔨 Compilando deepseekcoder-coder-v2_16b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+----------------------------------------------------------------------
+🔨 Compilando codellama_13b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b (PARSEC) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 1T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 1T .......... OK
+🏃 Executando openmp/swaptions (standard) | 1T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 1T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 1T .......... OK
+🏃 Executando openmp/freqmine (standard) | 1T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 2T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 2T .......... OK
+🏃 Executando openmp/swaptions (standard) | 2T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 2T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 2T .......... OK
+🏃 Executando openmp/freqmine (standard) | 2T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 4T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 4T .......... OK
+🏃 Executando openmp/swaptions (standard) | 4T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 4T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 4T .......... OK
+🏃 Executando openmp/freqmine (standard) | 4T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 8T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 8T .......... OK
+🏃 Executando openmp/swaptions (standard) | 8T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 8T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 8T .......... OK
+🏃 Executando openmp/freqmine (standard) | 8T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 16T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 16T .......... OK
+🏃 Executando openmp/swaptions (standard) | 16T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 16T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 16T .......... OK
+🏃 Executando openmp/freqmine (standard) | 16T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 32T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 32T .......... OK
+🏃 Executando openmp/swaptions (standard) | 32T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 32T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 32T .......... OK
+🏃 Executando openmp/freqmine (standard) | 32T .......... OK
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: STANDARD | THREADS: 64T
+======================================================================
+🏃 Executando openmp/blackscholes (standard) | 64T .......... OK
+🏃 Executando openmp/swaptions (standard) | 64T .......... OK
+🏃 Executando openmp/fluidanimate (standard) | 64T .......... OK
+🏃 Executando openmp/streamcluster (standard) | 64T .......... OK
+🏃 Executando openmp/freqmine (standard) | 64T .......... OK
+
+======================================================================
+📦 PREPARANDO PARSEC DATASET: LARGE (-DLARGE_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando baseline sequential (PARSEC) para LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/parsec/kernels/blackscholes ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/blackscholes/blackscholes.c -lm -o blackscholes-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/parsec/kernels/swaptions ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/swaptions/swaptions.c -lm -o swaptions-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/parsec/kernels/fluidanimate ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/fluidanimate/fluidanimate.c -lm -o fluidanimate-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/parsec/kernels/streamcluster ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/streamcluster/streamcluster.c -lm -o streamcluster-seq.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/parsec/kernels/freqmine ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/kernels/freqmine/freqmine.c -lm -o freqmine-seq.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+🚀 Executando baseline sequential (1T) | DATASET: LARGE...
+🏃 Executando sequential/blackscholes (large) | 1T .......... OK
+🏃 Executando sequential/swaptions (large) | 1T .......... OK
+🏃 Executando sequential/fluidanimate (large) | 1T .......... OK
+🏃 Executando sequential/streamcluster (large) | 1T .......... OK
+🏃 Executando sequential/freqmine (large) | 1T .......... OK
+----------------------------------------------------------------------
+🔨 Compilando openmp (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/parsec/kernels/blackscholes ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/blackscholes/blackscholes.c -lm -lgomp -o blackscholes-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/parsec/kernels/swaptions ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/swaptions/swaptions.c -lm -lgomp -o swaptions-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/parsec/kernels/fluidanimate ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/fluidanimate/fluidanimate.c -lm -lgomp -o fluidanimate-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/parsec/kernels/streamcluster ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/streamcluster/streamcluster.c -lm -lgomp -o streamcluster-openmp.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/parsec/kernels/freqmine ../../core/polybench-c-3.2/utilities/polybench.c ../../core/parsec/openmp/freqmine/freqmine.c -lm -lgomp -o freqmine-openmp.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+----------------------------------------------------------------------
+🔨 Compilando codestral_22b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+----------------------------------------------------------------------
+🔨 Compilando granite-code-20b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+----------------------------------------------------------------------
+🔨 Compilando qwen-2.5-coder-14b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+----------------------------------------------------------------------
+🔨 Compilando starcode-2_15b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+----------------------------------------------------------------------
+🔨 Compilando deepseekcoder-coder-v2_16b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+----------------------------------------------------------------------
+🔨 Compilando codellama_13b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b (PARSEC) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [SKIP] blackscholes/blackscholes.c ausente
+  [SKIP] swaptions/swaptions.c ausente
+  [SKIP] fluidanimate/fluidanimate.c ausente
+  [SKIP] streamcluster/streamcluster.c ausente
+  [SKIP] freqmine/freqmine.c ausente
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO PARSEC | DATASET: LARGE | THREADS: 1T
+======================================================================
+🏃 Executando openmp/blackscholes (large) | 1T .......... OK
+🏃 Executando openmp/swaptions (large) | 1T .......... OK
+🏃 Executando openmp/fluidanimate (large) | 1T .......... OK
+🏃 Executando openmp/streamcluster (large) | 1T .......... OK
+🏃 Executando openmp/freqmine (large) | 1T .......... OK

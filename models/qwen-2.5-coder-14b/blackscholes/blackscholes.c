@@ -1,0 +1,171 @@
+/**
+ * blackscholes.c: PARSEC Benchmark Suite — Black-Scholes PDE Option Pricing
+ * Adapted from core/parsec-benchmark/pkgs/apps/blackscholes/src/blackscholes.c
+ * (Copyright (c) 2007 Intel Corp. / Princeton University PARSEC Suite)
+ */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+#include <polybench.h>
+#include "blackscholes.h"
+
+#define INV_SQRT_2XPI 0.39894228040143270286
+
+/* Cumulative Normal Distribution Function (Hull, Section 11.8) */
+static DATA_TYPE CNDF(DATA_TYPE InputX) {
+  int sign;
+  DATA_TYPE OutputX, xInput, xNPrimeofX, expValues;
+  DATA_TYPE xK2, xK2_2, xK2_3, xK2_4, xK2_5;
+  DATA_TYPE xLocal, xLocal_1, xLocal_2, xLocal_3;
+
+  if (InputX < 0.0) {
+    InputX = -InputX;
+    sign = 1;
+  } else {
+    sign = 0;
+  }
+
+  xInput = InputX;
+  expValues = exp(-0.5 * InputX * InputX);
+  xNPrimeofX = expValues * INV_SQRT_2XPI;
+
+  xK2 = 1.0 / (1.0 + 0.2316419 * xInput);
+  xK2_2 = xK2 * xK2;
+  xK2_3 = xK2_2 * xK2;
+  xK2_4 = xK2_3 * xK2;
+  xK2_5 = xK2_4 * xK2;
+
+  xLocal_1 = xK2 * 0.319381530;
+  xLocal_2 = xK2_2 * (-0.356563782);
+  xLocal_3 = xK2_3 * 1.781477937;
+  xLocal_2 = xLocal_2 + xLocal_3;
+  xLocal_3 = xK2_4 * (-1.821255978);
+  xLocal_2 = xLocal_2 + xLocal_3;
+  xLocal_3 = xK2_5 * 1.330274429;
+  xLocal_2 = xLocal_2 + xLocal_3;
+
+  xLocal_1 = xLocal_2 + xLocal_1;
+  xLocal = 1.0 - xLocal_1 * xNPrimeofX;
+  OutputX = sign ? (1.0 - xLocal) : xLocal;
+
+  return OutputX;
+}
+
+/* Analytical Black-Scholes European Option Pricing Equation */
+static DATA_TYPE BlkSchlsEqEuroNoDiv(DATA_TYPE sptprice, DATA_TYPE strike,
+                                     DATA_TYPE rate, DATA_TYPE volatility,
+                                     DATA_TYPE time, int otype) {
+  DATA_TYPE OptionPrice;
+  DATA_TYPE xSqrtTime = sqrt(time);
+  DATA_TYPE logValues = log(sptprice / strike);
+  DATA_TYPE xPowerTerm = 0.5 * volatility * volatility;
+  DATA_TYPE xDen = volatility * xSqrtTime;
+  DATA_TYPE d1 = ((rate + xPowerTerm) * time + logValues) / xDen;
+  DATA_TYPE d2 = d1 - xDen;
+  DATA_TYPE NofXd1 = CNDF(d1);
+  DATA_TYPE NofXd2 = CNDF(d2);
+  DATA_TYPE FutureValueX = strike * exp(-rate * time);
+
+  if (otype == 0) {
+    OptionPrice = (sptprice * NofXd1) - (FutureValueX * NofXd2);
+  } else {
+    OptionPrice = (FutureValueX * (1.0 - NofXd2)) - (sptprice * (1.0 - NofXd1));
+  }
+  return OptionPrice;
+}
+
+static void init_array(int nopt,
+                       DATA_TYPE POLYBENCH_1D(sptprice, NOPT, nopt),
+                       DATA_TYPE POLYBENCH_1D(strike, NOPT, nopt),
+                       DATA_TYPE POLYBENCH_1D(rate, NOPT, nopt),
+                       DATA_TYPE POLYBENCH_1D(volatility, NOPT, nopt),
+                       DATA_TYPE POLYBENCH_1D(otime, NOPT, nopt),
+                       int POLYBENCH_1D(otype, NOPT, nopt),
+                       DATA_TYPE POLYBENCH_1D(prices, NOPT, nopt)) {
+  int i;
+  for (i = 0; i < nopt; i++) {
+    sptprice[i] = 30.0 + (DATA_TYPE)(i % 80);
+    strike[i] = 25.0 + (DATA_TYPE)((i * 7) % 90);
+    rate[i] = 0.02 + 0.001 * (DATA_TYPE)(i % 60);
+    volatility[i] = 0.10 + 0.005 * (DATA_TYPE)(i % 50);
+    otime[i] = 0.25 + 0.25 * (DATA_TYPE)((i % 12) + 1);
+    otype[i] = i % 2;
+    prices[i] = 0.0;
+  }
+}
+
+static void print_array(int nopt,
+                        DATA_TYPE POLYBENCH_1D(prices, NOPT, nopt)) {
+  int i;
+  for (i = 0; i < nopt; i++) {
+    fprintf(stderr, DATA_PRINTF_MODIFIER, prices[i]);
+    if (i % 20 == 0)
+      fprintf(stderr, "\n");
+  }
+  fprintf(stderr, "\n");
+}
+
+static void kernel_blackscholes(int nopt, int nruns,
+                                DATA_TYPE POLYBENCH_1D(sptprice, NOPT, nopt),
+                                DATA_TYPE POLYBENCH_1D(strike, NOPT, nopt),
+                                DATA_TYPE POLYBENCH_1D(rate, NOPT, nopt),
+                                DATA_TYPE POLYBENCH_1D(volatility, NOPT, nopt),
+                                DATA_TYPE POLYBENCH_1D(otime, NOPT, nopt),
+                                int POLYBENCH_1D(otype, NOPT, nopt),
+                                DATA_TYPE POLYBENCH_1D(prices, NOPT, nopt)) {
+  int i, j;
+  DATA_TYPE price;
+
+#pragma scop
+  for (i = 0; i < _PB_NOPT; i++) {
+    #pragma omp parallel for private(price)
+    for (j = 0; j < _PB_NRUNS; j++) {
+      price = BlkSchlsEqEuroNoDiv(sptprice[i], strike[i], rate[i],
+                                  volatility[i], otime[i], otype[i]);
+      prices[i] = price;
+    }
+  }
+#pragma endscop
+}
+
+int main(int argc, char **argv) {
+  int nopt = NOPT;
+  int nruns = NRUNS;
+
+  POLYBENCH_1D_ARRAY_DECL(sptprice, DATA_TYPE, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(strike, DATA_TYPE, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(rate, DATA_TYPE, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(volatility, DATA_TYPE, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(otime, DATA_TYPE, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(otype, int, NOPT, nopt);
+  POLYBENCH_1D_ARRAY_DECL(prices, DATA_TYPE, NOPT, nopt);
+
+  init_array(nopt, POLYBENCH_ARRAY(sptprice), POLYBENCH_ARRAY(strike),
+             POLYBENCH_ARRAY(rate), POLYBENCH_ARRAY(volatility),
+             POLYBENCH_ARRAY(otime), POLYBENCH_ARRAY(otype),
+             POLYBENCH_ARRAY(prices));
+
+  polybench_start_instruments;
+
+  kernel_blackscholes(nopt, nruns, POLYBENCH_ARRAY(sptprice),
+                      POLYBENCH_ARRAY(strike), POLYBENCH_ARRAY(rate),
+                      POLYBENCH_ARRAY(volatility), POLYBENCH_ARRAY(otime),
+                      POLYBENCH_ARRAY(otype), POLYBENCH_ARRAY(prices));
+
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  polybench_prevent_dce(print_array(nopt, POLYBENCH_ARRAY(prices)));
+
+  POLYBENCH_FREE_ARRAY(sptprice);
+  POLYBENCH_FREE_ARRAY(strike);
+  POLYBENCH_FREE_ARRAY(rate);
+  POLYBENCH_FREE_ARRAY(volatility);
+  POLYBENCH_FREE_ARRAY(otime);
+  POLYBENCH_FREE_ARRAY(otype);
+  POLYBENCH_FREE_ARRAY(prices);
+
+  return 0;
+}

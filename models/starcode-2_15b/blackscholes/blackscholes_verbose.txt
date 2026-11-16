@@ -1,0 +1,134 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/parsec/kernels/blackscholes/blackscholes.c
+Prompt File:          ../prompts/ParsecPrompt.md
+Timestamp:            2026-11-16T00:03:34.389785303Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       41.67 s
+Load Duration:        9.96 s
+Prompt Eval Count:    3189 tokens
+Prompt Eval Duration: 1.00 s
+Prompt Eval Rate:     3189.48 tokens/s
+Eval Count:           1405 tokens
+Eval Duration:        30.69 s
+Generation Rate:      45.78 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+Task: Annotate an existing PARSEC C kernel with OpenMP pragmas.
+
+You are an expert in High-Performance Computing, C, and OpenMP.
+
+Goal:
+Insert OpenMP pragmas to parallelize the computational kernel for performance, WITHOUT modifying the original C code logic, loop structure, or statements.
+
+Strict Rules (must follow exactly):
+- DO NOT change, reorder, remove, or refactor any line of C code (keep every comment, #include header, helper function, and main() intact).
+- DO NOT introduce temporary variables.
+- DO NOT change loop bounds or nesting.
+- ONLY add OpenMP pragmas  (#pragma omp ...) immediately before existing safe `for` loops inside the main `kernel_*` function (between `#pragma scop` and `#pragma endscop`). DO NOT add pragmas inside `init_array`, `print_array`, helper functions, or `main`.
+- NEVER place two `#pragma omp` directives consecutively; every `#pragma omp` line MUST be immediately followed on the very next line by a `for (...) ` statement.
+- Always use `#pragma omp parallel for` (do NOT omit the `for` keyword when annotating a `for` loop).
+- CRITICAL C89 RULE: Because loop variables (`i`, `j`, `k`, `t`, `d`, `f`, `v`) and working scalar variables (`price`, `dist`, `diff`, `x_cost`, `dt`, `sqrt_dt`, `sum_price`, `sum_sq`, `rate_path`, `discount`, `shock`, `drift`, `vol`, `z`, `payoff`, `disc_payoff`, `dx`, `dy`, `dz`, `distSq`, `hmr`, `fpress`, `inv_rho`, `mask`, `has_item`, `count`, `score`, `w`) are declared at the top of `kernel_*`, whenever you parallelize a loop over an index (such as `i`, `t`, or `item`), you MUST explicitly list all inner loop counters and temporary scalar variables modified inside that loop in `private(...)`. Leaving inner loop counters or temporary scalars out of `private(...)` makes them shared across threads and causes race conditions!
+- Do NOT parallelize sequential time-stepping or iterative outer loops (`for (fr = 0; ...) `or `for (step = 0; ...)` where iteration `fr+1` depends on arrays updated in iteration `fr`); instead, parallelize the spatial/data-parallel inner loops (`for (i = 0; ...)`).
+- You MUST return the COMPLETE, FULL, COMPILABLE C source file from the opening comment/#include to the closing `}` of `main()` inside a single ```c ... ``` block.
+- Numerical results must remain identical.
+
+Instructions:
+1. Briefly analyze the loop nest and data dependencies in the `kernel_*` function.
+2. Decide which loops are safe to parallelize.
+3. Add OpenMP pragmas with correct `private(...)` and `schedule(...)` clauses.
+4. Assume compilation with: gcc -O3 -fopenmp.
+
+Output format:
+- Section: "Analysis"
+- Section: "Optimized Kernel (OpenMP annotations only)"
+- Section: "Rationale"
+
+Kernel to annotate:
+
+```c
+/**
+  * ludcmp.c: PARSEC Benchmark Suite  — LU Decomposition
+  * Adapted from core/parsec-benchmark/pkgs/apps/ludcmp/src/ludcmp.c
+  * (Copyright (c) 2007 Intel Corp. / Princeton University PARSEC Suite)
+  */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+#include <polybench.h>
+#include "ludcmp.h"
+
+
+static void init_array(int m, int n,
+                       DATA_TYPE POLYBENCH_2D(A, M, N, m, n)) {
+  int i, j;
+
+  for  (i = 0; i < m; i++)
+    for  (j = 0; j < n; j++)
+      A[i][j] = ((DATA_TYPE) i * j) / m;
+}
+
+
+static void print_array(int m, int n,
+                        DATA_TYPE POLYBENCH_2D(A, M, N, m, n)) {
+  int i, j;
+
+  for  (i = 0; i < m; i++)
+    for  (j = 0; j < n; j++) {
+      fprintf(stderr, DATA_PRINTF_MODIFIER, A[i][j]);
+      if  ((i * m + j) % 20 == 0)
+        fprintf(stderr, "\n");
+     }
+  fprintf(stderr, "\n");
+}
+
+
+static void kernel_ludcmp(int m, int n,
+                          DATA_TYPE POLYBENCH_2D(A, M, N, m, n)) {
+  int i, j, k;
+  DATA_TYPE sum;
+
+  for  (k = 0; k < _PB_M - 1; k++) {
+    for  (i = k + 1; i < _PB_M; i++) {
+      A[i][k] /= A[k][k];
+      for  (j = k + 1; j < _PB_N; j++)
+        A[i][j] -= A[i][k] * A[k][j];
+     }
+   }
+}
+
+
+int main(int argc, char **argv) {
+  int m = M;
+  int n = N;
+
+  POLYBENCH_2D_ARRAY_DECL(A, DATA_TYPE, M, N, m, n);
+
+  init_array(m, n, POLYBENCH_ARRAY(A));
+
+  polybench_start_instruments;
+
+  kernel_ludcmp(m, n, POLYBENCH_ARRAY(A));
+
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  polybench_prevent_dce(print_array(m, n, POLYBENCH_ARRAY(A)));
+
+  POLYBENCH_FREE_ARRAY(A);
+
+  return 0;
+}
+```
+
+
+================================================================================

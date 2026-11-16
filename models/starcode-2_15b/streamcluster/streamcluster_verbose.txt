@@ -1,0 +1,183 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                starcoder2:15b
+Code File:            ../core/parsec/kernels/streamcluster/streamcluster.c
+Prompt File:          ../prompts/ParsecPrompt.md
+Timestamp:            2026-11-16T00:07:10.015643482Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       47.71 s
+Load Duration:        0.00 s
+Prompt Eval Count:    2327 tokens
+Prompt Eval Duration: 0.36 s
+Prompt Eval Rate:     6407.86 tokens/s
+Eval Count:           2141 tokens
+Eval Duration:        47.00 s
+Generation Rate:      45.56 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+Task: Annotate an existing PARSEC C kernel with OpenMP pragmas.
+
+You are an expert in High-Performance Computing, C, and OpenMP.
+
+Goal:
+Insert OpenMP pragmas to parallelize the computational kernel for performance, WITHOUT modifying the original C code logic, loop structure, or statements.
+
+Strict Rules (must follow exactly):
+- DO NOT change, reorder, remove, or refactor any line of C code (keep every comment, #include header, helper function, and main() intact).
+- DO NOT introduce temporary variables.
+- DO NOT change loop bounds or nesting.
+- ONLY add OpenMP pragmas  (#pragma omp ...) immediately before existing safe `for` loops inside the main `kernel_*` function (between `#pragma scop` and `#pragma endscop`). DO NOT add pragmas inside `init_array`, `print_array`, helper functions, or `main`.
+- NEVER place two `#pragma omp` directives consecutively; every `#pragma omp` line MUST be immediately followed on the very next line by a `for (...) ` statement.
+- Always use `#pragma omp parallel for` (do NOT omit the `for` keyword when annotating a `for` loop).
+- CRITICAL C89 RULE: Because loop variables (`i`, `j`, `k`, `t`, `d`, `f`, `v`) and working scalar variables (`price`, `dist`, `diff`, `x_cost`, `dt`, `sqrt_dt`, `sum_price`, `sum_sq`, `rate_path`, `discount`, `shock`, `drift`, `vol`, `z`, `payoff`, `disc_payoff`, `dx`, `dy`, `dz`, `distSq`, `hmr`, `fpress`, `inv_rho`, `mask`, `has_item`, `count`, `score`, `w`) are declared at the top of `kernel_*`, whenever you parallelize a loop over an index (such as `i`, `t`, or `item`), you MUST explicitly list all inner loop counters and temporary scalar variables modified inside that loop in `private(...)`. Leaving inner loop counters or temporary scalars out of `private(...)` makes them shared across threads and causes race conditions!
+- Do NOT parallelize sequential time-stepping or iterative outer loops (`for (fr = 0; ...) `or `for (step = 0; ...)` where iteration `fr+1` depends on arrays updated in iteration `fr`); instead, parallelize the spatial/data-parallel inner loops (`for (i = 0; ...)`).
+- You MUST return the COMPLETE, FULL, COMPILABLE C source file from the opening comment/#include to the closing `}` of `main()` inside a single ```c ... ``` block.
+- Numerical results must remain identical.
+
+Instructions:
+1. Briefly analyze the loop nest and data dependencies in the `kernel_*` function.
+2. Decide which loops are safe to parallelize.
+3. Add OpenMP pragmas with correct `private(...)` and `schedule(...)` clauses.
+4. Assume compilation with: gcc -O3 -fopenmp.
+
+Output format:
+- Section: "Analysis"
+- Section: "Optimized Kernel (OpenMP annotations only)"
+- Section: "Rationale"
+
+Kernel to annotate:
+
+```c
+/**
+  * streamcluster.c: PARSEC Benchmark Suite  — Online k-Median Stream Clustering
+  * Adapted from core/parsec-benchmark/pkgs/kernels/streamcluster/src/streamcluster.cpp
+  * (Authors: , Gilberto Contreras, Princeton University)
+  */
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+
+#include <polybench.h>
+#include "streamcluster.h"
+
+static void init_array(int npoints, int ndim, int niter,
+                       DATA_TYPE POLYBENCH_2D(points, NPOINTS, NDIM, npoints, ndim),
+                       DATA_TYPE POLYBENCH_1D(weight, NPOINTS, npoints),
+                       int POLYBENCH_1D(feasible, NITER, niter),
+                       DATA_TYPE POLYBENCH_1D(cost, NPOINTS, npoints),
+                       int POLYBENCH_1D(assign, NPOINTS, npoints)) {
+  int i, d;
+  for  (i = 0; i < npoints; i++) {
+    weight[i] = 1.0 + 0.05 * (DATA_TYPE)(i % 20);
+    cost[i] = 0.0;
+    assign[i] = 0;
+    for  (d = 0; d < ndim; d++) {
+      points[i][d] = ((DATA_TYPE)(((i + 1) * (d + 3) * 31 + i * i * 7 + d * 17) % 1009)) / 1009.0;
+    }
+  }
+  for  (i = 0; i < niter; i++) {
+    feasible[i] = (i * 97 + 13) % npoints;
+  }
+}
+
+static void print_array(int npoints,
+                        DATA_TYPE POLYBENCH_1D(cost, NPOINTS, npoints),
+                        int POLYBENCH_1D(assign, NPOINTS, npoints)) {
+  int i;
+  for  (i = 0; i < npoints; i++) {
+    fprintf(stderr, DATA_PRINTF_MODIFIER, cost[i]);
+    fprintf(stderr, "%d ", assign[i]);
+    if  (i % 10 == 0)
+      fprintf(stderr, "\n");
+  }
+  fprintf(stderr, "\n");
+}
+
+static void kernel_streamcluster(int npoints, int ndim, int niter,
+                                 DATA_TYPE POLYBENCH_2D(points, NPOINTS, NDIM, npoints, ndim),
+                                 DATA_TYPE POLYBENCH_1D(weight, NPOINTS, npoints),
+                                 int POLYBENCH_1D(feasible, NITER, niter),
+                                 DATA_TYPE POLYBENCH_1D(cost, NPOINTS, npoints),
+                                 int POLYBENCH_1D(assign, NPOINTS, npoints)) {
+  int i, d, step, x;
+  DATA_TYPE dist, diff, x_cost;
+
+#pragma scop
+   /* Initial facility center assignment (pspeedy / CenterCreate)  */
+  for  (i = 0; i < _PB_NPOINTS; i++) {
+    dist = 0.0;
+    for  (d = 0; d < _PB_NDIM; d++) {
+      diff = points[i][d] - points[0][d];
+      dist += diff * diff;
+    }
+    cost[i] = dist * weight[i];
+    assign[i] = 0;
+  }
+
+   /* Online local search over candidate facilities (pFL / pgain)  */
+  for  (step = 0; step < _PB_NITER; step++) {
+    x = feasible[step];
+    for  (i = 0; i < _PB_NPOINTS; i++) {
+      dist = 0.0;
+      for  (d = 0; d < _PB_NDIM; d++) {
+        diff = points[i][d] - points[x][d];
+        dist += diff * diff;
+      }
+      x_cost = dist * weight[i];
+      if  (x_cost < cost[i]) {
+        cost[i] = x_cost;
+        assign[i] = x;
+      }
+    }
+  }
+#pragma endscop
+}
+
+int main(int argc, char **argv) {
+  int npoints = NPOINTS;
+  int ndim = NDIM;
+  int niter = NITER;
+
+  POLYBENCH_2D_ARRAY_DECL(points, DATA_TYPE, NPOINTS, NDIM, npoints, ndim);
+  POLYBENCH_1D_ARRAY_DECL(weight, DATA_TYPE, NPOINTS, npoints);
+  POLYBENCH_1D_ARRAY_DECL(feasible, int, NITER, niter);
+  POLYBENCH_1D_ARRAY_DECL(cost, DATA_TYPE, NPOINTS, npoints);
+  POLYBENCH_1D_ARRAY_DECL(assign, int, NPOINTS, npoints);
+
+  init_array(npoints, ndim, niter,
+             POLYBENCH_ARRAY(points), POLYBENCH_ARRAY(weight),
+             POLYBENCH_ARRAY(feasible), POLYBENCH_ARRAY(cost),
+             POLYBENCH_ARRAY(assign));
+
+  polybench_start_instruments;
+
+  kernel_streamcluster(npoints, ndim, niter,
+                       POLYBENCH_ARRAY(points), POLYBENCH_ARRAY(weight),
+                       POLYBENCH_ARRAY(feasible), POLYBENCH_ARRAY(cost),
+                       POLYBENCH_ARRAY(assign));
+
+  polybench_stop_instruments;
+  polybench_print_instruments;
+
+  polybench_prevent_dce(print_array(npoints, POLYBENCH_ARRAY(cost),
+                                    POLYBENCH_ARRAY(assign)));
+
+  POLYBENCH_FREE_ARRAY(points);
+  POLYBENCH_FREE_ARRAY(weight);
+  POLYBENCH_FREE_ARRAY(feasible);
+  POLYBENCH_FREE_ARRAY(cost);
+  POLYBENCH_FREE_ARRAY(assign);
+
+  return 0;
+}
+```
+
+
+================================================================================
