@@ -6,6 +6,7 @@ CORE_DIR       = ../../core/polybench-c-3.2
 UTILS_DIR      = $(CORE_DIR)/utilities
 KERNELS_DIR    = $(CORE_DIR)/linear-algebra/kernels
 PARSEC_SEQ_DIR = ../../core/parsec/kernels
+ANON_SEQ_DIR   = ../../core/anonymized/op_x
 POLY_SRC       = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 
@@ -15,10 +16,11 @@ CC = gcc
 CFLAGS = -O3 -I $(UTILS_DIR) -DPOLYBENCH_TIME $(DATASET_SIZE)
 LDFLAGS = -lm
 
-# 4. Alvos (Kernels Originais PolyBench e PARSEC)
-.PHONY: all parsec clean
+# 4. Alvos (Kernels Originais PolyBench, PARSEC e Anonimizado)
+.PHONY: all parsec anon clean
 all: 2mmseq 3mmseq ataxseq gemmseq syr2kseq
 parsec: blackscholesseq swaptionsseq fluidanimateseq streamclusterseq freqmineseq
+anon: opxseq
 
 # Regras buscando o código original diretamente da pasta core (PolyBench)
 2mmseq: $(KERNELS_DIR)/2mm/2mm.c $(KERNELS_DIR)/2mm/2mm.h
@@ -51,6 +53,10 @@ streamclusterseq: $(PARSEC_SEQ_DIR)/streamcluster/streamcluster.c $(PARSEC_SEQ_D
 
 freqmineseq: $(PARSEC_SEQ_DIR)/freqmine/freqmine.c $(PARSEC_SEQ_DIR)/freqmine/freqmine.h
 	$(CC) $(CFLAGS) -I $(PARSEC_SEQ_DIR)/freqmine $(POLY_SRC) $(PARSEC_SEQ_DIR)/freqmine/freqmine.c $(LDFLAGS) -o freqmine-seq.exe
+
+# Regra para o método anonimizado (op_x / compute_pipeline)
+opxseq: $(ANON_SEQ_DIR)/op_x.c $(ANON_SEQ_DIR)/op_x.h
+	$(CC) $(CFLAGS) -I $(ANON_SEQ_DIR) $(POLY_SRC) $(ANON_SEQ_DIR)/op_x.c $(LDFLAGS) -o op_x-seq.exe
 
 clean:
 	rm -f *.exe

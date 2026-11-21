@@ -8,10 +8,10 @@ import urllib.error
 
 def extract_kernel_function(code_str):
     """
-    Finds `static void kernel_<name>(...) { ... }` using brace balancing.
-    Returns (start_idx, end_idx, func_text) or None.
+    Finds `static void kernel_<name>(...) { ... }` or `static void compute_pipeline(...) { ... }`
+    using brace balancing. Returns (start_idx, end_idx, func_text) or None.
     """
-    m = re.search(r'static\s+void\s+kernel_\w+\s*\(', code_str)
+    m = re.search(r'static\s+void\s+(?:kernel_\w+|compute_pipeline)\s*\(', code_str)
     if not m:
         return None
     start = m.start()
@@ -86,9 +86,9 @@ def _score_c_candidate(block):
         score += 25
     if 'main' in clean_block:
         score += 30
-    if 'kernel_' in clean_block:
+    if 'kernel_' in clean_block or 'compute_pipeline' in clean_block:
         score += 60
-    if 'init_array' in clean_block:
+    if 'init_array' in clean_block or 'setup_buffers' in clean_block:
         score += 20
     if '#pragma omp' in clean_block:
         score += 25
@@ -203,10 +203,15 @@ def transplant_pragmas_to_original(llm_code, orig_code):
         return None
 
     m_scop = re.search(r'(#pragma\s+scop\b)(.*?)(#pragma\s+endscop\b)', orig_code, re.DOTALL)
-    if not m_scop:
-        return None
-
-    scop_body = m_scop.group(2)
+    if m_scop:
+        region_start, region_end = m_scop.start(2), m_scop.end(2)
+        scop_body = m_scop.group(2)
+    else:
+        k_orig = extract_kernel_function(orig_code)
+        if not k_orig:
+            return None
+        region_start, region_end = k_orig[0], k_orig[1]
+        scop_body = k_orig[2]
     orig_lines = scop_body.splitlines()
     orig_for_indices = []
     for idx, ln in enumerate(orig_lines):
@@ -240,8 +245,8 @@ def transplant_pragmas_to_original(llm_code, orig_code):
             new_scop_lines.append(f"{indent}{pragma_by_orig_line[idx]}")
         new_scop_lines.append(ln)
 
-    new_scop_body = '\n'.join(new_scop_lines) + '\n'
-    return orig_code[:m_scop.start(2)] + new_scop_body + orig_code[m_scop.end(2):]
+    new_scop_body = '\n'.join(new_scop_lines) + ('\n' if m_scop else '')
+    return orig_code[:region_start] + new_scop_body + orig_code[region_end:]
 
 def format_metrics(response, model, code_file, prompt_file, raw_content):
     total_duration = response.get('total_duration')

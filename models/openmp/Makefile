@@ -7,6 +7,8 @@ UTILS_DIR      = ../../core/polybench-c-3.2/utilities
 ACC_KERNELS    = $(CORE_DIR)/OpenMP/linear-algebra/kernels
 PARSEC_INC_DIR = ../../core/parsec/kernels
 PARSEC_OMP_DIR = ../../core/parsec/openmp
+ANON_INC_DIR   = ../../core/anonymized/op_x
+ANON_OMP_DIR   = ../../core/anonymized/openmp/op_x
 POLY_SRC       = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 
@@ -26,9 +28,10 @@ else
 endif
 
 # 4. Alvos
-.PHONY: all parsec clean
+.PHONY: all parsec anon clean
 all: 2mmopenmp 3mmopenmp ataxopenmp gemmopenmp syr2kopenmp
 parsec: blackscholesopenmp swaptionsopenmp fluidanimateopenmp streamclusteropenmp freqmineopenmp
+anon: opxopenmp
 
 # Nota: Buscamos o arquivo .c dentro da estrutura do PolyBench-ACC
 2mmopenmp:
@@ -61,6 +64,10 @@ streamclusteropenmp:
 
 freqmineopenmp:
 	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I $(PARSEC_INC_DIR)/freqmine $(POLY_SRC) $(PARSEC_OMP_DIR)/freqmine/freqmine.c $(LDFLAGS) $(OMP_LIBS) -o freqmine-openmp.exe
+
+# Regra para a referência OpenMP do método anonimizado (op_x)
+opxopenmp:
+	$(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I $(ANON_INC_DIR) $(POLY_SRC) $(ANON_OMP_DIR)/op_x.c $(LDFLAGS) $(OMP_LIBS) -o op_x-openmp.exe
 
 clean:
 	rm -f *.exe

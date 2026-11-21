@@ -6,6 +6,7 @@ CORE_DIR    = ../../core/polybench-c-3.2
 UTILS_DIR   = $(CORE_DIR)/utilities
 KERNELS_DIR = $(CORE_DIR)/linear-algebra/kernels
 PARSEC_DIR  = ../../core/parsec/kernels
+ANON_DIR    = ../../core/anonymized/op_x
 POLY_SRC    = $(UTILS_DIR)/polybench.c
 
 DATASET_SIZE ?= 
@@ -29,9 +30,10 @@ else
 endif
 
 # 5. Alvos (PolyBench e PARSEC)
-.PHONY: all parsec clean 2mm 3mm atax gemm syr2k blackscholes swaptions fluidanimate streamcluster freqmine
+.PHONY: all parsec anon clean 2mm 3mm atax gemm syr2k blackscholes swaptions fluidanimate streamcluster freqmine op_x
 all: 2mm 3mm atax gemm syr2k
 parsec: blackscholes swaptions fluidanimate streamcluster freqmine
+anon: op_x
 
 # --- PolyBench: 2mm ---
 2mm: 2mm/2mm.c $(KERNELS_DIR)/2mm/2mm.h
@@ -72,6 +74,10 @@ streamcluster:
 # --- PARSEC: freqmine ---
 freqmine:
 	@if [ -f freqmine/freqmine.c ]; then $(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I $(PARSEC_DIR)/freqmine $(POLY_SRC) freqmine/freqmine.c $(LDFLAGS) $(OMP_LIBS) -o freqmine-codestral-openmp_3b.exe 2>/dev/null && echo "  [OK] freqmine-codestral-openmp_3b.exe" || echo "  [ERRO] freqmine-codestral-openmp_3b.exe falhou na compilacao"; else echo "  [SKIP] freqmine/freqmine.c ausente"; fi
+
+# --- ANONIMIZADO: op_x (compute_pipeline) ---
+op_x:
+	@if [ -f op_x/op_x.c ]; then $(CC) $(CFLAGS) $(OMP_INC) $(OMP_FLAGS) -I $(ANON_DIR) $(POLY_SRC) op_x/op_x.c $(LDFLAGS) $(OMP_LIBS) -o op_x-codestral-openmp_3b.exe 2>/dev/null && echo "  [OK] op_x-codestral-openmp_3b.exe" || echo "  [ERRO] op_x-codestral-openmp_3b.exe falhou na compilacao"; else echo "  [SKIP] op_x/op_x.c ausente"; fi
 
 # 6. Limpeza
 clean:

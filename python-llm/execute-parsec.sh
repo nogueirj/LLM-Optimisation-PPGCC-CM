@@ -35,11 +35,14 @@ else
 fi
 echo "Interpretador Python: $PYTHON_CMD"
 
-DEFAULT_MODELS=(
+QUANT_MODELS=(
     "codestral-openmp:3b"
     "codestral-openmp:4b"
     "codestral-openmp:8b"
     "codestral-openmp:16b"
+)
+
+NON_QUANT_MODELS=(
     "codestral:22b"
     "granite-code:20b"
     "qwen2.5-coder:14b"
@@ -48,12 +51,20 @@ DEFAULT_MODELS=(
     "codellama:13b"
 )
 
-if [ $# -gt 0 ]; then
+DEFAULT_MODELS=("${QUANT_MODELS[@]}" "${NON_QUANT_MODELS[@]}")
+
+if [ $# -eq 0 ] || [ "$1" = "all" ]; then
+    echo "Executando lista completa de benchmark (${#DEFAULT_MODELS[@]} modelos: quantizados + não-quantizados)..."
+    models=("${DEFAULT_MODELS[@]}")
+elif [ "$1" = "quantized" ]; then
+    echo "Executando apenas as variantes quantizadas (${#QUANT_MODELS[@]} modelos)..."
+    models=("${QUANT_MODELS[@]}")
+elif [ "$1" = "non-quantized" ]; then
+    echo "Executando apenas os modelos não-quantizados (${#NON_QUANT_MODELS[@]} modelos)..."
+    models=("${NON_QUANT_MODELS[@]}")
+else
     models=("$@")
     echo "Modelos especificados via argumento: ${models[*]}"
-else
-    echo "Executando lista padrão de benchmark (${#DEFAULT_MODELS[@]} modelos)..."
-    models=("${DEFAULT_MODELS[@]}")
 fi
 
 SUCCESS_COUNT=0
