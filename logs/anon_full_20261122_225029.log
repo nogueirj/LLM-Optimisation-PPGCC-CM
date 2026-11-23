@@ -1,0 +1,644 @@
+nohup: ignoring input
+========================================================================
+PIPELINE DE ANONIMIZAÇÃO — MÉTODO ANONIMIZADO op_x (compute_pipeline)
+Data/Hora de Início: Sun Nov 22 10:50:29 PM -03 2026
+Arquivo de Log:      ../logs/execute_anon_20261122_225029.log
+Código de Entrada:   ../core/anonymized/op_x/op_x.c
+Prompt Neutro:       ../prompts/AnonPrompt.md
+========================================================================
+Interpretador Python: ../.venv/bin/python
+Executando lista completa (10 modelos: quantizados + não-quantizados)...
+
+========================================================================
+>> MODELO ALVO: codestral-openmp:3b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codestral-openmp_3b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codestral-openmp:3b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codestral-openmp_3b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codestral-openmp:3b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)[*] Generating code... (1485 tokens generated)[*] Generating code... (1500 tokens generated)[*] Generating code... (1515 tokens generated)[*] Generating code... (1530 tokens generated)[*] Generating code... (1545 tokens generated)[*] Generating code... (1560 tokens generated)[*] Generating code... (1575 tokens generated)
+[+] Finished generation (1582 tokens received).
+[+] Saved pure C code to: ../models/codestral-openmp_3b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codestral-openmp_3b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codestral-openmp:3b em op_x concluído.
+[*] Descarregando 'codestral-openmp:3b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: codestral-openmp:4b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codestral-openmp_4b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codestral-openmp:4b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codestral-openmp_4b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codestral-openmp:4b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)[*] Generating code... (1485 tokens generated)[*] Generating code... (1500 tokens generated)[*] Generating code... (1515 tokens generated)[*] Generating code... (1530 tokens generated)[*] Generating code... (1545 tokens generated)[*] Generating code... (1560 tokens generated)[*] Generating code... (1575 tokens generated)[*] Generating code... (1590 tokens generated)
+[+] Finished generation (1598 tokens received).
+[+] Saved pure C code to: ../models/codestral-openmp_4b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codestral-openmp_4b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codestral-openmp:4b em op_x concluído.
+[*] Descarregando 'codestral-openmp:4b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: codestral-openmp:8b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codestral-openmp_8b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codestral-openmp:8b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codestral-openmp_8b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codestral-openmp:8b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)
+[+] Finished generation (544 tokens received).
+[+] Saved pure C code to: ../models/codestral-openmp_8b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codestral-openmp_8b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codestral-openmp:8b em op_x concluído.
+[*] Descarregando 'codestral-openmp:8b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: codestral-openmp:16b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codestral-openmp_16b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codestral-openmp:16b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codestral-openmp_16b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codestral-openmp:16b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)
+[+] Finished generation (544 tokens received).
+[+] Saved pure C code to: ../models/codestral-openmp_16b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codestral-openmp_16b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codestral-openmp:16b em op_x concluído.
+[*] Descarregando 'codestral-openmp:16b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: codestral:22b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codestral_22b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codestral:22b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codestral_22b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codestral:22b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)
+[+] Finished generation (877 tokens received).
+[+] Saved pure C code to: ../models/codestral_22b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codestral_22b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codestral:22b em op_x concluído.
+[*] Descarregando 'codestral:22b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: granite-code:20b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/granite-code-20b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       granite-code:20b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/granite-code-20b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (granite-code:20b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)[*] Generating code... (1485 tokens generated)[*] Generating code... (1500 tokens generated)[*] Generating code... (1515 tokens generated)[*] Generating code... (1530 tokens generated)[*] Generating code... (1545 tokens generated)[*] Generating code... (1560 tokens generated)[*] Generating code... (1575 tokens generated)[*] Generating code... (1590 tokens generated)[*] Generating code... (1605 tokens generated)[*] Generating code... (1620 tokens generated)[*] Generating code... (1635 tokens generated)[*] Generating code... (1650 tokens generated)[*] Generating code... (1665 tokens generated)[*] Generating code... (1680 tokens generated)[*] Generating code... (1695 tokens generated)[*] Generating code... (1710 tokens generated)[*] Generating code... (1725 tokens generated)[*] Generating code... (1740 tokens generated)[*] Generating code... (1755 tokens generated)[*] Generating code... (1770 tokens generated)
+[+] Finished generation (1782 tokens received).
+[+] Saved pure C code to: ../models/granite-code-20b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/granite-code-20b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] granite-code:20b em op_x concluído.
+[*] Descarregando 'granite-code:20b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: qwen2.5-coder:14b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/qwen-2.5-coder-14b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       qwen2.5-coder:14b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/qwen-2.5-coder-14b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (qwen2.5-coder:14b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)
+[+] Finished generation (1204 tokens received).
+[+] Saved pure C code to: ../models/qwen-2.5-coder-14b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/qwen-2.5-coder-14b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] qwen2.5-coder:14b em op_x concluído.
+[*] Descarregando 'qwen2.5-coder:14b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: starcoder2:15b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/starcode-2_15b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       starcoder2:15b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/starcode-2_15b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (starcoder2:15b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)[*] Generating code... (1485 tokens generated)[*] Generating code... (1500 tokens generated)[*] Generating code... (1515 tokens generated)[*] Generating code... (1530 tokens generated)[*] Generating code... (1545 tokens generated)[*] Generating code... (1560 tokens generated)[*] Generating code... (1575 tokens generated)[*] Generating code... (1590 tokens generated)[*] Generating code... (1605 tokens generated)[*] Generating code... (1620 tokens generated)[*] Generating code... (1635 tokens generated)[*] Generating code... (1650 tokens generated)[*] Generating code... (1665 tokens generated)
+[+] Finished generation (1672 tokens received).
+[+] Saved pure C code to: ../models/starcode-2_15b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/starcode-2_15b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] starcoder2:15b em op_x concluído.
+[*] Descarregando 'starcoder2:15b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: deepseek-coder-v2:16b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/deepseekcoder-coder-v2_16b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       deepseek-coder-v2:16b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/deepseekcoder-coder-v2_16b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (deepseek-coder-v2:16b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)
+[+] Finished generation (1480 tokens received).
+[+] Saved pure C code to: ../models/deepseekcoder-coder-v2_16b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/deepseekcoder-coder-v2_16b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] deepseek-coder-v2:16b em op_x concluído.
+[*] Descarregando 'deepseek-coder-v2:16b' da VRAM (ollama stop)...
+
+========================================================================
+>> MODELO ALVO: codellama:13b
+   Prompt: ../prompts/AnonPrompt.md
+   Saída:  ../models/codellama_13b/op_x/op_x.c
+========================================================================
+============================================================
+Model:       codellama:13b
+Code File:   ../core/anonymized/op_x/op_x.c
+Prompt File: ../prompts/AnonPrompt.md
+Output File: ../models/codellama_13b/op_x/op_x.c
+============================================================
+[*] Connecting to Ollama (codellama:13b)...
+[*] (Generating code, keeping model loaded in RAM with keep_alive='5m')...[*] Generating code... (15 tokens generated)[*] Generating code... (30 tokens generated)[*] Generating code... (45 tokens generated)[*] Generating code... (60 tokens generated)[*] Generating code... (75 tokens generated)[*] Generating code... (90 tokens generated)[*] Generating code... (105 tokens generated)[*] Generating code... (120 tokens generated)[*] Generating code... (135 tokens generated)[*] Generating code... (150 tokens generated)[*] Generating code... (165 tokens generated)[*] Generating code... (180 tokens generated)[*] Generating code... (195 tokens generated)[*] Generating code... (210 tokens generated)[*] Generating code... (225 tokens generated)[*] Generating code... (240 tokens generated)[*] Generating code... (255 tokens generated)[*] Generating code... (270 tokens generated)[*] Generating code... (285 tokens generated)[*] Generating code... (300 tokens generated)[*] Generating code... (315 tokens generated)[*] Generating code... (330 tokens generated)[*] Generating code... (345 tokens generated)[*] Generating code... (360 tokens generated)[*] Generating code... (375 tokens generated)[*] Generating code... (390 tokens generated)[*] Generating code... (405 tokens generated)[*] Generating code... (420 tokens generated)[*] Generating code... (435 tokens generated)[*] Generating code... (450 tokens generated)[*] Generating code... (465 tokens generated)[*] Generating code... (480 tokens generated)[*] Generating code... (495 tokens generated)[*] Generating code... (510 tokens generated)[*] Generating code... (525 tokens generated)[*] Generating code... (540 tokens generated)[*] Generating code... (555 tokens generated)[*] Generating code... (570 tokens generated)[*] Generating code... (585 tokens generated)[*] Generating code... (600 tokens generated)[*] Generating code... (615 tokens generated)[*] Generating code... (630 tokens generated)[*] Generating code... (645 tokens generated)[*] Generating code... (660 tokens generated)[*] Generating code... (675 tokens generated)[*] Generating code... (690 tokens generated)[*] Generating code... (705 tokens generated)[*] Generating code... (720 tokens generated)[*] Generating code... (735 tokens generated)[*] Generating code... (750 tokens generated)[*] Generating code... (765 tokens generated)[*] Generating code... (780 tokens generated)[*] Generating code... (795 tokens generated)[*] Generating code... (810 tokens generated)[*] Generating code... (825 tokens generated)[*] Generating code... (840 tokens generated)[*] Generating code... (855 tokens generated)[*] Generating code... (870 tokens generated)[*] Generating code... (885 tokens generated)[*] Generating code... (900 tokens generated)[*] Generating code... (915 tokens generated)[*] Generating code... (930 tokens generated)[*] Generating code... (945 tokens generated)[*] Generating code... (960 tokens generated)[*] Generating code... (975 tokens generated)[*] Generating code... (990 tokens generated)[*] Generating code... (1005 tokens generated)[*] Generating code... (1020 tokens generated)[*] Generating code... (1035 tokens generated)[*] Generating code... (1050 tokens generated)[*] Generating code... (1065 tokens generated)[*] Generating code... (1080 tokens generated)[*] Generating code... (1095 tokens generated)[*] Generating code... (1110 tokens generated)[*] Generating code... (1125 tokens generated)[*] Generating code... (1140 tokens generated)[*] Generating code... (1155 tokens generated)[*] Generating code... (1170 tokens generated)[*] Generating code... (1185 tokens generated)[*] Generating code... (1200 tokens generated)[*] Generating code... (1215 tokens generated)[*] Generating code... (1230 tokens generated)[*] Generating code... (1245 tokens generated)[*] Generating code... (1260 tokens generated)[*] Generating code... (1275 tokens generated)[*] Generating code... (1290 tokens generated)[*] Generating code... (1305 tokens generated)[*] Generating code... (1320 tokens generated)[*] Generating code... (1335 tokens generated)[*] Generating code... (1350 tokens generated)[*] Generating code... (1365 tokens generated)[*] Generating code... (1380 tokens generated)[*] Generating code... (1395 tokens generated)[*] Generating code... (1410 tokens generated)[*] Generating code... (1425 tokens generated)[*] Generating code... (1440 tokens generated)[*] Generating code... (1455 tokens generated)[*] Generating code... (1470 tokens generated)[*] Generating code... (1485 tokens generated)[*] Generating code... (1500 tokens generated)[*] Generating code... (1515 tokens generated)[*] Generating code... (1530 tokens generated)[*] Generating code... (1545 tokens generated)[*] Generating code... (1560 tokens generated)[*] Generating code... (1575 tokens generated)[*] Generating code... (1590 tokens generated)[*] Generating code... (1605 tokens generated)[*] Generating code... (1620 tokens generated)[*] Generating code... (1635 tokens generated)[*] Generating code... (1650 tokens generated)[*] Generating code... (1665 tokens generated)[*] Generating code... (1680 tokens generated)[*] Generating code... (1695 tokens generated)[*] Generating code... (1710 tokens generated)[*] Generating code... (1725 tokens generated)[*] Generating code... (1740 tokens generated)[*] Generating code... (1755 tokens generated)[*] Generating code... (1770 tokens generated)[*] Generating code... (1785 tokens generated)[*] Generating code... (1800 tokens generated)[*] Generating code... (1815 tokens generated)[*] Generating code... (1830 tokens generated)[*] Generating code... (1845 tokens generated)[*] Generating code... (1860 tokens generated)[*] Generating code... (1875 tokens generated)[*] Generating code... (1890 tokens generated)
+[+] Finished generation (1894 tokens received).
+[+] Saved pure C code to: ../models/codellama_13b/op_x/op_x.c
+[+] Saved metrics & verbose log to: ../models/codellama_13b/op_x/op_x_verbose.txt
+------------------------------------------------------------
+[+] [SUCESSO] codellama:13b em op_x concluído.
+[*] Descarregando 'codellama:13b' da VRAM (ollama stop)...
+
+========================================================================
+EXECUÇÃO DE ANONIMIZAÇÃO (op_x) CONCLUÍDA!
+Data/Hora de Término: Sun Nov 22 10:54:36 PM -03 2026
+Sucessos:             10
+Falhas:               0
+Modelos Ignorados:    0
+Log Consolidado:      ../logs/execute_anon_20261122_225029.log
+========================================================================
+======================================================================
+🔍 EXECUTANDO VERIFICAÇÃO EM 4 NÍVEIS — ANONIMIZAÇÃO (op_x)
+======================================================================
+============================================================================================================================
+RELATÓRIO DE VERIFICAÇÃO EM 4 NÍVEIS — EXPERIMENTO DE ANONIMIZAÇÃO (op_x / compute_pipeline)
+============================================================================================================================
+Modelo                     | Kernel | G1: Imutável | G2: Pragmas   | G3: Compila | G4: Numérico | Diagnóstico
+----------------------------------------------------------------------------------------------------------------------------
+openmp                     | op_x   | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas em compute_pipeline, Identico -O3/-O0
+codestral_22b              | op_x   | PASS         | PASS (4k/0f)  | FAIL        | SKIP         | GCC: work-sharing region may not be closely nested inside of
+granite-code-20b           | op_x   | PASS         | PASS (2k/0f)  | FAIL        | SKIP         | GCC: ‘k2’ not specified in enclosing ‘parallel’
+qwen-2.5-coder-14b         | op_x   | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas em compute_pipeline, Identico -O3/-O0
+starcode-2_15b             | op_x   | PASS         | FAIL (0k/0f)  | PASS        | PASS         | alvo=0, fora=0 (sem pragma em compute_pipeline!)
+deepseekcoder-coder-v2_16b | op_x   | PASS         | PASS (2k/0f)  | PASS        | FAIL         | Data race mascarada em -O3, exposta em -O0! Divergencia (-O0
+codellama_13b              | op_x   | PASS         | PASS (2k/0f)  | PASS        | FAIL         | Data race mascarada em -O3, exposta em -O0! Divergencia (-O0
+codestral-openmp_16b       | op_x   | PASS         | PASS (2k/0f)  | PASS        | FAIL         | Data race mascarada em -O3, exposta em -O0! Divergencia (-O0
+codestral-openmp_8b        | op_x   | PASS         | PASS (2k/0f)  | PASS        | FAIL         | Data race mascarada em -O3, exposta em -O0! Divergencia (-O0
+codestral-openmp_4b        | op_x   | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas em compute_pipeline, Identico -O3/-O0
+codestral-openmp_3b        | op_x   | PASS         | PASS (2k/0f)  | PASS        | PASS         | 100% valido (2 pragmas em compute_pipeline, Identico -O3/-O0
+----------------------------------------------------------------------------------------------------------------------------
+RESUMO GLOBAL (11 modelos): G1=11/11 | G2=10/11 | G3=9/11 (81.8%) | G4=5/11 (45.5%) | 4/4 Gates=4/11 (36.4%)
+Relatório CSV salvo em: results/verificacao_anon.csv
+============================================================================================================================
+
+======================================================================
+📦 PREPARANDO DATASET ANONIMIZADO (op_x): STANDARD (-DSTANDARD_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando baseline sequential (op_x) para STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET -I ../../core/anonymized/op_x ../../core/polybench-c-3.2/utilities/polybench.c ../../core/anonymized/op_x/op_x.c -lm -o op_x-seq.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+🚀 Executando baseline sequential (1T) | DATASET: STANDARD...
+🏃 Executando sequential/op_x (standard) | 1T .......... OK
+----------------------------------------------------------------------
+🔨 Compilando openmp (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DSTANDARD_DATASET  -fopenmp -I ../../core/anonymized/op_x ../../core/polybench-c-3.2/utilities/polybench.c ../../core/anonymized/openmp/op_x/op_x.c -lm -lgomp -o op_x-openmp.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+----------------------------------------------------------------------
+🔨 Compilando codestral_22b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+rm -f *.exe
+  [ERRO] op_x-codestral_22b.exe falhou na compilacao
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+----------------------------------------------------------------------
+🔨 Compilando granite-code-20b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+rm -f *.exe
+  [ERRO] op_x-granite-code-20b.exe falhou na compilacao
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+----------------------------------------------------------------------
+🔨 Compilando qwen-2.5-coder-14b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+rm -f *.exe
+  [OK] op_x-qwen-2.5-coder-14b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+----------------------------------------------------------------------
+🔨 Compilando starcode-2_15b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+rm -f *.exe
+  [OK] op_x-starcode-2_15b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+----------------------------------------------------------------------
+🔨 Compilando deepseekcoder-coder-v2_16b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+rm -f *.exe
+  [OK] op_x-deepseekcoder-coder-v2_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+----------------------------------------------------------------------
+🔨 Compilando codellama_13b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+rm -f *.exe
+  [OK] op_x-codellama_13b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_8b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_4b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b (op_x) para dataset STANDARD (-DSTANDARD_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_3b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 1T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 1T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 1T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 1T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 1T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 1T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 2T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 2T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 2T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 2T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 2T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 2T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 4T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 4T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 4T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 4T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 4T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 4T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 8T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 8T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 8T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 8T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 8T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 8T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 16T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 16T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 16T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 16T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 16T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 16T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 32T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 32T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 32T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 32T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 32T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 32T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: STANDARD | THREADS: 64T
+======================================================================
+🏃 Executando openmp/op_x (standard) | 64T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (standard) | 64T .......... OK
+🏃 Executando starcode-2_15b/op_x (standard) | 64T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (standard) | 64T .......... OK
+🏃 Executando codellama_13b/op_x (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (standard) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (standard) | 64T .......... OK
+
+======================================================================
+📦 PREPARANDO DATASET ANONIMIZADO (op_x): LARGE (-DLARGE_DATASET)
+======================================================================
+----------------------------------------------------------------------
+🔨 Compilando baseline sequential (op_x) para LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET -I ../../core/anonymized/op_x ../../core/polybench-c-3.2/utilities/polybench.c ../../core/anonymized/op_x/op_x.c -lm -o op_x-seq.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/sequential'
+🚀 Executando baseline sequential (1T) | DATASET: LARGE...
+🏃 Executando sequential/op_x (large) | 1T .......... OK
+----------------------------------------------------------------------
+🔨 Compilando openmp (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+rm -f *.exe
+gcc -O3 -I ../../core/polybench-c-3.2/utilities -DPOLYBENCH_TIME -DLARGE_DATASET  -fopenmp -I ../../core/anonymized/op_x ../../core/polybench-c-3.2/utilities/polybench.c ../../core/anonymized/openmp/op_x/op_x.c -lm -lgomp -o op_x-openmp.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/openmp'
+----------------------------------------------------------------------
+🔨 Compilando codestral_22b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+rm -f *.exe
+  [ERRO] op_x-codestral_22b.exe falhou na compilacao
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral_22b'
+----------------------------------------------------------------------
+🔨 Compilando granite-code-20b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+rm -f *.exe
+  [ERRO] op_x-granite-code-20b.exe falhou na compilacao
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/granite-code-20b'
+----------------------------------------------------------------------
+🔨 Compilando qwen-2.5-coder-14b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+rm -f *.exe
+  [OK] op_x-qwen-2.5-coder-14b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/qwen-2.5-coder-14b'
+----------------------------------------------------------------------
+🔨 Compilando starcode-2_15b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+rm -f *.exe
+  [OK] op_x-starcode-2_15b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/starcode-2_15b'
+----------------------------------------------------------------------
+🔨 Compilando deepseekcoder-coder-v2_16b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+rm -f *.exe
+  [OK] op_x-deepseekcoder-coder-v2_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/deepseekcoder-coder-v2_16b'
+----------------------------------------------------------------------
+🔨 Compilando codellama_13b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+rm -f *.exe
+  [OK] op_x-codellama_13b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codellama_13b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_16b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_16b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_16b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_8b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_8b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_8b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_4b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_4b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_4b'
+----------------------------------------------------------------------
+🔨 Compilando codestral-openmp_3b (op_x) para dataset LARGE (-DLARGE_DATASET)...
+make: Entering directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+rm -f *.exe
+  [OK] op_x-codestral-openmp_3b.exe
+make: Leaving directory '/home/a_julionogueira/LLM-Optimisation-PPGCC-CM/models/codestral-openmp_3b'
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 1T
+======================================================================
+🏃 Executando openmp/op_x (large) | 1T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 1T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 1T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 1T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 1T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 1T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 1T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 1T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 1T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 2T
+======================================================================
+🏃 Executando openmp/op_x (large) | 2T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 2T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 2T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 2T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 2T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 2T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 2T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 2T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 2T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 4T
+======================================================================
+🏃 Executando openmp/op_x (large) | 4T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 4T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 4T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 4T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 4T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 4T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 4T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 4T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 4T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 8T
+======================================================================
+🏃 Executando openmp/op_x (large) | 8T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 8T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 8T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 8T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 8T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 8T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 8T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 8T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 8T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 16T
+======================================================================
+🏃 Executando openmp/op_x (large) | 16T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 16T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 16T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 16T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 16T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 16T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 16T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 16T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 16T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 32T
+======================================================================
+🏃 Executando openmp/op_x (large) | 32T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 32T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 32T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 32T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 32T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 32T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 32T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 32T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 32T .......... OK
+======================================================================
+🚀 EXECUTANDO ANONIMIZADO (op_x) | DATASET: LARGE | THREADS: 64T
+======================================================================
+🏃 Executando openmp/op_x (large) | 64T .......... OK
+🏃 Executando qwen-2.5-coder-14b/op_x (large) | 64T .......... OK
+🏃 Executando starcode-2_15b/op_x (large) | 64T .......... OK
+🏃 Executando deepseekcoder-coder-v2_16b/op_x (large) | 64T .......... OK
+🏃 Executando codellama_13b/op_x (large) | 64T .......... OK
+🏃 Executando codestral-openmp_16b/op_x (large) | 64T .......... OK
+🏃 Executando codestral-openmp_8b/op_x (large) | 64T .......... OK
+🏃 Executando codestral-openmp_4b/op_x (large) | 64T .......... OK
+🏃 Executando codestral-openmp_3b/op_x (large) | 64T .......... OK
+
+======================================================================
+📊 GERANDO MÉTRICAS, TABELAS LATEX E GRÁFICOS — ANONIMIZAÇÃO (op_x)
+======================================================================
+✅ Métricas consolidadas salvas em: /home/a_julionogueira/LLM-Optimisation-PPGCC-CM/results/anon_scaling_metrics.csv
+
+==================================================================================================================
+📊 EXPERIMENTO DE ANONIMIZAÇÃO — op_x (compute_pipeline) vs. 2mm ORIGINAL
+==================================================================================================================
+
+▶ DATASET: LARGE | 32 THREADS
+------------------------------------------------------------------------------------------------------------------
+Modelo                     | 4 Gates  |  Tempo (s) |  Speedup op_x | Efic. op_x |  Speedup 2mm | Razão (op_x/2mm)
+------------------------------------------------------------------------------------------------------------------
+openmp                     | PASS     |     0.5688 |        24.50x |      76.6% |       24.59x |            99.7%
+qwen-2.5-coder-14b         | PASS     |     0.5694 |        24.48x |      76.5% |       25.34x |            96.6%
+starcode-2_15b             | FAIL     |    14.0431 |         0.99x |       3.1% |          --- |              ---
+deepseekcoder-coder-v2_16b | FAIL     |     0.5569 |       25.03x* |      78.2% |       24.92x |           100.4%
+codellama_13b              | FAIL     |     0.5683 |       24.53x* |      76.6% |        0.98x |          2497.1%
+codestral-openmp_16b       | FAIL     |     0.5690 |       24.50x* |      76.6% |       15.01x |           163.2%
+codestral-openmp_8b        | FAIL     |     0.5721 |       24.36x* |      76.1% |       10.21x |           238.6%
+codestral-openmp_4b        | PASS     |     0.5703 |        24.44x |      76.4% |       10.76x |           227.1%
+codestral-openmp_3b        | PASS     |     0.5702 |        24.45x |      76.4% |       11.79x |           207.3%
+
+▶ DATASET: LARGE | 64 THREADS
+------------------------------------------------------------------------------------------------------------------
+Modelo                     | 4 Gates  |  Tempo (s) |  Speedup op_x | Efic. op_x |  Speedup 2mm | Razão (op_x/2mm)
+------------------------------------------------------------------------------------------------------------------
+openmp                     | PASS     |     0.6057 |        23.01x |      36.0% |       23.51x |            97.9%
+qwen-2.5-coder-14b         | PASS     |     0.6023 |        23.14x |      36.2% |       22.89x |           101.1%
+starcode-2_15b             | FAIL     |    14.0372 |         0.99x |       1.6% |          --- |              ---
+deepseekcoder-coder-v2_16b | FAIL     |     0.6169 |       22.59x* |      35.3% |       23.18x |            97.5%
+codellama_13b              | FAIL     |     0.5987 |       23.28x* |      36.4% |        0.98x |          2368.3%
+codestral-openmp_16b       | FAIL     |     0.5951 |       23.42x* |      36.6% |       13.71x |           170.9%
+codestral-openmp_8b        | FAIL     |     0.5977 |       23.32x* |      36.4% |       13.16x |           177.2%
+codestral-openmp_4b        | PASS     |     0.5991 |        23.26x |      36.4% |       11.06x |           210.3%
+codestral-openmp_3b        | PASS     |     0.6035 |        23.10x |      36.1% |       10.54x |           219.1%
+
+▶ DATASET: STANDARD | 32 THREADS
+------------------------------------------------------------------------------------------------------------------
+Modelo                     | 4 Gates  |  Tempo (s) |  Speedup op_x | Efic. op_x |  Speedup 2mm | Razão (op_x/2mm)
+------------------------------------------------------------------------------------------------------------------
+openmp                     | PASS     |     0.1972 |        29.55x |      92.4% |       29.21x |           101.2%
+qwen-2.5-coder-14b         | PASS     |     0.2005 |        29.07x |      90.8% |       28.89x |           100.6%
+starcode-2_15b             | FAIL     |     5.7750 |         1.01x |       3.2% |          --- |              ---
+deepseekcoder-coder-v2_16b | FAIL     |     0.1982 |       29.41x* |      91.9% |       28.91x |           101.7%
+codellama_13b              | FAIL     |     0.2001 |       29.13x* |      91.0% |        0.99x |          2929.3%
+codestral-openmp_16b       | FAIL     |     0.1991 |       29.27x* |      91.5% |       21.48x |           136.3%
+codestral-openmp_8b        | FAIL     |     0.1978 |       29.47x* |      92.1% |       21.92x |           134.4%
+codestral-openmp_4b        | PASS     |     0.1953 |        29.85x |      93.3% |       22.95x |           130.0%
+codestral-openmp_3b        | PASS     |     0.1956 |        29.80x |      93.1% |       21.88x |           136.2%
+
+▶ DATASET: STANDARD | 64 THREADS
+------------------------------------------------------------------------------------------------------------------
+Modelo                     | 4 Gates  |  Tempo (s) |  Speedup op_x | Efic. op_x |  Speedup 2mm | Razão (op_x/2mm)
+------------------------------------------------------------------------------------------------------------------
+openmp                     | PASS     |     0.1416 |        41.17x |      64.3% |       42.70x |            96.4%
+qwen-2.5-coder-14b         | PASS     |     0.1340 |        43.50x |      68.0% |       36.51x |           119.1%
+starcode-2_15b             | FAIL     |     5.7573 |         1.01x |       1.6% |          --- |              ---
+deepseekcoder-coder-v2_16b | FAIL     |     0.1314 |       44.36x* |      69.3% |       39.81x |           111.4%
+codellama_13b              | FAIL     |     0.1403 |       41.55x* |      64.9% |        1.00x |          4167.5%
+codestral-openmp_16b       | FAIL     |     0.1369 |       42.57x* |      66.5% |       22.22x |           191.6%
+codestral-openmp_8b        | FAIL     |     0.1409 |       41.37x* |      64.6% |       21.50x |           192.4%
+codestral-openmp_4b        | PASS     |     0.1358 |        42.92x |      67.1% |       19.83x |           216.4%
+codestral-openmp_3b        | PASS     |     0.1380 |        42.22x |      66.0% |       19.55x |           216.0%
+
+✅ Tabelas LaTeX salvas em: /home/a_julionogueira/LLM-Optimisation-PPGCC-CM/results/tabela_escalabilidade_anon.tex
+ℹ️ matplotlib/seaborn não encontrado neste ambiente; gráfico PNG pode ser gerado localmente.
+
+======================================================================
+✨ BENCHMARK DE ANONIMIZAÇÃO (op_x) FINALIZADO!
+📁 Arquivos gerados:
+  • results/verificacao_anon.csv               (relatório dos 4 Gates no op_x)
+  • results/raw_times_anon.csv                 (tempos brutos de 1 a 64 threads)
+  • results/anon_scaling_metrics.csv           (speedup e eficiência consolidados)
+  • results/tabela_escalabilidade_anon.tex     (tabelas LaTeX para anonimizacao.tex)
+  • results/scaling_curve_anon.png             (curvas de escalabilidade op_x vs 2mm)
+======================================================================

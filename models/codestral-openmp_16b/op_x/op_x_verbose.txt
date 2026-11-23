@@ -1,0 +1,59 @@
+================================================================================
+OLLAMA EXECUTION METRICS & VERBOSE LOG
+================================================================================
+Model:                codestral-openmp:16b
+Code File:            ../core/anonymized/op_x/op_x.c
+Prompt File:          ../prompts/AnonPrompt.md
+Timestamp:            2026-11-23T01:52:35.195463795Z
+
+--------------------------------------------------------------------------------
+Performance Metrics
+--------------------------------------------------------------------------------
+Total Duration:       47.29 s
+Load Duration:        30.91 s
+Prompt Eval Count:    1863 tokens
+Prompt Eval Duration: 0.36 s
+Prompt Eval Rate:     5148.23 tokens/s
+Eval Count:           559 tokens
+Eval Duration:        16.01 s
+Generation Rate:      34.92 tokens/s
+
+--------------------------------------------------------------------------------
+Raw Response (including analysis, thinking, and explanations)
+--------------------------------------------------------------------------------
+
+Output Code (with `#pragma omp` directives annotated with `<LOOP-START>` and `<LOOP-END>` tags):
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+#include "op_x.h"
+
+static void setup_buffers(int d1, int d2, int d3, int d4,
+                          REAL_T *k1, REAL_T *k2,
+                          REAL_T BUF_2D(src_p, L1, L3, d1, d3),
+                          REAL_T BUF_2D(src_q, L3, L2, d3, d2),
+                          REAL_T BUF_2D(src_r, L2, L4, d2, d4),
+                          REAL_T BUF_2D(dst_u, L1, L4, d1, d4)) {
+  int u, v;
+
+  *k1 = 32412;
+  *k2 = 2123;
+<LOOP-START>for (u = 0; u < d1; u++)
+    for (v = 0; v < d3; v++)
+      src_p[u][v] = ((REAL_T)u * v) / d1;
+  #pragma omp parallel for private(u, v)
+for (u = 0; u < d3; u++)
+    for (v = 0; v < d2; v++)
+      src_q[u][v] = ((REAL_T)u * (v + 1)) / d2;
+  #pragma omp parallel for private(u, v)
+for (u = 0; u < d2; u++)
+    for (v = 0; v < d4; v++)
+      src_r[u][v] = ((REAL_T)u * (v + 3)) / d4;
+  #pragma omp parallel for private(u, v)<LOOP-END>
+```
+
+Rationale:
+Inserted `#pragma omp parallel for private(u, v)` immediately before the compute-intensive loop to distribute iterations across available threads with correct variable scoping and scheduling.
+================================================================================

@@ -1,0 +1,90 @@
+% Tabelas de Escalabilidade — Experimento de Anonimização (op_x vs 2mm)
+% Gerado automaticamente por analysis_scripts/analise_anon_escalabilidade.py
+
+\begin{table}[htbp]
+\centering
+\caption{Desempenho e eficiência do método anonimizado (\texttt{op\_x}) frente ao \texttt{2mm} original em 32 threads — Dataset \texttt{LARGE}}
+\label{tab:anon_scale_large_32t}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Modelo} & \textbf{4 Gates} & \textbf{Tempo (s)} & \textbf{Speedup \texttt{op\_x}} & \textbf{Eficiência} & \textbf{Speedup \texttt{2mm}} & \textbf{Retenção} \\
+\midrule
+\texttt{openmp} & PASS & $0.5688$ & $24.50\times$ & $76.6\%$ & $24.59\times$ & $99.7\%$ \\
+\texttt{qwen-2.5-coder-14b} & PASS & $0.5694$ & $24.48\times$ & $76.5\%$ & $25.34\times$ & $96.6\%$ \\
+\texttt{starcode-2\_15b} & FAIL & $14.0431$ & $0.99\times$ & $3.1\%$ & --- & --- \\
+\texttt{deepseekcoder-coder-v2\_16b} & FAIL & $0.5569$ & $25.03\times^\dagger$ & $78.2\%$ & $24.92\times$ & $100.4\%$ \\
+\texttt{codellama\_13b} & FAIL & $0.5683$ & $24.53\times^\dagger$ & $76.6\%$ & $0.98\times$ & $2497.1\%$ \\
+\texttt{codestral-openmp\_16b} & FAIL & $0.5690$ & $24.50\times^\dagger$ & $76.6\%$ & $15.01\times$ & $163.2\%$ \\
+\texttt{codestral-openmp\_8b} & FAIL & $0.5721$ & $24.36\times^\dagger$ & $76.1\%$ & $10.21\times$ & $238.6\%$ \\
+\texttt{codestral-openmp\_4b} & PASS & $0.5703$ & $24.44\times$ & $76.4\%$ & $10.76\times$ & $227.1\%$ \\
+\texttt{codestral-openmp\_3b} & PASS & $0.5702$ & $24.45\times$ & $76.4\%$ & $11.79\times$ & $207.3\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Desempenho e eficiência do método anonimizado (\texttt{op\_x}) frente ao \texttt{2mm} original em 64 threads — Dataset \texttt{LARGE}}
+\label{tab:anon_scale_large_64t}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Modelo} & \textbf{4 Gates} & \textbf{Tempo (s)} & \textbf{Speedup \texttt{op\_x}} & \textbf{Eficiência} & \textbf{Speedup \texttt{2mm}} & \textbf{Retenção} \\
+\midrule
+\texttt{openmp} & PASS & $0.6057$ & $23.01\times$ & $36.0\%$ & $23.51\times$ & $97.9\%$ \\
+\texttt{qwen-2.5-coder-14b} & PASS & $0.6023$ & $23.14\times$ & $36.2\%$ & $22.89\times$ & $101.1\%$ \\
+\texttt{starcode-2\_15b} & FAIL & $14.0372$ & $0.99\times$ & $1.6\%$ & --- & --- \\
+\texttt{deepseekcoder-coder-v2\_16b} & FAIL & $0.6169$ & $22.59\times^\dagger$ & $35.3\%$ & $23.18\times$ & $97.5\%$ \\
+\texttt{codellama\_13b} & FAIL & $0.5987$ & $23.28\times^\dagger$ & $36.4\%$ & $0.98\times$ & $2368.3\%$ \\
+\texttt{codestral-openmp\_16b} & FAIL & $0.5951$ & $23.42\times^\dagger$ & $36.6\%$ & $13.71\times$ & $170.9\%$ \\
+\texttt{codestral-openmp\_8b} & FAIL & $0.5977$ & $23.32\times^\dagger$ & $36.4\%$ & $13.16\times$ & $177.2\%$ \\
+\texttt{codestral-openmp\_4b} & PASS & $0.5991$ & $23.26\times$ & $36.4\%$ & $11.06\times$ & $210.3\%$ \\
+\texttt{codestral-openmp\_3b} & PASS & $0.6035$ & $23.10\times$ & $36.1\%$ & $10.54\times$ & $219.1\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Desempenho e eficiência do método anonimizado (\texttt{op\_x}) frente ao \texttt{2mm} original em 32 threads — Dataset \texttt{STANDARD}}
+\label{tab:anon_scale_standard_32t}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Modelo} & \textbf{4 Gates} & \textbf{Tempo (s)} & \textbf{Speedup \texttt{op\_x}} & \textbf{Eficiência} & \textbf{Speedup \texttt{2mm}} & \textbf{Retenção} \\
+\midrule
+\texttt{openmp} & PASS & $0.1972$ & $29.55\times$ & $92.4\%$ & $29.21\times$ & $101.2\%$ \\
+\texttt{qwen-2.5-coder-14b} & PASS & $0.2005$ & $29.07\times$ & $90.8\%$ & $28.89\times$ & $100.6\%$ \\
+\texttt{starcode-2\_15b} & FAIL & $5.7750$ & $1.01\times$ & $3.2\%$ & --- & --- \\
+\texttt{deepseekcoder-coder-v2\_16b} & FAIL & $0.1982$ & $29.41\times^\dagger$ & $91.9\%$ & $28.91\times$ & $101.7\%$ \\
+\texttt{codellama\_13b} & FAIL & $0.2001$ & $29.13\times^\dagger$ & $91.0\%$ & $0.99\times$ & $2929.3\%$ \\
+\texttt{codestral-openmp\_16b} & FAIL & $0.1991$ & $29.27\times^\dagger$ & $91.5\%$ & $21.48\times$ & $136.3\%$ \\
+\texttt{codestral-openmp\_8b} & FAIL & $0.1978$ & $29.47\times^\dagger$ & $92.1\%$ & $21.92\times$ & $134.4\%$ \\
+\texttt{codestral-openmp\_4b} & PASS & $0.1953$ & $29.85\times$ & $93.3\%$ & $22.95\times$ & $130.0\%$ \\
+\texttt{codestral-openmp\_3b} & PASS & $0.1956$ & $29.80\times$ & $93.1\%$ & $21.88\times$ & $136.2\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Desempenho e eficiência do método anonimizado (\texttt{op\_x}) frente ao \texttt{2mm} original em 64 threads — Dataset \texttt{STANDARD}}
+\label{tab:anon_scale_standard_64t}
+\small
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Modelo} & \textbf{4 Gates} & \textbf{Tempo (s)} & \textbf{Speedup \texttt{op\_x}} & \textbf{Eficiência} & \textbf{Speedup \texttt{2mm}} & \textbf{Retenção} \\
+\midrule
+\texttt{openmp} & PASS & $0.1416$ & $41.17\times$ & $64.3\%$ & $42.70\times$ & $96.4\%$ \\
+\texttt{qwen-2.5-coder-14b} & PASS & $0.1340$ & $43.50\times$ & $68.0\%$ & $36.51\times$ & $119.1\%$ \\
+\texttt{starcode-2\_15b} & FAIL & $5.7573$ & $1.01\times$ & $1.6\%$ & --- & --- \\
+\texttt{deepseekcoder-coder-v2\_16b} & FAIL & $0.1314$ & $44.36\times^\dagger$ & $69.3\%$ & $39.81\times$ & $111.4\%$ \\
+\texttt{codellama\_13b} & FAIL & $0.1403$ & $41.55\times^\dagger$ & $64.9\%$ & $1.00\times$ & $4167.5\%$ \\
+\texttt{codestral-openmp\_16b} & FAIL & $0.1369$ & $42.57\times^\dagger$ & $66.5\%$ & $22.22\times$ & $191.6\%$ \\
+\texttt{codestral-openmp\_8b} & FAIL & $0.1409$ & $41.37\times^\dagger$ & $64.6\%$ & $21.50\times$ & $192.4\%$ \\
+\texttt{codestral-openmp\_4b} & PASS & $0.1358$ & $42.92\times$ & $67.1\%$ & $19.83\times$ & $216.4\%$ \\
+\texttt{codestral-openmp\_3b} & PASS & $0.1380$ & $42.22\times$ & $66.0\%$ & $19.55\times$ & $216.0\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
