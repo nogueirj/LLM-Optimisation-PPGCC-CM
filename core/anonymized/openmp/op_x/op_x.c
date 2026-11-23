@@ -50,23 +50,20 @@ static void compute_pipeline(int d1, int d2, int d3, int d4,
                              REAL_T BUF_2D(dst_u, L1, L4, d1, d4)) {
   int u, v, w;
 
-#pragma omp parallel
-  {
-#pragma omp for private(v, w)
-    for (u = 0; u < _LIM_1; u++)
-      for (v = 0; v < _LIM_2; v++) {
-        buf_m[u][v] = 0;
-        for (w = 0; w < _LIM_3; ++w)
-          buf_m[u][v] += k1 * src_p[u][w] * src_q[w][v];
-      }
-#pragma omp for private(v, w)
-    for (u = 0; u < _LIM_1; u++)
-      for (v = 0; v < _LIM_4; v++) {
-        dst_u[u][v] *= k2;
-        for (w = 0; w < _LIM_2; ++w)
-          dst_u[u][v] += buf_m[u][w] * src_r[w][v];
-      }
-  }
+#pragma omp parallel for private(v, w) schedule(static)
+  for (u = 0; u < _LIM_1; u++)
+    for (v = 0; v < _LIM_2; v++) {
+      buf_m[u][v] = 0;
+      for (w = 0; w < _LIM_3; ++w)
+        buf_m[u][v] += k1 * src_p[u][w] * src_q[w][v];
+    }
+#pragma omp parallel for private(v, w) schedule(static)
+  for (u = 0; u < _LIM_1; u++)
+    for (v = 0; v < _LIM_4; v++) {
+      dst_u[u][v] *= k2;
+      for (w = 0; w < _LIM_2; ++w)
+        dst_u[u][v] += buf_m[u][w] * src_r[w][v];
+    }
 }
 
 int main(int argc, char **argv) {

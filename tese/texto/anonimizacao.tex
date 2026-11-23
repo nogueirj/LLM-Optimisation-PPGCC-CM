@@ -1,0 +1,187 @@
+% ======================================================================
+% CAPÍTULO — EXPERIMENTO DE ANONIMIZAÇÃO: MEMORIZAÇÃO VS. RACIOCÍNIO ESTRUTURAL
+% ======================================================================
+
+\chapter{Estudo de Anonimização de Código: Assinatura Lexical versus Raciocínio Estrutural}
+\label{cap:anonimizacao}
+
+Uma questão metodológica central na avaliação de Grandes Modelos de Linguagem (LLMs) aplicados à paralelização automática diz respeito à origem das diretivas \texttt{\#pragma omp} sintetizadas: o modelo realmente analisa a estrutura dos laços \texttt{for} e o grafo de dependências de dados do núcleo computacional, ou limita-se a recuperar soluções memorizadas durante o pré-treinamento a partir de assinaturas conhecidas (como \texttt{kernel\_2mm}, \texttt{\#include <polybench.h>}, \texttt{\#pragma scop} e comentários matemáticos)?
+
+Em consonância com os objetivos desta dissertação --- que propõem investigar a capacidade real de análise e geração de código paralelo por LLMs em contraste com ferramentas determinísticas e implementação manual ---, este capítulo apresenta um experimento controlado de \textbf{anonimização estrutural e lexical}. Um núcleo computacional de referência é desprovido de toda e qualquer pista nominal, semântica ou documental, preservando-se rigorosamente sua equivalência matemática e computacional, para avaliar se os modelos (em precisão nativa e quantizados) mantêm a corretude nos 4 Gates, a estratégia de posicionamento de pragmas, o \textit{speedup} e a eficiência paralela de 1 a 64 \textit{threads}.
+
+% ======================================================================
+\section{Base Estrutural, Funcionamento e Aplicabilidade do Método Selecionado}
+\label{sec:anon_base}
+% ======================================================================
+
+Para conduzir uma comparação contrafactual controlada (teste A/B em que o único fator variado é a presença ou ausência de pistas lexicais), selecionou-se como base o núcleo de duas multiplicações matriciais encadeadas (\texttt{2mm}) da suíte \textit{PolyBench/C}, cuja versão original já foi exaustivamente avaliada nos capítulos anteriores e apresentou $100\%$ de aprovação numérica (Gate~4) nas quatro variantes quantizadas da família \texttt{codestral-openmp}.
+
+\subsection{O que o Método Faz}
+\label{subsec:anon_o_que_faz}
+
+O método computa a composição encadeada de duas multiplicações densas de matrizes com escalonamento afim sobre uma matriz de destino pré-existente:
+\begin{equation}
+    E = \alpha \cdot A \cdot B, \qquad D = E \cdot C + \beta \cdot D = \alpha \cdot A \cdot B \cdot C + \beta \cdot D,
+    \label{eq:anon_2mm}
+\end{equation}
+em que $A \in \mathbb{R}^{d_1 \times d_3}$, $B \in \mathbb{R}^{d_3 \times d_2}$, $C \in \mathbb{R}^{d_2 \times d_4}$, o arranjo intermediário $E \in \mathbb{R}^{d_1 \times d_2}$ e a matriz de saída $D \in \mathbb{R}^{d_1 \times d_4}$, com escalares $\alpha, \beta \in \mathbb{R}$. Em termos de complexidade assintótica, o algoritmo executa dois estágios consecutivos de complexidade cúbica, totalizando $\mathcal{O}(d_1 d_2 d_3 + d_1 d_4 d_2)$ operações de ponto flutuante (FLOPs) em precisão dupla (\texttt{double}).
+
+\subsection{Aplicabilidade em Computação de Alto Desempenho}
+\label{subsec:anon_aplicabilidade}
+
+A estrutura de contração tensorial encadeada em dois estágios representada pela Equação~\eqref{eq:anon_2mm} constitui um bloco construtivo recorrente em cargas de trabalho científicas e industriais de HPC:
+\begin{itemize}
+    \item \textbf{Aprendizado Profundo e Arquiteturas Transformer}: o cálculo de atenção escalar ($Q K^\top V$) e a propagação sequencial entre camadas lineares totalmente conectadas (\textit{Multi-Layer Perceptrons} --- MLPs) seguem diretamente o padrão de dois produtos matriciais acoplados por uma matriz de ativações intermediárias;
+    \item \textbf{Simulação Numérica e Método dos Elementos Finitos (FEM)}: a montagem de operadores de rigidez transformados ($K' = T^\top K T$) e a projeção entre espaços de discretização requerem multiplicações matriciais encadeadas com acúmulo ponderado em arranjos globais;
+    \item \textbf{Processamento de Sinais, Estatística Multivariada e Controle Ótimo}: o cômputo de formas bilineares, atualizações de matrizes de covariância em filtros de Kalman ($P' = F P F^\top + Q$) e decomposições espectrais em blocos reproduzem a mesma estrutura de acoplamento de dados entre dois estágios.
+\end{itemize}
+
+\subsection{Estrutura dos Laços e Grafo de Dependências}
+\label{subsec:anon_dependencias}
+
+Do ponto de vista de paralelização em memória compartilhada (OpenMP), o núcleo é particularmente informativo porque exige raciocínio preciso sobre três propriedades simultâneas de sua estrutura de controle:
+\begin{enumerate}
+    \item \textbf{Dependência Verdadeira entre Estágios (RAW --- \textit{Read-After-Write})}: o Estágio~2 lê sistematicamente todos os elementos da matriz intermediária \texttt{buf\_m[u][w]} produzidos pelo Estágio~1. Consequentemente, os dois blocos de laços não podem ser executados concorrentemente sem uma barreira implícita ou explícita entre eles;
+    \item \textbf{Paralelismo Livre de Dependências nos Laços Externos (\texttt{u} e \texttt{v})}: dentro de cada estágio, cada elemento \texttt{buf\_m[u][v]} (Estágio~1) e \texttt{dst\_u[u][v]} (Estágio~2) é escrito exclusivamente por um único par $(u, v)$. Logo, o laço mais externo \texttt{u} (ou o colapso \texttt{collapse(2)} sobre \texttt{u} e \texttt{v}) é completamente paralelizável sem risco de condição de corrida, desde que os índices internos \texttt{v} e \texttt{w} --- declarados fora dos laços no padrão C89 --- sejam privatizados (\texttt{private(v, w)});
+    \item \textbf{Dependência Carregada por Laço (\textit{Loop-Carried Dependency}) no Índice Interno \texttt{w}}: o terceiro nível de aninhamento acumula somas parciais no mesmo elemento de saída (\texttt{buf\_m[u][v] += ...} e \texttt{dst\_u[u][v] += ...}). Um modelo que falhe na análise de dependências e paralelizar diretamente o laço \texttt{w} sem sincronização ou redução introduzirá condição de corrida imediata (reprovando no Gate~4) ou degradação severa por contenção de barreiras.
+\end{enumerate}
+
+\subsection{Transformações de Anonimização Aplicadas (\texttt{2mm} $\rightarrow$ \texttt{op\_x})}
+\label{subsec:anon_mapeamento}
+
+Para impedir qualquer reconhecimento superficial via correspondência de padrões lexicais, criou-se o núcleo anonimizado \texttt{core/anonymized/op\_x/op\_x.c} (com cabeçalho \texttt{op\_x.h}). A Tabela~\ref{tab:anon_mapeamento} detalha todas as transformações aplicadas. Cabe ressaltar que o arquivo de cabeçalho \texttt{op\_x.h} encapsula as macros de alocação e medição temporal de \texttt{polybench.h} sob nomes neutros, de modo que o arquivo \texttt{op\_x.c} submetido aos LLMs não contém nenhuma ocorrência das palavras \texttt{polybench}, \texttt{2mm}, \texttt{kernel}, \texttt{scop}, \texttt{alpha}, \texttt{beta}, \texttt{tmp}, tampouco qualquer comentário explicativo.
+
+\begin{table}[htbp]
+\centering
+\caption{Mapeamento completo das transformações de anonimização aplicadas ao núcleo \texttt{2mm}}
+\label{tab:anon_mapeamento}
+\small
+\begin{tabular}{llp{6.2cm}}
+\toprule
+\textbf{Elemento Original (\texttt{2mm})} & \textbf{Elemento Anonimizado (\texttt{op\_x})} & \textbf{Objetivo da Anonimização} \\
+\midrule
+\texttt{2mm.c} / \texttt{2mm.h} & \texttt{op\_x.c} / \texttt{op\_x.h} & Oculta o nome canônico do algoritmo BLAS/PolyBench \\
+\texttt{\#include <polybench.h>} & Encapsulado em \texttt{op\_x.h} & Elimina a identificação explícita da suíte de benchmark \\
+\texttt{\#pragma scop} / \texttt{endscop} & Removidos de \texttt{op\_x.c} & Remove delimitadores sintáticos típicos de SCoPs \\
+\texttt{kernel\_2mm} & \texttt{compute\_pipeline} & Substitui a assinatura \texttt{kernel\_*} por nome genérico \\
+\texttt{init\_array} / \texttt{print\_array} & \texttt{setup\_buffers} / \texttt{emit\_result} & Oculta rotinas auxiliares padrão do PolyBench \\
+\texttt{ni, nj, nk, nl} / \texttt{\_PB\_N*} & \texttt{d1, d2, d3, d4} / \texttt{\_LIM\_1..\_LIM\_4} & Remove convenção tradicional de dimensões matriciais \\
+\texttt{alpha, beta} & \texttt{k1, k2} & Remove escalares nominais clássicos de rotinas BLAS \\
+\texttt{tmp, A, B, C, D} & \texttt{buf\_m, src\_p, src\_q, src\_r, dst\_u} & Elimina notação matricial alfabética e o rótulo \texttt{tmp} \\
+\texttt{i, j, k} & \texttt{u, v, w} & Substitui índices canônicos de multiplicação de matrizes \\
+Comentários e fórmula matemática & Integralmente removidos & Suprime pistas em linguagem natural sobre a equação \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+O Código~\ref{cod:anon_compute_pipeline} apresenta a função \texttt{compute\_pipeline} efetivamente entregue aos modelos de linguagem. Os perfis de dimensão foram mantidos idênticos aos do \texttt{2mm} original: \texttt{SMALL\_DATASET} ($128^3$, usado no Gate~4), \texttt{STANDARD\_DATASET} ($1\,024^3$) e \texttt{LARGE\_DATASET} ($2\,000^3$), assegurando equivalência numérica bit-a-bit entre a execução sequencial de \texttt{op\_x.c} e a de \texttt{2mm.c}.
+
+\begin{lstlisting}[style=C, basicstyle=\scriptsize, label=cod:anon_compute_pipeline, caption={Núcleo computacional anonimizado \texttt{compute\_pipeline} (\texttt{core/anonymized/op\_x/op\_x.c}) submetido aos LLMs}]
+static void compute_pipeline(int d1, int d2, int d3, int d4,
+                             REAL_T k1, REAL_T k2,
+                             REAL_T BUF_2D(buf_m, L1, L2, d1, d2),
+                             REAL_T BUF_2D(src_p, L1, L3, d1, d3),
+                             REAL_T BUF_2D(src_q, L3, L2, d3, d2),
+                             REAL_T BUF_2D(src_r, L2, L4, d2, d4),
+                             REAL_T BUF_2D(dst_u, L1, L4, d1, d4)) {
+  int u, v, w;
+
+  for (u = 0; u < _LIM_1; u++)
+    for (v = 0; v < _LIM_2; v++) {
+      buf_m[u][v] = 0;
+      for (w = 0; w < _LIM_3; ++w)
+        buf_m[u][v] += k1 * src_p[u][w] * src_q[w][v];
+    }
+  for (u = 0; u < _LIM_1; u++)
+    for (v = 0; v < _LIM_4; v++) {
+      dst_u[u][v] *= k2;
+      for (w = 0; w < _LIM_2; ++w)
+        dst_u[u][v] += buf_m[u][w] * src_r[w][v];
+    }
+}
+\end{lstlisting}
+
+% ======================================================================
+\section{Protocolo de Prompting Neutro e Pipeline Experimental}
+\label{sec:anon_prompt}
+% ======================================================================
+
+O arquivo \texttt{core/anonymized/op\_x/op\_x.c} foi submetido aos mesmos dez modelos avaliados no capítulo anterior --- os seis modelos generalistas não-quantizados (\texttt{codestral:22b}, \texttt{granite-code:20b}, \texttt{qwen2.5-coder:14b}, \texttt{starcoder2:15b}, \texttt{deepseek-coder-v2:16b} e \texttt{codellama:13b}) e as quatro variantes quantizadas especializadas (\texttt{codestral-openmp:16b}, \texttt{8b}, \texttt{4b} e \texttt{3b}) --- por meio do script automatizado \texttt{python-llm/execute-anon.sh}.
+
+O \textit{prompt} padronizado (\texttt{prompts/AnonPrompt.md}), transcrito no Código~\ref{cod:anon_prompt}, foi elaborado de maneira estritamente neutra quanto ao domínio algorítmico, instruindo o modelo a inspecionar os limites de laço, os padrões de indexação e as dependências de leitura e escrita dentro de \texttt{compute\_pipeline}, sem alterar nenhuma instrução C existente.
+
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, breaklines=true, frame=single, label=cod:anon_prompt, caption={Prompt neutro (\texttt{prompts/AnonPrompt.md}) empregado na anotação do método anonimizado}]
+You are an expert in High Performance Computing (HPC) and OpenMP parallelization in C.
+
+Your task is to analyze the computational loop nests and data dependencies inside
+the function `compute_pipeline` in the C source code below, determine the best
+OpenMP parallelization strategy and exact loop placement, and insert ONLY valid
+`#pragma omp` directives.
+
+STRICT RULES:
+1. Analyze the loop bounds, array indexing, and read/write dependencies across all
+   nested loops before deciding where to place `#pragma omp` directives.
+2. Do NOT rename, remove, reorder, or modify ANY existing C code, `#include`
+   directive, function signature, variable name, loop header, expression, or macro.
+3. Insert ONLY `#pragma omp` directives inside `compute_pipeline` (do NOT
+   parallelize `setup_buffers`, `emit_result`, or `main`).
+4. Respect C89 variable declarations: loop index variables declared outside the
+   loops (`u`, `v`, `w`) that are used inside inner loops MUST be properly
+   privatized (e.g., `private(v, w)`), and never parallelize a loop that carries
+   a write-after-read or read-after-write accumulation dependency on the same
+   array element across iterations.
+5. Return ONLY the complete, compilable C source code inside a single ```c ... ```
+   code block, with no extra explanation outside the code block.
+\end{lstlisting}
+
+Após a geração, todos os códigos são submetidos automaticamente ao pipeline de duas fases:
+\begin{enumerate}
+    \item \textbf{Verificação Automatizada em 4 Gates (\texttt{scripts/verify\_anon.py})}: checa a imutabilidade léxica dos tokens C (Gate~1), a inserção efetiva de diretivas \texttt{\#pragma omp} exclusivamente no corpo de \texttt{compute\_pipeline} (Gate~2), a compilação Pass@1 com \texttt{gcc -O3 -fopenmp} (Gate~3) e a equivalência numérica determinística em 4 \textit{threads} tanto em \texttt{-O3} quanto em \texttt{-O0} (para impedir que a promoção de variáveis em registradores sob \texttt{-O3} mascare condições de corrida em índices C89 não privatizados) contra a referência sequencial de \texttt{op\_x.c} e o \texttt{2mm.c} original ($\epsilon_{\text{rel}} \le 10^{-5}$, Gate~4);
+    \item \textbf{Benchmarking de Escalabilidade de 1 a 64 \textit{Threads} (\texttt{scripts/run\_scale\_anon.sh})}: compila e executa cada modelo aprovado em $\{1, 2, 4, 8, 16, 32, 64\}$ \textit{threads} ($R = 10$ repetições por ponto, com afinidade \texttt{OMP\_PROC\_BIND=true} e \texttt{OMP\_PLACES=cores}) nos datasets \texttt{STANDARD} ($1\,024^3$) e \texttt{LARGE} ($2\,000^3$), confrontando o \textit{speedup} e a eficiência paralela de \texttt{op\_x} diretamente com os valores obtidos para o \texttt{2mm} original por meio da taxa de retenção de desempenho ($R_{\text{anon}} = S_{\text{op\_x}} / S_{\text{2mm}}$).
+\end{enumerate}
+
+% ======================================================================
+\section{Análise nos 4 Gates e Estratégias de Anotação Identificadas}
+\label{sec:anon_gates}
+% ======================================================================
+
+A Tabela~\ref{tab:anon_gates} organiza a avaliação funcional e estrutural dos dez modelos de linguagem e da referência manual sobre o método anonimizado \texttt{compute\_pipeline} (\texttt{op\_x}), registrando o resultado em cada Gate bem como o local e a cláusula OpenMP escolhidos por cada modelo (os valores experimentais consolidados serão preenchidos a partir de \texttt{results/verificacao\_anon.csv} após a execução no servidor \texttt{ws-trx50}).
+
+\begin{table}[htbp]
+\centering
+\caption{Verificação em 4 Gates e estratégia OpenMP adotada no método anonimizado \texttt{op\_x} (\texttt{compute\_pipeline})}
+\label{tab:anon_gates}
+\small
+\begin{tabular}{lccccc p{3.6cm}}
+\toprule
+\textbf{Modelo} & \textbf{G1} & \textbf{G2} & \textbf{G3} & \textbf{G4} & \textbf{4/4} & \textbf{Estratégia / Local do Pragma} \\
+\midrule
+\texttt{openmp} (Ref.) & PASS & PASS (2k/0f) & PASS & PASS & PASS & $2\times$ \texttt{omp parallel for private(v,w) schedule(static)} nos laços externos \texttt{u} \\
+\midrule
+\texttt{codestral\_22b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{granite-code-20b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{qwen-2.5-coder-14b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{starcode-2\_15b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{deepseekcoder-coder-v2\_16b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{codellama\_13b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\midrule
+\texttt{codestral-openmp\_16b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{codestral-openmp\_8b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{codestral-openmp\_4b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\texttt{codestral-openmp\_3b} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{pend.} & \textit{Aguardando execução (\texttt{ws-trx50})} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ======================================================================
+\section{Resultados de Benchmarks: Speedup, Eficiência e Retenção frente ao \texttt{2mm}}
+\label{sec:anon_benchmarks}
+% ======================================================================
+
+Os resultados de tempo de execução, \textit{speedup} ($T_{\text{seq}}/T_{\text{par}}$), eficiência paralela ($S_p / p$) e taxa de retenção frente ao kernel original \texttt{2mm} ($S_{\text{op\_x}} / S_{\text{2mm}}$) nos perfis \texttt{STANDARD} ($1\,024^3$) e \texttt{LARGE} ($2\,000^3$) serão integrados automaticamente a partir dos artefatos \texttt{results/tabela\_escalabilidade\_anon.tex} e \texttt{results/scaling\_curve\_anon.png} após a execução do script \texttt{scripts/run\_scale\_anon.sh} no servidor \texttt{ws-trx50}.
+
+A comparação quantitativa entre a execução do \texttt{2mm} original e do \texttt{op\_x} anonimizado permitirá responder objetivamente às duas hipóteses do estudo:
+\begin{itemize}
+    \item \textbf{Hipótese $H_1$ (Raciocínio Estrutural)}: modelos que mantiverem aprovação nos 4 Gates e taxa de retenção $R_{\text{anon}} \approx 100\%$ com inserção equivalente de pragmas nos laços externos \texttt{u} (preservando a barreira entre estágios e evitando paralelizar o acumulador \texttt{w}) demonstram compreensão efetiva da estrutura de laços e das dependências de dados, independentemente de assinaturas nominais;
+    \item \textbf{Hipótese $H_0$ (Dependência de Assinatura / Memorização)}: modelos que degradarem na taxa de aprovação dos Gates, posicionarem pragmas em laços com dependência de fluxo ou apresentarem queda abrupta de \textit{speedup} ($R_{\text{anon}} \ll 100\%$) revelam dependência de pistas lexicais memorizadas durante o treinamento.
+\end{itemize}

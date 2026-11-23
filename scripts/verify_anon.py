@@ -131,28 +131,28 @@ def check_gate2_pragmas(gen_code: str) -> tuple[bool, int, int, str, str]:
     kernel_count = 0
     kernel_pragmas: list[str] = []
     fn_match = re.search(
-        r"\bvoid\s+compute_pipeline\s*\([^)]*\)\s*\{",
+        r"\bvoid\s+compute_pipeline\s*\(",
         gen_code,
-        flags=re.DOTALL,
     )
     if fn_match:
-        start = fn_match.end() - 1
-        depth = 0
-        end = len(gen_code)
-        for idx in range(start, len(gen_code)):
-            if gen_code[idx] == "{":
-                depth += 1
-            elif gen_code[idx] == "}":
-                depth -= 1
-                if depth == 0:
-                    end = idx + 1
-                    break
-        kernel_body = gen_code[start:end]
-        kernel_pragmas = [
-            p.strip()
-            for p in re.findall(r"^\s*#\s*pragma\s+omp\b.*$", kernel_body, flags=re.MULTILINE)
-        ]
-        kernel_count = len(kernel_pragmas)
+        start = gen_code.find("{", fn_match.end())
+        if start != -1:
+            depth = 0
+            end = len(gen_code)
+            for idx in range(start, len(gen_code)):
+                if gen_code[idx] == "{":
+                    depth += 1
+                elif gen_code[idx] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        end = idx + 1
+                        break
+            kernel_body = gen_code[start:end]
+            kernel_pragmas = [
+                p.strip()
+                for p in re.findall(r"^\s*#\s*pragma\s+omp\b.*$", kernel_body, flags=re.MULTILINE)
+            ]
+            kernel_count = len(kernel_pragmas)
 
     outside_count = max(0, total_count - kernel_count)
     passed = kernel_count >= 1
@@ -179,13 +179,14 @@ def compile_c(
     out_exe: Path,
     use_openmp: bool = True,
     extra_defines: list[str] | None = None,
+    opt_level: str = "-O3",
 ) -> tuple[bool, str]:
     extra_defines = extra_defines or ["-DPOLYBENCH_TIME"]
     omp_cflags, omp_ldflags = get_omp_flags() if use_openmp else ([], [])
 
     cmd = [
         "gcc",
-        "-O3",
+        opt_level,
         "-I",
         str(POLY_UTILS_DIR),
         "-I",
@@ -216,37 +217,38 @@ def parse_floats(stderr_text: str) -> list[float]:
     return [float(x) for x in raw]
 
 
-def check_gate4_numerical(
+def _run_and_compare_dump(
     gen_c_file: Path,
     ref_vals: list[float],
     tmpdir: Path,
     model: str,
-) -> tuple[bool, str]:
+    opt_level: str,
+) -> tuple[bool, float, float, str]:
     defines = ["-DSMALL_DATASET", "-DPOLYBENCH_DUMP_ARRAYS"]
-    omp_exe = tmpdir / f"omp_op_x_{model}.exe"
-    ok, err = compile_c(gen_c_file, ANON_DIR, omp_exe, use_openmp=True, extra_defines=defines)
+    omp_exe = tmpdir / f"omp_op_x_{model}_{opt_level.lstrip('-')}.exe"
+    ok, err = compile_c(gen_c_file, ANON_DIR, omp_exe, use_openmp=True, extra_defines=defines, opt_level=opt_level)
     if not ok:
-        return False, f"Falha build dump: {err}"
+        return False, float("inf"), float("inf"), f"Falha build dump ({opt_level}): {err}"
 
     env = os.environ.copy()
     env["OMP_NUM_THREADS"] = "4"
     try:
         res_omp = subprocess.run([str(omp_exe)], capture_output=True, text=True, env=env, timeout=60)
     except subprocess.TimeoutExpired:
-        return False, "Timeout na execucao (60s)"
+        return False, float("inf"), float("inf"), f"Timeout na execucao ({opt_level}, 60s)"
 
     if res_omp.returncode != 0:
-        return False, f"Crash em runtime (exit={res_omp.returncode})"
+        return False, float("inf"), float("inf"), f"Crash em runtime ({opt_level}, exit={res_omp.returncode})"
 
     omp_vals = parse_floats(res_omp.stderr)
     if len(omp_vals) != len(ref_vals) or len(ref_vals) == 0:
-        return False, f"Contagem divergente de elementos ({len(omp_vals)} vs {len(ref_vals)})"
+        return False, float("inf"), float("inf"), f"Contagem divergente ({opt_level}: {len(omp_vals)} vs {len(ref_vals)})"
 
     max_abs = 0.0
     max_rel = 0.0
     for a, b in zip(ref_vals, omp_vals):
         if math.isnan(b) or math.isinf(b):
-            return False, "NaN/Inf detectado na saida"
+            return False, float("inf"), float("inf"), f"NaN/Inf detectado ({opt_level})"
         diff = abs(a - b)
         rel = diff / max(abs(a), 1e-12)
         if diff > max_abs:
@@ -255,8 +257,27 @@ def check_gate4_numerical(
             max_rel = rel
 
     if max_rel <= 1e-5:
-        return True, f"Identico (erro_rel_max={max_rel:.2e})"
-    return False, f"Divergencia numerica! erro_rel_max={max_rel:.2e}, erro_abs_max={max_abs:.2e}"
+        return True, max_rel, max_abs, "OK"
+    return False, max_rel, max_abs, f"Divergencia ({opt_level}: erro_rel_max={max_rel:.2e}, erro_abs_max={max_abs:.2e})"
+
+
+def check_gate4_numerical(
+    gen_c_file: Path,
+    ref_vals: list[float],
+    tmpdir: Path,
+    model: str,
+) -> tuple[bool, str]:
+    ok_o3, rel_o3, _, msg_o3 = _run_and_compare_dump(gen_c_file, ref_vals, tmpdir, model, "-O3")
+    if not ok_o3:
+        return False, msg_o3
+
+    # Verifica também em -O0 para impedir que promocao em registradores do -O3 mascare
+    # data races em variaveis C89 nao privatizadas (ex.: indice interno `v` compartilhado).
+    ok_o0, rel_o0, _, msg_o0 = _run_and_compare_dump(gen_c_file, ref_vals, tmpdir, model, "-O0")
+    if not ok_o0:
+        return False, f"Data race mascarada em -O3, exposta em -O0! {msg_o0}"
+
+    return True, f"Identico -O3/-O0 (erro_rel_max={max(rel_o3, rel_o0):.2e})"
 
 
 def resolve_candidate_file(model: str) -> Path:
